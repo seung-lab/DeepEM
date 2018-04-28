@@ -9,9 +9,8 @@ from pytorch_connectome.data.dataset import Dataset, worker_init_fn
 
 
 class Data(object):
-    def __init__(self, opt, phase, device=None):
-        assert phase in ['train','eval']
-        self.build(opt, phase, device)
+    def __init__(self, opt, is_train, device=None):
+        self.build(opt, is_train, device)
 
     def __call__(self):
         sample = next(self.dataiter)
@@ -24,19 +23,19 @@ class Data(object):
     def requires_grad(self, key):
         return self.is_train and (k in self.inputs)
 
-    def build(self, opt, phase, device):
+    def build(self, opt, is_train, device):
         # Data
-        mod = imp.load_source('data', opt.data_pathname)
+        mod = imp.load_source('data', opt.data)
         data = mod.load_data(opt.data_dir)
 
         # Data augmentation
-        mod = imp.load_source('augment', opt.augment_pathname)
-        aug = mod.get_augmentation(phase)
+        mod = imp.load_source('augment', opt.augment)
+        aug = mod.get_augmentation(is_train)
 
         # Data sampler
-        mod = imp.load_source('sampler', opt.sampler_pathname)
+        mod = imp.load_source('sampler', opt.sampler)
         spec = mod.get_spec(opt.in_spec, opt.out_spec)
-        sampler = mod.Sampler(data, spec, aug)
+        sampler = mod.Sampler(data, spec, is_train, aug)
 
         # Data loader
         size = (opt.max_iter - opt.chkpt_num) * opt.batch_size
@@ -50,5 +49,5 @@ class Data(object):
         # Attributes
         self.dataiter = iter(dataloader)
         self.inputs = opt.in_spec.keys()
-        self.is_train = (phase=='train')
+        self.is_train = is_train
         self.device = torch.device('cuda') if device is None else device

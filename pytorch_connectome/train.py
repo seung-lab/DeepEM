@@ -8,14 +8,15 @@ from tensorboardX import SummaryWriter
 
 from pytorch_connectome.data import Data
 from pytorch_connectome.options import TrainOptions
+from pytorch_connectome.utils.monitor import LearningMonitor
 
 
 def train(opt):
     # TODO: Create a model.
 
     # Data loader
-    train_data = Data(opt, 'train')
-    # eval_data = Data(opt, 'eval')
+    train_data = Data(opt, is_train=True)
+    # eval_data = Data(opt, is_train=False)
 
     # Optimizer
     trainable = filter(lambda p: p.requires_grad, model.parameters())
@@ -35,8 +36,8 @@ def train(opt):
         # Optimizer step
         optimizer.zero_grad()
         # losses, nmasks, inputs, preds, labels = model(sample)
-        # weights = [opt.loss_weight[k] for k in sorted(opt.loss_weight)]
-        # loss = sum([w*l.mean() for w, l in zip(weights,losses)])
+        weights = [opt.loss_weight[k] for k in sorted(opt.loss_weight)]
+        loss = sum([w*l.mean() for w, l in zip(weights,losses)])
         loss.backward()
         optimizer.step()
 

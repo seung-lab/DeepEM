@@ -3,9 +3,7 @@ from __future__ import print_function
 from augmentor import *
 
 
-def get_augmentation(phase, box=None, **kwargs):
-    assert phase in ['train','eval']
-
+def get_augmentation(is_train, box=None, **kwargs):
     # Mild misalignment
     m1 = Blend(
         [Misalign((0,10), margin=1), SlipMisalign((0,10), margin=1)],
@@ -59,7 +57,7 @@ def get_augmentation(phase, box=None, **kwargs):
     augs.append(MixedBlurrySection(maxsec=7))
 
     # Warping
-    if phase == 'train':
+    if is_train:
         augs.append(Warp(skip=0.3))
 
     # Flip & rotate

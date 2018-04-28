@@ -7,10 +7,19 @@ import dataprovider3.emio as emio
 # Pinky dataset
 pinky_dir = 'pinky/ground_truth'
 pinky_info = {
-    'stitched_vol19-vol34':{
+    'stitched_vol19-vol34_train':{
         'img': 'img.h5',
         'seg': 'seg.d10.b1.h5',
-        'msk': 'msk.h5',
+        'msk': 'msk_train.h5',
+        'psd': 'psd.h5',
+        'mit': 'mit.h5',
+        'dir': '',
+        'loc': True,
+    },
+    'stitched_vol19-vol34_val':{
+        'img': 'img.h5',
+        'seg': 'seg.d10.b1.h5',
+        'msk': 'msk_val.h5',
         'psd': 'psd.h5',
         'mit': 'mit.h5',
         'dir': '',
