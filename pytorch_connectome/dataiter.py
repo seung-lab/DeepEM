@@ -4,13 +4,12 @@ import imp
 import torch
 from torch.utils.data import DataLoader
 
-from pytorch_connectome.data.dataloader import DataLoader
 from pytorch_connectome.data.dataset import Dataset, worker_init_fn
 
 
-class Data(object):
-    def __init__(self, opt, is_train, device=None):
-        self.build(opt, is_train, device)
+class DataIter(object):
+    def __init__(self, opt, data, is_train, device=None):
+        self.build(opt, data, is_train, device)
 
     def __call__(self):
         sample = next(self.dataiter)
@@ -23,11 +22,7 @@ class Data(object):
     def requires_grad(self, key):
         return self.is_train and (k in self.inputs)
 
-    def build(self, opt, is_train, device):
-        # Data
-        mod = imp.load_source('data', opt.data)
-        data = mod.load_data(opt.data_dir)
-
+    def build(self, opt, data, is_train, device):
         # Data augmentation
         mod = imp.load_source('augment', opt.augment)
         aug = mod.get_augmentation(is_train)

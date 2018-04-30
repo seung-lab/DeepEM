@@ -1,5 +1,6 @@
 from __future__ import print_function
 import argparse
+import os
 
 
 class TrainOptions(object):
@@ -75,9 +76,9 @@ class TrainOptions(object):
             opt.out_spec['affinity'] = (len(opt.edges),) + opt.fov
             opt.loss_weight['affinity'] = opt.aff
 
-        if opt.syn > 0:
+        if opt.psd > 0:
             opt.out_spec['synapse'] = (1,) + opt.fov
-            opt.loss_weight['synapse'] = opt.syn
+            opt.loss_weight['synapse'] = opt.psd
 
         if opt.mit > 0:
             opt.out_spec['mitochondria'] = (1,) + opt.fov

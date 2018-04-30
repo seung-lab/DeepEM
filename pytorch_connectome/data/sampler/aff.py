@@ -8,7 +8,7 @@ from pytorch_connectome.data.sampler.utils import recompute_CC
 
 def get_data_ids(is_train):
     if is_train:
-        return ['stitched_vol19-vol34_train',
+        return ['stitched_vol19-vol34',
                 'stitched_vol40-vol41',
                 'vol101',
                 'vol102',
@@ -18,7 +18,7 @@ def get_data_ids(is_train):
                 'vol502',
                 'vol503']
     else:
-        return ['stitched_vol19-vol34_val']
+        return ['stitched_vol19-vol34']
 
 
 
@@ -38,6 +38,7 @@ def get_spec(in_spec, out_spec):
 class Sampler(object):
     def __init__(self, data, spec, is_train, aug=None):
         data_ids = get_data_ids(is_train)
+        self.is_train = is_train
         self.build(data, data_ids, spec, aug)
 
     def __call__(self):
@@ -45,7 +46,7 @@ class Sampler(object):
         return self.postprocess(sample)
 
     def postprocess(self, sample):
-        assert 'affinity' in sample
+        assert('affinity' in sample)
         sample['affinity'] = recompute_CC(sample['affinity'])
         sample = Augment.to_tensor(sample)
         return self.to_float32(sample)
@@ -64,8 +65,20 @@ class Sampler(object):
         self.dataprovider = dp
 
     def build_dataset(self, key, data):
+        img = data['img']
+        seg = data['seg']
+        msk = self.get_mask(data)
+        loc = data['loc']
+        # Create Dataset.
         dset = Dataset()
-        dset.add_data(key='input', data=data['img'])
-        dset.add_data(key='affinity', data=data['seg'])
-        dset.add_mask(key='affinity_mask', data=data['msk'], loc=data['loc'])
+        dset.add_data(key='input', data=img)
+        dset.add_data(key='affinity', data=seg)
+        dset.add_mask(key='affinity_mask', data=msk, loc=loc)
         return dset
+
+    def get_mask(self, data):
+        key = 'msk_train' if self.is_train else 'msk_val'
+        if key in data:
+            return data[key]
+        assert('msk' in data)
+        return data['msk']
