@@ -56,7 +56,7 @@ class Sampler(object):
 
     def build(self, data, spec, aug):
         dp = DataProvider(spec)
-        for k, v in data:
+        for k, v in data.items():
             dp.add_dataset(self.build_dataset(k, v))
         dp.set_augment(aug)
         dp.set_imgs(['input'])
