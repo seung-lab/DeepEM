@@ -52,6 +52,7 @@ class TrainOptions(object):
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--long_range', action='store_true')
         self.parser.add_argument('--symmetric', action='store_true')
+        self.parser.add_argument('--group', type=int, default=0)
 
         # Data augmentation
         self.parser.add_argument('--box', default=None)
