@@ -20,7 +20,7 @@ class DataLoader(object):
         return sample
 
     def requires_grad(self, key):
-        return self.is_train and (k in self.inputs)
+        return self.is_train and (key in self.inputs)
 
     def build(self, opt, data, is_train, device):
         # Data augmentation
