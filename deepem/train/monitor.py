@@ -1,4 +1,5 @@
 from __future__ import print_function
+from collections import OrderedDict
 import os
 import h5py
 
@@ -41,6 +42,12 @@ class LearningMonitor:
         assert phase in ['train','test'], "invalid phase {}".format(phase)
         d = getattr(self, phase)
         return d[key][-1]
+
+    def get_last_values(self, phase):
+        """Extract the last values."""
+        assert phase in ['train','test'], "invalid phase {}".format(phase)
+        d = getattr(self, phase)
+        return {k: d[k][-1] for k in d}
 
     def load(self, fname):
         """Initialize by loading from a h5 file."""

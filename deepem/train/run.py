@@ -4,11 +4,10 @@ import os
 import time
 
 import torch
-from tensorboardX import SummaryWriter
 
+from deepem.train.logger import Logger
 from deepem.train.option import TrainOptions
-from deepem.train.utils import load_model, load_data
-from deepem.utils.monitor import LearningMonitor
+from deepem.train.utils import *
 
 
 def train(opt):
@@ -22,58 +21,79 @@ def train(opt):
     trainable = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = torch.optim.Adam(trainable, lr=opt.base_lr)
 
-    # Create a summary writer.
-    # writer = SummaryWriter(opt.log_dir)
+    # Initial checkpoint
+    save_chkpt(model, opt.model_dir, opt.chkpt_num)
 
     # Training loop
-    t0 = time.time()
     print("========== BEGIN TRAINING LOOP ==========")
-    for i in range(opt.chkpt_num, opt.max_iter):
+    with Logger(opt) as logger:
 
-        # Load training samples.
-        sample = train_loader()
+        # Timer
+        t0 = time.time()
 
-        # Optimizer step
-        optimizer.zero_grad()
-        losses, nmasks, preds = model(sample)
-        losses = {k: v.mean() for k, v in losses.items()}
-        nmasks = {k: v.mean() for k, v in nmasks.items()}
-        loss = sum([w*losses[k] for k, w in opt.loss_weight.items()])
-        loss.backward()
-        optimizer.step()
+        for i in range(opt.chkpt_num, opt.max_iter):
 
-        # Elapsed time
+            # Load training samples.
+            sample = train_loader()
+
+            # Optimizer step
+            optimizer.zero_grad()
+            losses, nmasks, preds = forward(model, sample, opt)
+            total_loss = sum([w*losses[k] for k, w in opt.loss_weight.items()])
+            total_loss.backward()
+            optimizer.step()
+
+            # Elapsed time
+            elapsed = time.time() - t0
+
+            # Record keeping
+            logger.record('train', losses, nmasks, elapsed=elapsed)
+
+            # Log & display averaged stats.
+            if (i+1) % opt.avgs_intv == 0 or i < opt.warm_up:
+                logger.check('train', i+1)
+
+            # Logging images
+            if (i+1) % opt.imgs_intv == 0:
+                logger.log_images('train', i+1, preds, sample)
+
+            # Evaluation loop
+            if (i+1) % opt.eval_intv == 0:
+                eval_loop(i+1, model, val_loader, opt, logger)
+
+            # Model checkpoint
+            if (i+1) % opt.chkpt_intv == 0:
+                save_chkpt(model, opt.model_dir, i+1)
+
+            # Reset timer.
+            t0 = time.time()
+
+
+def eval_loop(iter_num, model, data_loader, opt, logger):
+    if not opt.no_eval:
+        model.eval()
+
+    # Evaluation loop
+    print("---------- BEGIN EVALUATION LOOP ----------")
+
+    t0 = time.time()
+    for i in range(opt.eval_iter):
+        sample = data_loader()
+        losses, nmasks, preds = forward(model, sample, opt)
         elapsed = time.time() - t0
 
-        # Dispaly
-        disp = "Iter: %8d, " % (i+1)
-        for k, v in losses.items():
-            disp += "%s = %.3f, " % (k, v.item())
-        disp += "lr = %.6f, " % opt.base_lr
-        disp += "(elapsed = %.3f). " % elapsed
-        print(disp)
-
-        # Averaging & displaying stats
-        if (i+1) % opt.avgs_intv == 0 or i < opt.warm_up:
-            pass
-
-        # Logging images
-        if (i+1) % opt.imgs_intv == 0:
-            pass
-
-        # Evaluation loop
-        if (i+1) % opt.eval_intv == 0:
-            pass
-
-        # Model snapshot
-        if (i+1) % opt.chkpt_intv == 0:
-            pass
+        # Record keeping
+        logger.record('test', losses, nmasks, elapsed=elapsed)
 
         # Restart timer.
         t0 = time.time()
 
-    # Close the summary writer.
-    # writer.close()
+    # Log & display averaged stats.
+    logger.check('test', iter_num)
+
+    print("-------------------------------------------")
+
+    model.train()
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ import imp
 import os
 
 import torch
+from torch.nn.parallel import data_parallel
 
 from deepem.loss.loss import BCELoss
 from deepem.loss.affinity import AffinityLoss
@@ -26,24 +27,26 @@ def get_criteria(opt):
 def load_model(opt):
     # Create a model.
     mod = imp.load_source('model', opt.model)
-    model = Model(mod.create_model(opt), opt)
+    model = Model(mod.create_model(opt), get_criteria(opt), opt)
 
     # Load from a checkpoint, if any.
     if opt.chkpt_num > 0:
-        model = load_chkpt(model, opt)
-
-    # Multi-GPU training
-    if len(opt.gpu_ids) > 1:
-        model = torch.nn.DataParallel(model)
+        model = load_chkpt(model, opt.model_dir, opt.chkpt_num)
 
     return model.train().cuda()
 
 
-def load_chkpt(model, opt):
-    print("LOAD CHECKPOINT: {} iters.".format(opt.chkpt_num))
-    fname = os.path.join(opt.model_dir, "model{}.chkpt".format(opt.chkpt_num))
+def load_chkpt(model, fpath, chkpt_num):
+    print("LOAD CHECKPOINT: {} iters.".format(chkpt_num))
+    fname = os.path.join(fpath, "model{}.chkpt".format(chkpt_num))
     model.load(fname)
     return model
+
+
+def save_chkpt(model, fpath, chkpt_num):
+    print("SAVE CHECKPOINT: {} iters.".format(chkpt_num))
+    fname = os.path.join(fpath, "model{}.chkpt".format(chkpt_num))
+    model.save(fname)
 
 
 def load_data(opt):
@@ -60,3 +63,17 @@ def load_data(opt):
     val_loader = Data(opt, val_data, is_train=False)
 
     return train_loader, val_loader
+
+
+def forward(model, sample, opt):
+    # Forward pass
+    if len(opt.gpu_ids) > 1:
+        losses, nmasks, preds = data_parallel(model, sample)
+    else:
+        losses, nmasks, preds = model(sample)
+
+    # Average over minibatch
+    losses = {k: v.mean() for k, v in losses.items()}
+    nmasks = {k: v.mean() for k, v in nmasks.items()}
+
+    return losses, nmasks, preds

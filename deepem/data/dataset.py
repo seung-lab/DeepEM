@@ -8,7 +8,7 @@ import torch.utils.data
 def worker_init_fn(worker_id):
     # Each worker already has its own random state (Torch).
     seed = torch.IntTensor(1).random_()[0]
-    print("worker ID = {}, seed = {}".format(worker_id, seed))
+    # print("worker ID = {}, seed = {}".format(worker_id, seed))
     np.random.seed(seed)
 
 

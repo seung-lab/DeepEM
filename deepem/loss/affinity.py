@@ -39,7 +39,7 @@ class AffinityLoss(nn.Module):
 
         def forward(self, x, i):
             num_channels = x.size(-4)
-            assert(num_channels == len(self.edges)))
+            assert(num_channels == len(self.edges))
             assert(i < num_channels and i >= 0)
             edge = self.edges[i]
             return torch_utils.get_pair_first2(x[...,[i],:,:,:], edge)

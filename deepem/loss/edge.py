@@ -47,8 +47,8 @@ class EdgeCRF(nn.Module):
         if self.size_average:
             try:
                 loss = loss / nmsk
-                nmsk = torch.tensor(1, dtype=nmsk.type(),
-                                       device=nmsk.device)
+                nmsk = torch.tensor([1], dtype=nmsk.type(),
+                                         device=nmsk.device)
             except:
                 import pdb; pdb.set_trace()
         return loss, nmsk

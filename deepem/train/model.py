@@ -5,19 +5,18 @@ import torch.nn as nn
 
 from deepem.loss.loss import BCELoss
 from deepem.loss.affinity import AffinityLoss
-from deepem.train.utils import get_criteria
 
 
 class Model(nn.Module):
     """
     Model wrapper for training.
     """
-    def __init__(self, model, opt):
+    def __init__(self, model, criteria, opt):
         super(Model, self).__init__()
         self.model = model
+        self.criteria = criteria
         self.in_spec = opt.in_spec
         self.out_spec = opt.out_spec
-        self.criteria = get_criteria(opt)
         self.pretrain = opt.pretrain
 
     def forward(self, sample):
@@ -29,12 +28,15 @@ class Model(nn.Module):
         return losses, nmasks, preds
 
     def eval_loss(self, preds, sample):
-        loss, nmsk = dict(), dict()
+        losses, nmasks = dict(), dict()
         for k in self.out_spec:
             target = sample[k]
             mask = sample[k + '_mask']
-            loss[k], nmsk[k] = self.criteria(preds[k], target, mask)
-        return loss, nmsk
+            loss, nmsk = self.criteria[k](preds[k], target, mask)
+            # TODO: PyTorch 0.4.0 bug
+            losses[k] = loss.unsqueeze(0)
+            nmasks[k] = nmsk.unsqueeze(0)
+        return losses, nmasks
 
     def save(self, fpath):
         torch.save(self.model.state_dict(), fpath)

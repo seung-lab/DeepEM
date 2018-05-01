@@ -29,8 +29,8 @@ class BCELoss(nn.Module):
 
         if self.size_average:
             loss = loss / nmsk
-            nmsk = torch.tensor(1, dtype=nmsk.type(),
-                                   device=nmsk.device)
+            nmsk = torch.tensor([1], dtype=nmsk.type(),
+                                     device=nmsk.device)
 
         return loss, nmsk
 
@@ -52,7 +52,7 @@ class MSELoss(nn.Module):
 
         if self.size_average:
             loss = loss / nmsk
-            nmsk = torch.tensor(1, dtype=nmsk.type(),
-                                   device=nmsk.device)
+            nmsk = torch.tensor([1], dtype=nmsk.type(),
+                                     device=nmsk.device)
 
         return loss, nmsk
