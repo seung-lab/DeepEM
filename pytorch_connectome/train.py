@@ -16,7 +16,7 @@ def train(opt):
     # TODO: Create a model.
 
     # Data
-    data = imp.load_source('data', opt.data).load_data(opt.data_dir, data_ids=['stitched_vol19-vol34'])
+    data = load_data(opt)
     train_data = DataIter(opt, data, is_train=True)
     # eval_data = DataIter(opt, data, is_train=False)
 
@@ -73,6 +73,18 @@ def train(opt):
 
     # Close the summary writer.
     # writer.close()
+
+
+def load_data(opt):
+    # Train & validation data IDs
+    mod = imp.load_source('sampler', opt.sampler)
+    train_ids = mod.get_data_ids(True)
+    val_ids = mod.get_data_ids(False)
+    data_ids = list(set().union(train_ids, val_ids))
+
+    # Load data.
+    mod = imp.load_source('data', opt.data)
+    return mod.load_data(opt.data_dir, data_ids=data_ids)
 
 
 if __name__ == "__main__":

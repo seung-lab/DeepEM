@@ -21,7 +21,6 @@ def get_data_ids(is_train):
         return ['stitched_vol19-vol34']
 
 
-
 def get_spec(in_spec, out_spec):
     spec = dict()
     for k, v in in_spec.items():
