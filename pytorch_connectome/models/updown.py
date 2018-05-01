@@ -1,3 +1,4 @@
+from __future__ import print_function
 from collections import OrderedDict
 import math
 
@@ -7,7 +8,12 @@ from torch.autograd import Variable
 from torch.nn import functional as F
 
 import emvision
+from emvision.models.layers import BilinearUp
 from emvision.models.utils import pad_size
+
+
+def create_model(opt):
+    raise NotImplementedError
 
 
 class Conv(nn.Module):
@@ -23,28 +29,6 @@ class Conv(nn.Module):
 
     def forward(self, x):
         return self.conv(x)
-
-
-class CaffeBilinearUp(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(CaffeBilinearUp, self).__init__()
-        assert in_channels==out_channels
-        self.groups = in_channels
-        weight = torch.Tensor(self.groups, 1, 1, 4, 4)
-        width = weight.size(-1)
-        hight = weight.size(-2)
-        assert width==hight
-        f = float(math.ceil(width / 2.0))
-        c = float(width - 1) / (2.0 * f)
-        for w in range(width):
-            for h in range(hight):
-                weight[...,h,w] = (1 - abs(w/f - c)) * (1 - abs(h/f - c))
-        self.register_buffer('weight', weight)
-
-    def forward(self, x):
-        return F.conv_transpose3d(x, self.weight,
-            stride=(1,2,2), padding=(0,1,1), groups=self.groups
-        )
 
 
 class InputBlock(nn.Sequential):
@@ -67,7 +51,7 @@ class OutputBlock(nn.Module):
             out_channels = v[-4]
             outs.append(nn.Sequential(
                 Conv(in_channels, out_channels, kernel_size, bias=True),
-                CaffeBilinearUp(out_channels, out_channels)
+                BilinearUp(out_channels, out_channels)
             ))
         self.outs = nn.ModuleList(outs)
 

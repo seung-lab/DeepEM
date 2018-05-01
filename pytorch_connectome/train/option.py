@@ -41,6 +41,8 @@ class TrainOptions(object):
         self.parser.add_argument('--chkpt_intv', type=int, default=10000)
         self.parser.add_argument('--chkpt_num', type=int, default=0)
         self.parser.add_argument('--no_eval', action='store_true')
+
+        # Loss
         self.parser.add_argument('--size_average', action='store_true')
         self.parser.add_argument('--margin', type=float, default=0)
 

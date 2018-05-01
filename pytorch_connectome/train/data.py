@@ -2,12 +2,12 @@ from __future__ import print_function
 import imp
 
 import torch
-import torch.utils.data
+from torch.utils.data import DataLoader
 
 from pytorch_connectome.data.dataset import Dataset, worker_init_fn
 
 
-class DataLoader(object):
+class Data(object):
     def __init__(self, opt, data, is_train, device=None):
         self.build(opt, data, is_train, device)
 
@@ -35,11 +35,11 @@ class DataLoader(object):
         # Data loader
         size = (opt.max_iter - opt.chkpt_num) * opt.batch_size
         dataset = Dataset(sampler, size)
-        dataloader = torch.utils.data.DataLoader(dataset,
-                        batch_size=opt.batch_size,
-                        num_workers=opt.num_workers,
-                        pin_memory=True,
-                        worker_init_fn=worker_init_fn)
+        dataloader = DataLoader(dataset,
+                                batch_size=opt.batch_size,
+                                num_workers=opt.num_workers,
+                                pin_memory=True,
+                                worker_init_fn=worker_init_fn)
 
         # Attributes
         self.dataiter = iter(dataloader)

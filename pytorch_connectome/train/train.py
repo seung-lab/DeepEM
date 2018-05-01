@@ -7,8 +7,8 @@ import torch
 
 from tensorboardX import SummaryWriter
 
-from pytorch_connectome.dataloader import DataLoader
-from pytorch_connectome.options import TrainOptions
+from pytorch_connectome.train.data import Data
+from pytorch_connectome.train.option import TrainOptions
 from pytorch_connectome.utils.monitor import LearningMonitor
 
 
@@ -80,11 +80,11 @@ def load_data(opt):
 
     # Train
     train_data = {k: data[k] for k in opt.train_ids}
-    train_loader = DataLoader(opt, train_data, is_train=True)
+    train_loader = Data(opt, train_data, is_train=True)
 
     # Validation
     val_data = {k: data[k] for k in opt.val_ids}
-    val_loader = DataLoader(opt, val_data, is_train=False)
+    val_loader = Data(opt, val_data, is_train=False)
 
     return train_loader, val_loader
 
