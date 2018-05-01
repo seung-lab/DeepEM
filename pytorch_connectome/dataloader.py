@@ -2,7 +2,7 @@ from __future__ import print_function
 import imp
 
 import torch
-import torch.utils.data.DataLoader
+import torch.utils.data
 
 from pytorch_connectome.data.dataset import Dataset, worker_init_fn
 
