@@ -1,37 +1,40 @@
 from __future__ import print_function
 
-
 import torch
 import torch.nn as nn
 
+from deepem.loss.loss import BCELoss
+from deepem.loss.affinity import AffinityLoss
+from deepem.train.utils import get_criteria
+
 
 class Model(nn.Module):
-    def __init__(self, opt):
+    """
+    Model wrapper for training.
+    """
+    def __init__(self, model, opt):
         super(Model, self).__init__()
-
+        self.model = model
+        self.in_spec = opt.in_spec
+        self.out_spec = opt.out_spec
+        self.criteria = get_criteria(opt)
         self.pretrain = opt.pretrain
 
     def forward(self, sample):
-        """Forward pass & loss."""
         # Forward pass
         inputs = [sample[k] for k in sorted(self.in_spec)]
-        outputs = self.model(*inputs)
-        # Evaluate loss.
-        losses, nmasks = self.eval_loss(outputs, sample)
-        labels = [sample[k] for k in sorted(self.out_spec)]
-        return losses, nmasks, inputs, preds, labels
+        preds = self.model(*inputs)
+        # Loss evaluation
+        losses, nmasks = self.eval_loss(preds, sample)
+        return losses, nmasks, preds
 
     def eval_loss(self, preds, sample):
-        loss = OrderedDict()
-        nmsk = OrderedDict()
-        for i, k in enumerate(sorted(self.out_spec)):
-            label = sample[k]
-            mask = sample[k+'_mask']
-            if k == 'affinity':
-                loss[k], nmsk[k] = self.loss_fn(preds[i], label, mask)
-            else:
-                loss[k], nmsk[k] = self.bceloss(preds[i], label, mask)
-        return list(loss.values()), list(nmsk.values())
+        loss, nmsk = dict(), dict()
+        for k in self.out_spec:
+            target = sample[k]
+            mask = sample[k + '_mask']
+            loss[k], nmsk[k] = self.criteria(preds[k], target, mask)
+        return loss, nmsk
 
     def save(self, fpath):
         torch.save(self.model.state_dict(), fpath)

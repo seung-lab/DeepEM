@@ -4,23 +4,23 @@ import os
 import time
 
 import torch
-
 from tensorboardX import SummaryWriter
 
-from pytorch_connectome.train.data import Data
-from pytorch_connectome.train.option import TrainOptions
-from pytorch_connectome.utils.monitor import LearningMonitor
+from deepem.train.option import TrainOptions
+from deepem.train.utils import load_model, load_data
+from deepem.utils.monitor import LearningMonitor
 
 
 def train(opt):
-    # TODO: Create a model.
+    # Model
+    model = load_model(opt)
 
     # Data loaders
     train_loader, val_loader = load_data(opt)
 
     # Optimizer
-    # trainable = filter(lambda p: p.requires_grad, model.parameters())
-    # optimizer = torch.optim.Adam(trainable, lr=opt.base_lr)
+    trainable = filter(lambda p: p.requires_grad, model.parameters())
+    optimizer = torch.optim.Adam(trainable, lr=opt.base_lr)
 
     # Create a summary writer.
     # writer = SummaryWriter(opt.log_dir)
@@ -33,19 +33,22 @@ def train(opt):
         # Load training samples.
         sample = train_loader()
 
-        # # Optimizer step
-        # optimizer.zero_grad()
-        # # losses, nmasks, inputs, preds, labels = model(sample)
-        # weights = [opt.loss_weight[k] for k in sorted(opt.loss_weight)]
-        # loss = sum([w*l.mean() for w, l in zip(weights,losses)])
-        # loss.backward()
-        # optimizer.step()
+        # Optimizer step
+        optimizer.zero_grad()
+        losses, nmasks, preds = model(sample)
+        losses = {k: v.mean() for k, v in losses.items()}
+        nmasks = {k: v.mean() for k, v in nmasks.items()}
+        loss = sum([w*losses[k] for k, w in opt.loss_weight.items()])
+        loss.backward()
+        optimizer.step()
 
         # Elapsed time
         elapsed = time.time() - t0
 
         # Dispaly
         disp = "Iter: %8d, " % (i+1)
+        for k, v in losses.items():
+            disp += "%s = %.3f, " % (k, v.item())
         disp += "lr = %.6f, " % opt.base_lr
         disp += "(elapsed = %.3f). " % elapsed
         print(disp)
@@ -71,22 +74,6 @@ def train(opt):
 
     # Close the summary writer.
     # writer.close()
-
-
-def load_data(opt):
-    mod = imp.load_source('data', opt.data)
-    data_ids = list(set().union(opt.train_ids, opt.val_ids))
-    data = mod.load_data(opt.data_dir, data_ids=data_ids)
-
-    # Train
-    train_data = {k: data[k] for k in opt.train_ids}
-    train_loader = Data(opt, train_data, is_train=True)
-
-    # Validation
-    val_data = {k: data[k] for k in opt.val_ids}
-    val_loader = Data(opt, val_data, is_train=False)
-
-    return train_loader, val_loader
 
 
 if __name__ == "__main__":

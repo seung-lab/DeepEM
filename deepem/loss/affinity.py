@@ -3,8 +3,8 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 
-from pytorch_connectome.loss.edge import EdgeSampler, EdgeCRF
-from pytorch_connectome.utils import torch_utils
+from deepem.loss.edge import EdgeSampler, EdgeCRF
+from deepem.utils import torch_utils
 
 
 class AffinityLoss(nn.Module):

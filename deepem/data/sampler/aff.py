@@ -3,7 +3,7 @@ from __future__ import print_function
 from augmentor import Augment
 from dataprovider3 import DataProvider, Dataset
 
-from pytorch_connectome.data.sampler.utils import recompute_CC
+from deepem.data.sampler.utils import recompute_CC
 
 
 def get_data_ids(is_train):

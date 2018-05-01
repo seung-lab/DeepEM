@@ -4,7 +4,7 @@ import imp
 import torch
 from torch.utils.data import DataLoader
 
-from pytorch_connectome.data.dataset import Dataset, worker_init_fn
+from deepem.data.dataset import Dataset, worker_init_fn
 
 
 class Data(object):

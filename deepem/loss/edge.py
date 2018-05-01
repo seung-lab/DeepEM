@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from pytorch_connectome.utils import torch_utils
+from deepem.utils import torch_utils
 
 
 class EdgeSampler(object):
