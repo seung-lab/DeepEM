@@ -76,14 +76,8 @@ def train(opt):
 
 
 def load_data(opt):
-    # Train & validation data IDs
-    mod = imp.load_source('sampler', opt.sampler)
-    train_ids = mod.get_data_ids(True)
-    val_ids = mod.get_data_ids(False)
-    data_ids = list(set().union(train_ids, val_ids))
-
-    # Load data.
     mod = imp.load_source('data', opt.data)
+    data_ids = list(set().union(opt.train_ids, opt.val_ids))
     return mod.load_data(opt.data_dir, data_ids=data_ids)
 
 

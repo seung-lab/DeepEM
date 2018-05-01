@@ -22,6 +22,10 @@ class TrainOptions(object):
         # cuDNN auto-tuning
         self.parser.add_argument('--autotune', action='store_true')
 
+        # Training/validation sets
+        self.parser.add_argument('--train_ids', type=str, default=[], nargs='+')
+        self.parser.add_argument('--val_ids', type=str, default=[], nargs='+')
+
         # Training
         self.parser.add_argument('--base_lr', type=float, default=0.001)
         self.parser.add_argument('--max_iter', type=int, default=1000000)
@@ -64,6 +68,13 @@ class TrainOptions(object):
         opt.exp_dir = 'experiments/{}'.format(opt.exp_name)
         opt.log_dir = os.path.join(opt.exp_dir, 'logs')
         opt.model_dir = os.path.join(opt.exp_dir, 'models')
+
+        # Training/validation sets
+        mod = imp.load_source('sampler', opt.sampler)
+        if not opt.train_ids:
+            opt.train_ids = mod.get_data_ids(True)
+        if not opt.val_ids:
+            opt.val_ids = mod.get_data_ids(False)
 
         # Model spec
         opt.fov = tuple(opt.fov)
