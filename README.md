@@ -1,2 +1,2 @@
-# pytorch-connectome
+# pytorch-deepem
 Connectomics with PyTorch
