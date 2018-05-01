@@ -36,9 +36,8 @@ def get_spec(in_spec, out_spec):
 
 class Sampler(object):
     def __init__(self, data, spec, is_train, aug=None):
-        data_ids = get_data_ids(is_train)
         self.is_train = is_train
-        self.build(data, data_ids, spec, aug)
+        self.build(data, spec, aug)
 
     def __call__(self):
         sample = self.dataprovider()
@@ -55,10 +54,10 @@ class Sampler(object):
             sample[k] = v.astype('float32')
         return sample
 
-    def build(self, data, data_ids, spec, aug):
+    def build(self, data, spec, aug):
         dp = DataProvider(spec)
-        for key in data_ids:
-            dp.add_dataset(self.build_dataset(key, data[key]))
+        for k, v in data:
+            dp.add_dataset(self.build_dataset(k, v))
         dp.set_augment(aug)
         dp.set_imgs(['input'])
         self.dataprovider = dp

@@ -7,7 +7,7 @@ import torch
 
 from tensorboardX import SummaryWriter
 
-from pytorch_connectome.dataiter import DataIter
+from pytorch_connectome.dataloader import DataLoader
 from pytorch_connectome.options import TrainOptions
 from pytorch_connectome.utils.monitor import LearningMonitor
 
@@ -15,10 +15,8 @@ from pytorch_connectome.utils.monitor import LearningMonitor
 def train(opt):
     # TODO: Create a model.
 
-    # Data
-    data = load_data(opt)
-    train_data = DataIter(opt, data, is_train=True)
-    # eval_data = DataIter(opt, data, is_train=False)
+    # Data loaders
+    train_loader, val_loader = load_data(opt)
 
     # Optimizer
     # trainable = filter(lambda p: p.requires_grad, model.parameters())
@@ -33,7 +31,7 @@ def train(opt):
     for i in range(opt.chkpt_num, opt.max_iter):
 
         # Load training samples.
-        sample = train_data(opt.in_spec)
+        sample = train_loader(opt.in_spec)
 
         # # Optimizer step
         # optimizer.zero_grad()
@@ -78,7 +76,17 @@ def train(opt):
 def load_data(opt):
     mod = imp.load_source('data', opt.data)
     data_ids = list(set().union(opt.train_ids, opt.val_ids))
-    return mod.load_data(opt.data_dir, data_ids=data_ids)
+    data = mod.load_data(opt.data_dir, data_ids=data_ids)
+
+    # Train
+    train_data = {k: data[k] for k in opt.train_ids}
+    train_loader = DataLoader(opt, train_data, is_train=True)
+
+    # Validation
+    val_data = {k: data[k] for k in opt.val_ids}
+    val_loader = DataLoader(opt, val_data, is_train=False)
+
+    return train_loader, val_loader
 
 
 if __name__ == "__main__":
