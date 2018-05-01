@@ -31,7 +31,7 @@ def train(opt):
     for i in range(opt.chkpt_num, opt.max_iter):
 
         # Load training samples.
-        sample = train_loader(opt.in_spec)
+        sample = train_loader()
 
         # # Optimizer step
         # optimizer.zero_grad()

@@ -101,7 +101,7 @@ class TrainOptions(object):
 
         args = vars(opt)
         print('------------ Options -------------')
-        for k, v in sorted(args.items()):
+        for k, v in args.items():
             print('%s: %s' % (str(k), str(v)))
         print('-------------- End ----------------')
 
