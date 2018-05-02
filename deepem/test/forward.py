@@ -30,7 +30,7 @@ class Forward(object):
                 inputs = self.to_torch(inputs)
 
                 # Forward pass
-                outputs = model(*inputs)
+                outputs = model(inputs)
                 scanner.push(self.from_torch(outputs))
 
                 # Elapsed time
@@ -46,11 +46,11 @@ class Forward(object):
         return scanner.outputs
 
     def to_torch(self, sample):
-        inputs = list()
+        inputs = dict()
         for k in sorted(self.in_spec):
             data = np.expand_dims(sample[k], axis=0)
             tensor = torch.from_numpy(data).cuda()
-            inputs.append(tensor.cuda())
+            inputs[k] = tensor.cuda()
         return inputs
 
     def from_torch(self, outputs):

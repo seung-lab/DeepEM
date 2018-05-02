@@ -13,12 +13,12 @@ class Options(object):
 
     def initialize(self):
         self.parser.add_argument('--exp_name', required=True)
-        self.parser.add_argument('--data_dir', required=True)
         self.parser.add_argument('--model',    required=True)
 
         # Data
+        self.parser.add_argument('--data_dir', default="")
         self.parser.add_argument('--data_names', nargs='+')
-        self.parser.add_argument('--input_name', default='img.h5')
+        self.parser.add_argument('--input_name', default="img.h5")
 
         # cuDNN auto-tuning
         self.parser.add_argument('--autotune', action='store_true')
@@ -77,10 +77,10 @@ class Options(object):
         opt.scan_spec = dict()
         if opt.aff > 0:
             opt.scan_spec['affinity'] = (3,) + opt.fov
-        if opt.syn:
-            opt.scan_spec['synapse'] = (1,) + outsize
+        if opt.psd:
+            opt.scan_spec['synapse'] = (1,) + opt.fov
         if opt.mit:
-            opt.scan_spec['mitochondria'] = (1,) + outsize
+            opt.scan_spec['mitochondria'] = (1,) + opt.fov
         stride = self.get_stride(opt.fov, opt.overlap)
         opt.scan_params = dict(stride=stride, blend='bump')
 

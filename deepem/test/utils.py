@@ -55,10 +55,10 @@ def save_output(data_name, output, opt):
         if opt.crop:
             data = crop_center(data, opt.crop)
         dname = data_name.replace('/', '_')
-        fname = "{}_{}_{}.h5".format(dname, k, opt.chkpt_num)
+        fname = "{}_{}_{}".format(dname, k, opt.chkpt_num)
         if opt.out_prefix:
-            fname = '_'.join(opt.out_prefix, fname)
+            fname = opt.out_prefix + '_' + fname
         if opt.out_tag:
-            fname = '_'.join(fname, opt.out_tag)
-        fpath = os.path.join(opt.fwd_dir, fname)
+            fname = fname + '_' + opt.out_tag
+        fpath = os.path.join(opt.fwd_dir, fname + ".h5")
         emio.imsave(data, fpath)
