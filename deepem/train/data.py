@@ -8,24 +8,24 @@ from deepem.data.dataset import Dataset, worker_init_fn
 
 
 class Data(object):
-    def __init__(self, opt, data, is_train, device=None):
-        self.build(opt, data, is_train, device)
+    def __init__(self, opt, data, is_train):
+        self.build(opt, data, is_train)
 
     def __call__(self):
         sample = next(self.dataiter)
         for k in sample:
-            sample[k].requires_grad_(self.requires_grad(k))
-            sample[k] = sample[k].to(self.device)
-            # TODO: Non-blocking data transfer?
+            is_input = k in self.inputs
+            sample[k].requires_grad_(is_input)
+            sample[k] = sample[k].cuda(non_blocking=(not is_input))
         return sample
 
     def requires_grad(self, key):
         return self.is_train and (key in self.inputs)
 
-    def build(self, opt, data, is_train, device):
+    def build(self, opt, data, is_train):
         # Data augmentation
         mod = imp.load_source('augment', opt.augment)
-        aug = mod.get_augmentation(is_train)
+        aug = mod.get_augmentation(is_train, **opt.aug_params)
 
         # Data sampler
         mod = imp.load_source('sampler', opt.sampler)
@@ -45,4 +45,3 @@ class Data(object):
         self.dataiter = iter(dataloader)
         self.inputs = opt.in_spec.keys()
         self.is_train = is_train
-        self.device = torch.device('cuda') if device is None else device

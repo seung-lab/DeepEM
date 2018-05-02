@@ -75,22 +75,21 @@ def eval_loop(iter_num, model, data_loader, opt, logger):
 
     # Evaluation loop
     print("---------- BEGIN EVALUATION LOOP ----------")
-
-    t0 = time.time()
-    for i in range(opt.eval_iter):
-        sample = data_loader()
-        losses, nmasks, preds = forward(model, sample, opt)
-        elapsed = time.time() - t0
-
-        # Record keeping
-        logger.record('test', losses, nmasks, elapsed=elapsed)
-
-        # Restart timer.
+    with torch.no_grad():
         t0 = time.time()
+        for i in range(opt.eval_iter):
+            sample = data_loader()
+            losses, nmasks, preds = forward(model, sample, opt)
+            elapsed = time.time() - t0
+
+            # Record keeping
+            logger.record('test', losses, nmasks, elapsed=elapsed)
+
+            # Restart timer.
+            t0 = time.time()
 
     # Log & display averaged stats.
     logger.check('test', iter_num)
-
     print("-------------------------------------------")
 
     model.train()

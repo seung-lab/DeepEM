@@ -81,7 +81,7 @@ class TrainOptions(object):
         if not opt.val_ids:
             opt.val_ids = mod.get_data_ids(False)
 
-        # Model spec
+        # Model
         opt.fov = tuple(opt.fov)
         opt.in_spec = dict(input=(1,) + opt.fov)
         opt.edges = self.get_edges(opt)
@@ -102,6 +102,16 @@ class TrainOptions(object):
 
         assert len(opt.out_spec) > 0
         assert len(opt.out_spec) == len(opt.loss_weight)
+
+        # Data augmentation
+        opt.aug_params = dict()
+        opt.aug_params['box'] = opt.box
+
+        # Multiclass detection
+        opt.data_params = dict()
+        opt.data_params['seg'] = opt.aff > 0
+        opt.data_params['psd'] = opt.psd > 0
+        opt.data_params['mit'] = opt.mit > 0
 
         args = vars(opt)
         print('------------ Options -------------')

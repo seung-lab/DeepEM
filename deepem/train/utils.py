@@ -52,7 +52,7 @@ def save_chkpt(model, fpath, chkpt_num):
 def load_data(opt):
     mod = imp.load_source('data', opt.data)
     data_ids = list(set().union(opt.train_ids, opt.val_ids))
-    data = mod.load_data(opt.data_dir, data_ids=data_ids)
+    data = mod.load_data(opt.data_dir, data_ids=data_ids, **opt.data_params)
 
     # Train
     train_data = {k: data[k] for k in opt.train_ids}

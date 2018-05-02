@@ -100,7 +100,8 @@ pinky_info = {
 }
 
 
-def load_data(data_dir, data_ids=None):
+def load_data(data_dir, data_ids=None, seg=True, psd=False, mit=False):
+    assert(any([x for x in [seg,psd,mit]]))
     if data_ids is None:
         data_ids = pinky_info.keys()
     data = dict()
@@ -108,11 +109,11 @@ def load_data(data_dir, data_ids=None):
     dpath = os.path.join(base, pinky_dir)
     for data_id in data_ids:
         info = pinky_info[data_id]
-        data[data_id] = load_dataset(dpath, data_id, info)
+        data[data_id] = load_dataset(dpath, data_id, info, seg, psd, mit)
     return data
 
 
-def load_dataset(dpath, tag, info):
+def load_dataset(dpath, tag, info, seg, psd, mit):
     dset = dict()
 
     # Image
@@ -122,9 +123,24 @@ def load_dataset(dpath, tag, info):
     dset['img'] /= 255.0
 
     # Segmentation
-    fpath = os.path.join(dpath, info['dir'], info['seg'])
-    print(fpath)
-    dset['seg'] = emio.imread(fpath).astype('uint32')
+    if seg:
+        fpath = os.path.join(dpath, info['dir'], info['seg'])
+        print(fpath)
+        dset['seg'] = emio.imread(fpath).astype('uint32')
+
+    # Synapse
+    if psd:
+        fpath = os.path.join(dpath, info['dir'], info['psd'])
+        print(fpath)
+        dset['psd'] = emio.imread(fpath)
+        dset['psd'] = (dset['psd'] > 0).astype('float32')
+
+    # Mitochondria:
+    if mit:
+        fpath = os.path.join(dpath, info['dir'], info['mit'])
+        print(fpath)
+        dset['mit'] = emio.imread(fpath)
+        dset['mit'] = (dset['mit'] > 0).astype('float32')
 
     # Mask
     if tag == 'stitched_vol19-vol34':

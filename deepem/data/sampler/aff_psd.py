@@ -65,6 +65,7 @@ class Sampler(object):
     def build_dataset(self, key, data):
         img = data['img']
         seg = data['seg']
+        psd = data['psd']
         loc = data['loc']
         msk = self.get_mask(data)
         # Create Dataset.
@@ -72,6 +73,8 @@ class Sampler(object):
         dset.add_data(key='input', data=img)
         dset.add_data(key='affinity', data=seg)
         dset.add_mask(key='affinity_mask', data=msk, loc=loc)
+        dset.add_data(key='synapse', data=psd)
+        dset.add_data(key='synapse_mask', data=msk)
         return dset
 
     def get_mask(self, data):
