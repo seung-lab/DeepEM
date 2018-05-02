@@ -17,13 +17,13 @@ class Options(object):
         self.parser.add_argument('--model',    required=True)
 
         # Data
-        self.parser.add_argument('--data_name', nargs='+')
+        self.parser.add_argument('--data_names', nargs='+')
         self.parser.add_argument('--input_name', default='img.h5')
 
         # cuDNN auto-tuning
         self.parser.add_argument('--autotune', action='store_true')
 
-        # Training
+        # Inference
         self.parser.add_argument('--gpu_id', type=str, default='0')
         self.parser.add_argument('--chkpt_num', type=int, default=0)
         self.parser.add_argument('--no_eval', action='store_true')
@@ -36,13 +36,14 @@ class Options(object):
 
         # Multiclass detection
         self.parser.add_argument('--aff', type=int, default=0)
-        self.parser.add_argument('--psd', type=int, default=0)
-        self.parser.add_argument('--mit', type=int, default=0)
+        self.parser.add_argument('--psd', action='store_true')
+        self.parser.add_argument('--mit', action='store_true')
 
         # Forward scanning
-        self.parser.add_argument('--scan_prefix', default='')
-        self.parser.add_argument('--scan_tag', default='')
-        self.parser.add_argument('--overlap', type=float, default=0.5)
+        self.parser.add_argument('--out_prefix', default='')
+        self.parser.add_argument('--out_tag', default='')
+        self.parser.add_argument('--overlap', type=float, default=[0.5,0.5,0.5], nargs='+')
+        self.parser.add_argument('--crop', type=int, default=None, nargs='+')
 
         # Benchmark
         self.parser.add_argument('--dummy', action='store_true')
@@ -63,24 +64,25 @@ class Options(object):
         # Model spec
         opt.fov = tuple(opt.fov)
         opt.in_spec = dict(input=(1,) + opt.fov)
-        opt.edges = self.get_edges(opt)
         opt.out_spec = dict()
-        opt.loss_weight = dict()
-
         if opt.aff > 0:
-            opt.out_spec['affinity'] = (len(opt.edges),) + opt.fov
-            opt.loss_weight['affinity'] = opt.aff
-
-        if opt.psd > 0:
+            opt.out_spec['affinity'] = (opt.aff,) + opt.fov
+        if opt.psd:
             opt.out_spec['synapse'] = (1,) + opt.fov
-            opt.loss_weight['synapse'] = opt.psd
-
-        if opt.mit > 0:
+        if opt.mit:
             opt.out_spec['mitochondria'] = (1,) + opt.fov
-            opt.loss_weight['mitochondria'] = opt.mit
+        assert(len(opt.out_spec) > 0)
 
-        assert len(opt.out_spec) > 0
-        assert len(opt.out_spec) == len(opt.loss_weight)
+        # Scan spec
+        opt.scan_spec = dict()
+        if opt.aff > 0:
+            opt.scan_spec['affinity'] = (3,) + opt.fov
+        if opt.syn:
+            opt.scan_spec['synapse'] = (1,) + outsize
+        if opt.mit:
+            opt.scan_spec['mitochondria'] = (1,) + outsize
+        stride = self.get_stride(opt.fov, opt.overlap)
+        opt.scan_params = dict(stride=stride, blend='bump')
 
         args = vars(opt)
         print('------------ Options -------------')
@@ -90,3 +92,9 @@ class Options(object):
 
         self.opt = opt
         return self.opt
+
+    def get_stride(self, fov, overlap):
+        assert(len(fov) == 3)
+        assert(len(overlap) == 3)
+        inverse = lambda f,o: 1-o if o>0 and o<1 else f-o
+        return tuple(inverse(f,o) for f,o in zip(fov,overlap))

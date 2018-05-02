@@ -15,8 +15,8 @@ class Model(nn.Module):
         super(Model, self).__init__()
         self.model = model
         self.criteria = criteria
-        self.in_spec = opt.in_spec
-        self.out_spec = opt.out_spec
+        self.in_spec = dict(opt.in_spec)
+        self.out_spec = dict(opt.out_spec)
         self.pretrain = opt.pretrain
 
     def forward(self, sample):

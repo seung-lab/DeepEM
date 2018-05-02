@@ -1,12 +1,24 @@
 from __future__ import print_function
+import os
 
 import torch
 
+from deepem.test.forward import Forward
 from deepem.test.option import Options
+from deepem.test.utils import *
 
 
 def test(opt):
-    pass
+    # Model
+    model = load_model(opt)
+
+    # Forward scan
+    forward = Forward(opt)
+    for dname in opt.data_names:
+        print(dname)
+        scanner = make_forward_scanner(dname, opt)
+        output = forward(model, scanner)
+        save_output(dname, output, opt)
 
 
 if __name__ == "__main__":
