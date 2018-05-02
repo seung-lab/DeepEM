@@ -6,7 +6,7 @@ import time
 import torch
 
 from deepem.train.logger import Logger
-from deepem.train.option import TrainOptions
+from deepem.train.option import Options
 from deepem.train.utils import *
 
 
@@ -97,7 +97,7 @@ def eval_loop(iter_num, model, data_loader, opt, logger):
 
 if __name__ == "__main__":
     # Options
-    opt = TrainOptions().parse()
+    opt = Options().parse()
 
     # GPUs
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(opt.gpu_ids)

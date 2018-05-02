@@ -4,7 +4,7 @@ import imp
 import os
 
 
-class TrainOptions(object):
+class Options(object):
     """
     Training options.
     """
