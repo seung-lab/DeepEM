@@ -5,8 +5,8 @@ import torch
 import torch.nn as nn
 
 import emvision
-from emvision.models.layers import Conv
-from deepem.models.layers import BilinearUp
+from emvision.models.layers import BilinearUp
+from deepem.models.layers import Conv
 
 
 def create_model(opt):
