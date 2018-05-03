@@ -39,7 +39,7 @@ class OutputBlock(nn.Module):
         self.keys = spec.keys()
 
     def forward(self, x):
-        return {k: out(x) for k, out zip(self.keys, self.outs)}
+        return {k: out(x) for k, out in zip(self.keys, self.outs)}
 
 
 class Model(nn.Sequential):
