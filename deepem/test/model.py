@@ -28,3 +28,12 @@ class Model(nn.Module):
             self.model.load_state_dict(model_dict)
         else:
             self.model.load_state_dict(state_dict)
+
+
+class OnnxModel(Model):
+    def __init__(self, model, opt):
+        super(OnnxModel, self).__init__(model, opt)
+
+    def forward(self, x):
+        outputs = self.model(x)
+        return [F.sigmoid(x) for x in outputs]

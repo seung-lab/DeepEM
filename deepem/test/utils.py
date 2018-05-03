@@ -5,14 +5,17 @@ import os
 
 from dataprovider3 import Dataset, ForwardScanner, emio
 
-from deepem.test.model import Model
+from deepem.test.model import Model, OnnxModel
 from deepem.utils.py_utils import crop_center
 
 
 def load_model(opt):
     # Create a model.
     mod = imp.load_source('model', opt.model)
-    model = Model(mod.create_model(opt), opt)
+    if opt.onnx:
+        model = OnnxModel(mod.create_model(opt), opt)
+    else:
+        model = Model(mod.create_model(opt), opt)
 
     # Load from a checkpoint, if any.
     if opt.chkpt_num > 0:

@@ -49,6 +49,9 @@ class Options(object):
         self.parser.add_argument('--dummy', action='store_true')
         self.parser.add_argument('--input_size', type=int, default=[128,1024,1024], nargs='+')
 
+        # Onnx export
+        self.parser.add_argument('--onnx', action='store_true')
+
         self.initialized = True
 
     def parse(self):
