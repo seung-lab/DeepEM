@@ -96,5 +96,5 @@ class Options(object):
     def get_stride(self, fov, overlap):
         assert(len(fov) == 3)
         assert(len(overlap) == 3)
-        inverse = lambda f,o: 1-o if o>0 and o<1 else f-o
+        inverse = lambda f,o: float(1-o) if o>0 and o<1 else int(f-o)
         return tuple(inverse(f,o) for f,o in zip(fov,overlap))
