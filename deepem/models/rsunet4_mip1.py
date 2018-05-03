@@ -5,18 +5,12 @@ import torch
 import torch.nn as nn
 
 import emvision
-from emvision.models.layers import BilinearUp
 from deepem.models.layers import Conv
 
 
 def create_model(opt):
     width = [16,32,64,128,256,512]
-    if opt.group > 0:
-        # Group normalization
-        core = emvision.models.rsunet_gn(width=width[:opt.depth], group=opt.group)
-    else:
-        # Batch (instance) normalization
-        core = emvision.models.RSUNet(width=width[:opt.depth])
+    core = emvision.models.rsunet_v3.RSUNet(width=width[:opt.depth])
     return Model(core, opt.in_spec, opt.out_spec)
 
 
@@ -29,6 +23,9 @@ class InputBlock(nn.Sequential):
 class OutputBlock(nn.Module):
     def __init__(self, in_channels, out_spec, kernel_size):
         super(OutputBlock, self).__init__()
+        self.norm = nn.BatchNorm3d(in_channels)
+        self.relu = nn.ReLU(inplace=True)
+
         spec = OrderedDict(sorted(out_spec.items(), key=lambda x: x[0]))
         outs = []
         for k, v in spec.items():
@@ -40,6 +37,8 @@ class OutputBlock(nn.Module):
         self.keys = spec.keys()
 
     def forward(self, x):
+        x = self.norm(x)
+        x = self.relu(x)
         return {k: out(x) for k, out in zip(self.keys, self.outs)}
 
 
