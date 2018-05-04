@@ -5,8 +5,10 @@ import os
 import torch
 from torch.nn.parallel import data_parallel
 
-from deepem.loss.loss import BCELoss
 from deepem.loss.affinity import AffinityLoss
+from deepem.loss.edge import EdgeLoss
+from deepem.loss.loss import BCELoss
+from deepem.loss.mean import MeanLoss
 from deepem.train.data import Data
 from deepem.train.model import Model
 
@@ -19,6 +21,19 @@ def get_criteria(opt):
                 size_average=opt.size_average,
                 margin=opt.margin
             )
+        elif k == 'embedding':
+            raise NotImplementedError
+            # Edge loss
+            # criteria[k] = EdgeLoss(
+            #     opt.max_edge,
+            #     n_edges=opt.n_edges,
+            #     edges=opt.edges,
+            #     size_average=opt.size_average
+            # )
+            # Mean loss
+            # criteria[k] = MeanLoss(
+            #
+            # )
         else:
             criteria[k] = BCELoss(size_average=opt.size_average)
     return criteria
