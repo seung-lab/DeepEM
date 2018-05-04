@@ -67,3 +67,8 @@ def get_pair2(arr, edge):
                      m1[2]:shape[2]-m2[2]]
 
     return arr1, arr2
+
+
+def affinity(v1, v2, dim=-4, keepdims=True):
+    d2 = torch.sum((v1 - v2)**2, dim=dim, keepdim=keepdims)
+    return torch.exp(-d2)

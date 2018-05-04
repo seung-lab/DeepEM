@@ -3,8 +3,29 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 
-from deepem.loss.edge import EdgeSampler, EdgeCRF
+from deepem.loss.edge import EdgeCRF
 from deepem.utils import torch_utils
+
+
+class EdgeSampler(object):
+    def __init__(self, edges, split_boundary=True):
+        self.edges = list(edges)
+        self.split_boundary = split_boundary
+
+    def generate_edges(self):
+        return list(self.edges)
+
+    def generate_true_aff(self, obj, edge):
+        o1, o2 = torch_utils.get_pair2(obj, edge)
+        if self.split_boundary:
+            ret = (((o1 == o2) + (o1 != 0) + (o2 != 0)) == 3)
+        else:
+            ret = (o1 == o2)
+        return ret.type(obj.type())
+
+    def generate_mask_aff(self, mask, edge):
+        m1, m2 = torch_utils.get_pair2(mask, edge)
+        return (m1 * m2).type(mask.type())
 
 
 class AffinityLoss(nn.Module):

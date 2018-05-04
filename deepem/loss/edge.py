@@ -9,23 +9,33 @@ from deepem.utils import torch_utils
 
 
 class EdgeSampler(object):
-    def __init__(self, edges, split_boundary=True):
+    def __init__(self, max_edge, edges=[]):
+        self.max_edge = tuple(max_edge)
         self.edges = list(edges)
-        self.split_boundary = split_boundary
 
-    def generate_edges(self):
-        return list(self.edges)
+    def generate_edges(self, n=32):
+        edges = list(self.edges)
+        for _ in range(n):
+            x = np.random.randint(0, self.max_edge[-1])
+            y = np.random.randint(0, self.max_edge[-2])
+            z = np.random.randint(0, self.max_edge[-3])
+            edge = (z,y,x)
+            edge = tuple(int(i * np.random.choice([1,-1])) for i in edge)
+            edges.append(edge)
+        return edges
+
+    def generate_target(self, obj, mask, edge):
+        mask *= (obj != 0).type(mask.type())
+        true_aff = self.generate_true_aff(obj, edge)
+        mask_aff = self.generate_mask_aff(mask, edge)
+        return true_aff, mask_aff
 
     def generate_true_aff(self, obj, edge):
-        o1, o2 = torch_utils.get_pair2(obj, edge)
-        if self.split_boundary:
-            ret = (((o1 == o2) + (o1 != 0) + (o2 != 0)) == 3)
-        else:
-            ret = (o1 == o2)
-        return ret.type(obj.type())
+        o1, o2 = torch_utils.get_pair(obj, edge)
+        return (o1 == o2).type(obj.type())
 
     def generate_mask_aff(self, mask, edge):
-        m1, m2 = torch_utils.get_pair2(mask, edge)
+        m1, m2 = torch_utils.get_pair(mask, edge)
         return (m1 * m2).type(mask.type())
 
 
@@ -36,14 +46,14 @@ class EdgeCRF(nn.Module):
         self.margin = np.clip(margin, 0, 1)
 
     def forward(self, preds, targets, masks):
-        assert len(preds)==len(targets)==len(masks)
+        assert(len(preds)==len(targets)==len(masks))
         loss = 0
         nmsk = 0
         for pred, target, mask in zip(preds, targets, masks):
             l, n = self.cross_entropy(pred, target, mask)
             loss += l
             nmsk += n
-        assert nmsk.item() > 0
+        assert(nmsk.item() > 0)
         if self.size_average:
             try:
                 loss = loss / nmsk
@@ -60,7 +70,6 @@ class EdgeCRF(nn.Module):
             target[torch.eq(target, 1)] = t
             target[torch.eq(target, 0)] = 1 - t
         bce = F.binary_cross_entropy_with_logits
-        ret = dict()
         loss = bce(pred, target, weight=mask, size_average=False)
         nmsk = (mask > 0).type(loss.type()).sum()
         return loss, nmsk
@@ -75,3 +84,35 @@ class EdgeCRF(nn.Module):
             m_int *= n_ext/(n_int + n_ext)
             m_ext *= n_int/(n_int + n_ext)
         return (m_int + m_ext).type(dtype)
+
+
+class EdgeLoss(nn.Module):
+    def __init__(self, max_edge, n_edges=32, edges=[], size_average=False):
+        super(EdgeLoss, self).__init__()
+        self.sampler = EdgeSampler(max_edge, edges=edges)
+        self.n_edges = max(n_edges, 0)
+        self.decoder = EdgeLoss.Decoder()
+        self.criterion = EdgeCRF(size_average=size_average)
+
+    def forward(self, vec, label, mask):
+        pred_affs = list()
+        true_affs = list()
+        mask_affs = list()
+        edges = self.sampler.generate_edges(n=self.n_edges)
+        for edge in edges:
+            try:
+                pred_affs.append(self.decoder(vec, edge))
+                t, m = self.sampler.generate_target(label, mask, edge)
+                true_affs.append(t)
+                mask_affs.append(m)
+            except:
+                raise
+        return self.criterion(pred_affs, true_affs, mask_affs)
+
+        class Decoder(nn.Module):
+            def __init__(self):
+                super(Decoder, self).__init__()
+
+            def forward(self, vec, edge):
+                v1, v2 = torch_utils.get_pair(vec, edge)
+                return torch_utils.affinity(v1, v2)
