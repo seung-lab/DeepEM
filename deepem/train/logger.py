@@ -113,7 +113,7 @@ class Logger(object):
                 # z-affinity
                 tag = '{}/images/z-affinity'.format(phase)
                 aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (1,0,0))))
-                self.log_image(tag, tensor, iter_num)
+                self.log_image(tag, aff, iter_num)
 
                 # Embedding
                 tag = '{}/images/embedding'.format(phase)
