@@ -121,7 +121,7 @@ class Options(object):
 
         # Multiclass detection
         opt.data_params = dict()
-        opt.data_params['seg'] = opt.aff > 0
+        opt.data_params['seg'] = opt.aff > 0 or opt.vec > 0
         opt.data_params['psd'] = opt.psd > 0
         opt.data_params['mit'] = opt.mit > 0
 

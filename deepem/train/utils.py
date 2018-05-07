@@ -25,7 +25,7 @@ def get_criteria(opt):
             # Edge loss
             criteria[k] = EdgeLoss(
                 opt.max_edge,
-                n_edges=opt.n_edges,
+                n_edge=opt.n_edge,
                 edges=[],
                 size_average=opt.size_average
             )

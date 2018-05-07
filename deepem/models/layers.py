@@ -20,3 +20,12 @@ class Conv(nn.Module):
 
     def forward(self, x):
         return self.conv(x)
+
+
+class Scale(nn.Module):
+    def __init__(self, init_value=0.1):
+        super(Scale, self).__init__()
+        self.scale = nn.Parameter(torch.FloatTensor([init_value]))
+
+    def forward(self, x):
+        return x * self.scale

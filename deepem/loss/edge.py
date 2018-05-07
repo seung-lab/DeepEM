@@ -87,10 +87,10 @@ class EdgeCRF(nn.Module):
 
 
 class EdgeLoss(nn.Module):
-    def __init__(self, max_edge, n_edges=32, edges=[], size_average=False):
+    def __init__(self, max_edge, n_edge=32, edges=[], size_average=False):
         super(EdgeLoss, self).__init__()
         self.sampler = EdgeSampler(max_edge, edges=edges)
-        self.n_edges = max(n_edges, 0)
+        self.n_edge = max(n_edge, 0)
         self.decoder = EdgeLoss.Decoder()
         self.criterion = EdgeCRF(size_average=size_average)
 
@@ -98,7 +98,7 @@ class EdgeLoss(nn.Module):
         pred_affs = list()
         true_affs = list()
         mask_affs = list()
-        edges = self.sampler.generate_edges(n=self.n_edges)
+        edges = self.sampler.generate_edges(n=self.n_edge)
         for edge in edges:
             try:
                 pred_affs.append(self.decoder(vec, edge))
@@ -111,7 +111,7 @@ class EdgeLoss(nn.Module):
 
     class Decoder(nn.Module):
         def __init__(self):
-            super(Decoder, self).__init__()
+            super(EdgeLoss.Decoder, self).__init__()
 
         def forward(self, vec, edge):
             v1, v2 = torch_utils.get_pair(vec, edge)

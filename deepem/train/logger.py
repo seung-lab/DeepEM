@@ -6,6 +6,8 @@ from torch.nn import functional as F
 from torchvision.utils import make_grid
 from tensorboardX import SummaryWriter
 
+from deepem.utils import torch_utils
+
 
 class Logger(object):
     def __init__(self, opt):
@@ -95,6 +97,29 @@ class Logger(object):
                 tag = '{}/labels/{}'.format(phase, k)
                 tensor = sample[k][0,...]
                 self.log_image(tag, tensor, iter_num)
+            elif k == 'embedding':
+                vec = preds[k][0,...]
+
+                # x-affinity
+                tag = '{}/images/x-affinity'.format(phase)
+                aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,0,1))))
+                self.log_image(tag, aff, iter_num)
+
+                # y-affinity
+                tag = '{}/images/y-affinity'.format(phase)
+                aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,1,0))))
+                self.log_image(tag, aff, iter_num)
+
+                # z-affinity
+                tag = '{}/images/z-affinity'.format(phase)
+                aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (1,0,0))))
+                self.log_image(tag, tensor, iter_num)
+
+                # Embedding
+                tag = '{}/images/embedding'.format(phase)
+                vec = vec - torch.min(vec)
+                vec = vec / torch.max(vec)
+                self.log_image(tag, vec[0:3,...], iter_num)
 
     def log_image(self, tag, tensor, iter_num):
         assert(torch.is_tensor(tensor))
