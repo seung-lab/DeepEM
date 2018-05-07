@@ -57,10 +57,10 @@ class EdgeCRF(nn.Module):
         if self.size_average:
             try:
                 loss = loss / nmsk
-                nmsk = torch.tensor([1], dtype=nmsk.type(),
-                                         device=nmsk.device)
+                nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
             except:
-                import pdb; pdb.set_trace()
+                # import pdb; pdb.set_trace()
+                raise
         return loss, nmsk
 
     def cross_entropy(self, pred, target, mask):

@@ -46,6 +46,8 @@ class Options(object):
         # Loss
         self.parser.add_argument('--size_average', action='store_true')
         self.parser.add_argument('--margin', type=float, default=0)
+        self.parser.add_argument('--max_edge', type=int, default=[5,32,32], nargs='+')
+        self.parser.add_argument('--n_edge', type=int, default=32)
 
         # Model
         self.parser.add_argument('--fov', type=int, default=[20,256,256], nargs='+')
@@ -61,6 +63,12 @@ class Options(object):
         self.parser.add_argument('--aff', type=float, default=0)
         self.parser.add_argument('--psd', type=float, default=0)
         self.parser.add_argument('--mit', type=float, default=0)
+
+        # Metric learning
+        self.parser.add_argument('--vec', type=int, default=0)
+
+        # Onnx export
+        self.parser.add_argument('--onnx', action='store_true')
 
         self.initialized = True
 
@@ -88,17 +96,21 @@ class Options(object):
         opt.out_spec = dict()
         opt.loss_weight = dict()
 
-        if opt.aff > 0:
-            opt.out_spec['affinity'] = (len(opt.edges),) + opt.fov
-            opt.loss_weight['affinity'] = opt.aff
+        if opt.vec > 0:
+            opt.out_spec['embedding'] = (opt.vec,) + opt.fov
+            opt.loss_weight['embedding'] = 1.0
+        else:
+            if opt.aff > 0:
+                opt.out_spec['affinity'] = (len(opt.edges),) + opt.fov
+                opt.loss_weight['affinity'] = opt.aff
 
-        if opt.psd > 0:
-            opt.out_spec['synapse'] = (1,) + opt.fov
-            opt.loss_weight['synapse'] = opt.psd
+            if opt.psd > 0:
+                opt.out_spec['synapse'] = (1,) + opt.fov
+                opt.loss_weight['synapse'] = opt.psd
 
-        if opt.mit > 0:
-            opt.out_spec['mitochondria'] = (1,) + opt.fov
-            opt.loss_weight['mitochondria'] = opt.mit
+            if opt.mit > 0:
+                opt.out_spec['mitochondria'] = (1,) + opt.fov
+                opt.loss_weight['mitochondria'] = opt.mit
 
         assert len(opt.out_spec) > 0
         assert len(opt.out_spec) == len(opt.loss_weight)

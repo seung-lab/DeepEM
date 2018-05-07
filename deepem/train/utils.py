@@ -22,18 +22,13 @@ def get_criteria(opt):
                 margin=opt.margin
             )
         elif k == 'embedding':
-            raise NotImplementedError
             # Edge loss
-            # criteria[k] = EdgeLoss(
-            #     opt.max_edge,
-            #     n_edges=opt.n_edges,
-            #     edges=opt.edges,
-            #     size_average=opt.size_average
-            # )
-            # Mean loss
-            # criteria[k] = MeanLoss(
-            #
-            # )
+            criteria[k] = EdgeLoss(
+                opt.max_edge,
+                n_edges=opt.n_edges,
+                edges=[],
+                size_average=opt.size_average
+            )
         else:
             criteria[k] = BCELoss(size_average=opt.size_average)
     return criteria
