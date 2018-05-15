@@ -7,8 +7,7 @@ from torch.nn.parallel import data_parallel
 
 from deepem.loss.affinity import AffinityLoss
 from deepem.loss.edge import EdgeLoss
-from deepem.loss.loss import BCELoss
-from deepem.loss.mean import MeanLoss
+from deepem.loss import loss
 from deepem.train.data import Data
 from deepem.train.model import Model
 
@@ -18,6 +17,7 @@ def get_criteria(opt):
     for k in opt.out_spec:
         if k == 'affinity':
             criteria[k] = AffinityLoss(opt.edges,
+                criterion=getattr(loss, opt.loss)(*opt.loss_params),
                 size_average=opt.size_average,
                 margin=opt.margin
             )

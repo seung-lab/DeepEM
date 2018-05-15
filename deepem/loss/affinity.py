@@ -3,7 +3,6 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 
-from deepem.loss.edge import EdgeCRF
 from deepem.utils import torch_utils
 
 
@@ -28,12 +27,50 @@ class EdgeSampler(object):
         return (m1 * m2).type(mask.type())
 
 
+class EdgeCRF(nn.Module):
+    def __init__(self, criterion, size_average=False, margin=0):
+        super(EdgeCRF, self).__init__()
+        self.criterion = criterion
+        self.size_average = size_average
+        self.margin = np.clip(margin, 0, 1)
+
+    def forward(self, preds, targets, masks):
+        assert(len(preds)==len(targets)==len(masks))
+        loss = 0
+        nmsk = 0
+        for pred, target, mask in zip(preds, targets, masks):
+            mask = self.class_balancing(target, mask)
+            l, n = self.criterion(pred, target, mask)
+            loss += l
+            nmsk += n
+        assert(nmsk.item() > 0)
+        if self.size_average:
+            try:
+                loss = loss / nmsk
+                nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
+            except:
+                # import pdb; pdb.set_trace()
+                raise
+        return loss, nmsk
+
+    def class_balancing(self, target, mask):
+        dtype = mask.type()
+        m_int = mask * torch.eq(target, 1).type(dtype)
+        m_ext = mask * torch.eq(target, 0).type(dtype)
+        n_int = m_int.sum().item()
+        n_ext = m_ext.sum().item()
+        if n_int > 0 and n_ext > 0:
+            m_int *= n_ext/(n_int + n_ext)
+            m_ext *= n_int/(n_int + n_ext)
+        return (m_int + m_ext).type(dtype)
+
+
 class AffinityLoss(nn.Module):
-    def __init__(self, edges, size_average=False, margin=0):
+    def __init__(self, edges, criterion, size_average=False, margin=0):
         super(AffinityLoss, self).__init__()
         self.sampler = EdgeSampler(edges)
         self.decoder = AffinityLoss.Decoder(edges)
-        self.criterion = EdgeCRF(
+        self.criterion = EdgeCRF(criterion,
             size_average=size_average,
             margin=margin
         )

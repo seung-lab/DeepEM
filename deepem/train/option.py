@@ -44,8 +44,10 @@ class Options(object):
         self.parser.add_argument('--pretrain', action='store_true')
 
         # Loss
+        self.parser.add_argument('--loss', default='BCELoss')
         self.parser.add_argument('--size_average', action='store_true')
         self.parser.add_argument('--margin', type=float, default=0)
+        self.parser.add_argument('--inverse', action='store_true')
         self.parser.add_argument('--max_edge', type=int, default=[5,32,32], nargs='+')
         self.parser.add_argument('--n_edge', type=int, default=32)
 
@@ -88,6 +90,12 @@ class Options(object):
             opt.train_ids = mod.get_data_ids(True)
         if not opt.val_ids:
             opt.val_ids = mod.get_data_ids(False)
+
+        # Loss
+        opt.loss_params = dict()
+        opt.loss_params['size_average'] = opt.size_average
+        opt.loss_params['margin'] = opt.margin
+        opt.loss_params['inverse'] = opt.inverse
 
         # Model
         opt.fov = tuple(opt.fov)

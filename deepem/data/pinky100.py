@@ -101,7 +101,7 @@ pinky_info = {
 
 
 def load_data(data_dir, data_ids=None, seg=True, psd=False, mit=False):
-    assert(any([x for x in [seg,psd,mit]]))
+    assert any([x for x in [seg,psd,mit]])
     if data_ids is None:
         data_ids = pinky_info.keys()
     data = dict()

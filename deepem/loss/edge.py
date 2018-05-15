@@ -25,18 +25,18 @@ class EdgeSampler(object):
         return edges
 
     def generate_target(self, objs, mask, edge):
-        mask *= (objs != 0).type(mask.type())
+        mask *= (objs != 0).type(mask.dtype)
         true_aff = self.generate_true_aff(objs, edge)
         mask_aff = self.generate_mask_aff(mask, edge)
         return true_aff, mask_aff
 
     def generate_true_aff(self, objs, edge):
         o1, o2 = torch_utils.get_pair(objs, edge)
-        return (o1 == o2).type(objs.type())
+        return (o1 == o2).type(objs.dtype)
 
     def generate_mask_aff(self, mask, edge):
         m1, m2 = torch_utils.get_pair(mask, edge)
-        return (m1 * m2).type(mask.type())
+        return (m1 * m2).type(mask.dtype)
 
 
 class EdgeCRF(nn.Module):
