@@ -52,6 +52,10 @@ class Options(object):
         # Onnx export
         self.parser.add_argument('--onnx', action='store_true')
 
+        # Cloud-volume
+        # TODO: Download input from cloud
+        # self.parser.add_argument('--gs_output', default='')
+
         self.initialized = True
 
     def parse(self):
