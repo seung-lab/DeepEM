@@ -51,6 +51,11 @@ class Options(object):
         self.parser.add_argument('--max_edge', type=int, default=[5,32,32], nargs='+')
         self.parser.add_argument('--n_edge', type=int, default=32)
 
+        # Optimizer
+        self.parser.add_argument('--amsgrad', action='store_true')
+        self.parser.add_argument('--sgd', action='store_true')
+        self.parser.add_argument('--momentum', type=float, default=0.9)
+
         # Model
         self.parser.add_argument('--fov', type=int, default=[20,256,256], nargs='+')
         self.parser.add_argument('--depth', type=int, default=4)

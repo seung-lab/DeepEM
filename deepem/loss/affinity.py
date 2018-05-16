@@ -1,4 +1,5 @@
 from __future__ import print_function
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -46,7 +47,7 @@ class EdgeCRF(nn.Module):
         assert(nmsk.item() > 0)
         if self.size_average:
             try:
-                loss = loss / nmsk
+                loss = loss / nmsk.item()
                 nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
             except:
                 # import pdb; pdb.set_trace()

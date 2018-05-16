@@ -40,10 +40,9 @@ class EdgeSampler(object):
 
 
 class EdgeCRF(nn.Module):
-    def __init__(self, size_average=False, margin=0):
+    def __init__(self, size_average=False):
         super(EdgeCRF, self).__init__()
         self.size_average = size_average
-        self.margin = np.clip(margin, 0, 1)
 
     def forward(self, preds, targets, masks):
         assert(len(preds)==len(targets)==len(masks))
@@ -56,7 +55,7 @@ class EdgeCRF(nn.Module):
         assert(nmsk.item() > 0)
         if self.size_average:
             try:
-                loss = loss / nmsk
+                loss = loss / nmsk.item()
                 nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
             except:
                 # import pdb; pdb.set_trace()
@@ -64,26 +63,22 @@ class EdgeCRF(nn.Module):
         return loss, nmsk
 
     def cross_entropy(self, pred, target, mask):
-        mask = self.class_balancing(target, mask)
-        if self.margin > 0:
-            t = 1 - self.margin
-            target[torch.eq(target, 1)] = t
-            target[torch.eq(target, 0)] = 1 - t
+        # mask = self.class_balancing(target, mask)
         bce = F.binary_cross_entropy_with_logits
         loss = bce(pred, target, weight=mask, size_average=False)
         nmsk = (mask > 0).type(loss.type()).sum()
         return loss, nmsk
 
-    def class_balancing(self, target, mask):
-        dtype = mask.type()
-        m_int = mask * torch.eq(target, 1).type(dtype)
-        m_ext = mask * torch.eq(target, 0).type(dtype)
-        n_int = m_int.sum().item()
-        n_ext = m_ext.sum().item()
-        if n_int > 0 and n_ext > 0:
-            m_int *= n_ext/(n_int + n_ext)
-            m_ext *= n_int/(n_int + n_ext)
-        return (m_int + m_ext).type(dtype)
+    # def class_balancing(self, target, mask):
+    #     dtype = mask.type()
+    #     m_int = mask * torch.eq(target, 1).type(dtype)
+    #     m_ext = mask * torch.eq(target, 0).type(dtype)
+    #     n_int = m_int.sum().item()
+    #     n_ext = m_ext.sum().item()
+    #     if n_int > 0 and n_ext > 0:
+    #         m_int *= n_ext/(n_int + n_ext)
+    #         m_ext *= n_int/(n_int + n_ext)
+    #     return (m_int + m_ext).type(dtype)
 
 
 class EdgeLoss(nn.Module):

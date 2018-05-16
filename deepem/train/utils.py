@@ -16,8 +16,10 @@ def get_criteria(opt):
     criteria = dict()
     for k in opt.out_spec:
         if k == 'affinity':
+            params = dict(opt.loss_params)
+            params['size_average'] = False
             criteria[k] = AffinityLoss(opt.edges,
-                criterion=getattr(loss, opt.loss)(*opt.loss_params),
+                criterion=getattr(loss, opt.loss)(**params),
                 size_average=opt.size_average,
                 margin=opt.margin
             )
