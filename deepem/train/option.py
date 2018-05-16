@@ -48,6 +48,7 @@ class Options(object):
         self.parser.add_argument('--size_average', action='store_true')
         self.parser.add_argument('--margin', type=float, default=0)
         self.parser.add_argument('--inverse', action='store_true')
+        self.parser.add_argument('--class_balancing', action='store_true')
         self.parser.add_argument('--max_edge', type=int, default=[5,32,32], nargs='+')
         self.parser.add_argument('--n_edge', type=int, default=32)
 
