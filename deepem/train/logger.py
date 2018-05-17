@@ -75,6 +75,8 @@ class Logger(object):
             return ret
 
     def log_images(self, phase, iter_num, preds, sample):
+        # TODO: GPU -> CPU before processing (to save GPU memory)?
+
         # Inputs
         for k in sorted(self.in_spec):
             tag = '{}/images/{}'.format(phase, k)
@@ -100,19 +102,31 @@ class Logger(object):
             elif k == 'embedding':
                 vec = preds[k][0,...]
 
-                # x-affinity
-                tag = '{}/images/x-affinity'.format(phase)
-                aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,0,1))))
-                self.log_image(tag, aff, iter_num)
+                # # x-affinity
+                # tag = '{}/images/x-affinity'.format(phase)
+                # aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,0,1))))
+                # self.log_image(tag, aff, iter_num)
+                #
+                # # y-affinity
+                # tag = '{}/images/y-affinity'.format(phase)
+                # aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,1,0))))
+                # self.log_image(tag, aff, iter_num)
+                #
+                # # z-affinity
+                # tag = '{}/images/z-affinity'.format(phase)
+                # aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (1,0,0))))
+                # self.log_image(tag, aff, iter_num)
 
-                # y-affinity
-                tag = '{}/images/y-affinity'.format(phase)
-                aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,1,0))))
-                self.log_image(tag, aff, iter_num)
-
-                # z-affinity
-                tag = '{}/images/z-affinity'.format(phase)
-                aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (1,0,0))))
+                # nearest neighbor affinity
+                tag = '{}/images/affinity'.format(phase)
+                x = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,0,1))))
+                y = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,1,0))))
+                z = torch_utils.affinity(*(torch_utils.get_pair(vec, (1,0,0))))
+                x = F.pad(x, (1,0))
+                y = F.pad(y, (1,0,0,0))
+                z = F.pad(z, (1,0,0,0,0,0))
+                assert(x.size() == y.size() == z.size())
+                aff = torch.stack((x,y,z), dim=0)
                 self.log_image(tag, aff, iter_num)
 
                 # Embedding
