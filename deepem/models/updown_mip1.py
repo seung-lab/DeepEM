@@ -36,7 +36,7 @@ class OutputBlock(nn.Module):
         self.is_onnx = is_onnx
 
     def forward(self, x):
-        self.outs = {k: m(x) for k, m in self.named_children()}
+        outs = {k: m(x) for k, m in self.named_children()}
         # ONNX doesn't support dictionary.
         if self.is_onnx:
             outs = [x[1] for x in sorted(outs.items(), key=lambda x: x[0])]

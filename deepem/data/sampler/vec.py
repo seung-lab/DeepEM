@@ -8,7 +8,15 @@ from deepem.data.sampler.utils import recompute_CC
 
 def get_data_ids(is_train):
     if is_train:
-        return ['stitched_vol19-vol34']
+        return ['stitched_vol19-vol34',
+                'stitched_vol40-vol41',
+                'vol101',
+                'vol102',
+                'vol103',
+                'vol104',
+                'vol501',
+                'vol502',
+                'vol503']
     else:
         return ['stitched_vol19-vol34']
 
