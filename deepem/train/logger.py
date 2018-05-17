@@ -126,7 +126,7 @@ class Logger(object):
                 y = F.pad(y, (0,0,1,0))
                 z = F.pad(z, (0,0,0,0,1,0))
                 assert(x.size() == y.size() == z.size())
-                aff = torch.stack((x,y,z), dim=0)
+                aff = torch.cat((x,y,z), dim=0)
                 self.log_image(tag, aff, iter_num)
 
                 # Embedding
