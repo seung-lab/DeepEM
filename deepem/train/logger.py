@@ -1,4 +1,7 @@
 from __future__ import print_function
+import os
+import sys
+import datetime
 from collections import OrderedDict
 
 import torch
@@ -12,6 +15,7 @@ from deepem.utils import torch_utils
 class Logger(object):
     def __init__(self, opt):
         self.monitor = {'train': Logger.Monitor(), 'test': Logger.Monitor()}
+        self.log_dir = opt.log_dir
         self.writer = SummaryWriter(opt.log_dir)
         self.in_spec = dict(opt.in_spec)
         self.out_spec = dict(opt.out_spec)
@@ -141,3 +145,22 @@ class Logger(object):
         imgs = [tensor[:,z,:,:] for z in range(depth)]
         img = make_grid(imgs, nrow=depth, padding=0)
         self.writer.add_image(tag, img, iter_num)
+
+    def log_parameters(self, params, log_dir=None):
+        tstamp = self.timestamp()
+        log_dir = self.log_dir if log_dir is None else log_dir
+        params_fname = os.path.join(log_dir, "{}_params.csv".format(tstamp))
+        with open(params_fname,"w+") as f:
+            for (k,v) in params.items():
+                f.write("{k}: {v}\n".format(k=k,v=v))
+
+    def log_command(self, log_dir=None):
+        tstamp = self.timestamp()
+        log_dir = self.log_dir if log_dir is None else log_dir
+        cmd_fname = os.path.join(log_dir, "{}_command".format(tstamp))
+        command = " ".join(sys.argv)
+        with open(cmd_fname, "w+") as f:
+            f.write(command)
+
+    def timestamp(self):
+        return datetime.datetime.now().strftime("%y%m%d_%H%M%S")
