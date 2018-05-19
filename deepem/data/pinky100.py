@@ -135,7 +135,7 @@ def load_dataset(dpath, tag, info, seg, psd, mit):
         dset['psd'] = emio.imread(fpath)
         dset['psd'] = (dset['psd'] > 0).astype('float32')
 
-    # Mitochondria:
+    # Mitochondria
     if mit:
         fpath = os.path.join(dpath, info['dir'], info['mit'])
         print(fpath)

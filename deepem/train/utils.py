@@ -33,7 +33,7 @@ def get_criteria(opt):
                 size_average=opt.size_average
             )
         else:
-            criteria[k] = BCELoss(size_average=opt.size_average)
+            criteria[k] = getattr(loss, opt.loss)(**opt.loss_params)
     return criteria
 
 
