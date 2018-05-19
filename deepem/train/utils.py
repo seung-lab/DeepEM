@@ -5,9 +5,10 @@ import os
 import torch
 from torch.nn.parallel import data_parallel
 
-from deepem.loss.affinity import AffinityLoss
-from deepem.loss.edge import EdgeLoss
-from deepem.loss import loss
+# from deepem.loss.affinity import AffinityLoss
+# from deepem.loss.edge import EdgeLoss
+# from deepem.loss import loss
+import deepem.loss as loss
 from deepem.train.data import Data
 from deepem.train.model import Model
 
@@ -18,7 +19,7 @@ def get_criteria(opt):
         if k == 'affinity':
             params = dict(opt.loss_params)
             params['size_average'] = False
-            criteria[k] = AffinityLoss(opt.edges,
+            criteria[k] = loss.AffinityLoss(opt.edges,
                 criterion=getattr(loss, opt.loss)(**params),
                 size_average=opt.size_average,
                 margin=opt.margin,
@@ -26,7 +27,7 @@ def get_criteria(opt):
             )
         elif k == 'embedding':
             # Edge loss
-            criteria[k] = EdgeLoss(
+            criteria[k] = loss.EdgeLoss(
                 opt.max_edge,
                 n_edge=opt.n_edge,
                 edges=[],

@@ -3,9 +3,6 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 
-from deepem.loss.loss import BCELoss
-from deepem.loss.affinity import AffinityLoss
-
 
 class Model(nn.Module):
     """
