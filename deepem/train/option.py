@@ -137,7 +137,7 @@ class Options(object):
         opt.data_params['psd'] = opt.psd > 0
         opt.data_params['mit'] = opt.mit > 0
         opt.data_params['pad_size'] = opt.pad_size
-        assert(len(opt.pad_size) == 3 and all(x >= 0 for x in pad_size))
+        assert(len(opt.pad_size) == 3 and all(x >= 0 for x in opt.pad_size))
 
         args = vars(opt)
         print('------------ Options -------------')
