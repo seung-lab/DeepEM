@@ -91,11 +91,8 @@ class Options(object):
         opt.model_dir = os.path.join(opt.exp_dir, 'models')
 
         # Training/validation sets
-        mod = imp.load_source('sampler', opt.sampler)
-        if not opt.train_ids:
-            opt.train_ids = mod.get_data_ids(True)
-        if not opt.val_ids:
-            opt.val_ids = mod.get_data_ids(False)
+        if (not opt.train_ids) or (not opt.val_ids):
+            raise ValueError("Train/validation IDs unspecified")
 
         # Loss
         opt.loss_params = dict()

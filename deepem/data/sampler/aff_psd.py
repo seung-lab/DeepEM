@@ -6,21 +6,6 @@ from dataprovider3 import DataProvider, Dataset
 from deepem.data.sampler.utils import recompute_CC
 
 
-def get_data_ids(is_train):
-    if is_train:
-        return ['stitched_vol19-vol34',
-                'stitched_vol40-vol41',
-                'vol101',
-                'vol102',
-                'vol103',
-                'vol104',
-                'vol401',
-                'vol502',
-                'vol503']
-    else:
-        return ['stitched_vol19-vol34']
-
-
 def get_spec(in_spec, out_spec):
     spec = dict()
     for k, v in in_spec.items():
