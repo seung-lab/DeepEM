@@ -26,6 +26,7 @@ class Options(object):
         # Training/validation sets
         self.parser.add_argument('--train_ids', type=str, default=[], nargs='+')
         self.parser.add_argument('--val_ids', type=str, default=[], nargs='+')
+        self.parser.add_argument('--pad_size', type=int, default=[0,0,0], nargs='+')
 
         # Training
         self.parser.add_argument('--base_lr', type=float, default=0.001)
@@ -135,6 +136,8 @@ class Options(object):
         opt.data_params['seg'] = opt.aff > 0 or opt.vec > 0
         opt.data_params['psd'] = opt.psd > 0
         opt.data_params['mit'] = opt.mit > 0
+        opt.data_params['pad_size'] = opt.pad_size
+        assert(len(opt.pad_size) == 3 and all(x >= 0 for x in pad_size))
 
         args = vars(opt)
         print('------------ Options -------------')
