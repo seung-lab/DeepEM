@@ -9,7 +9,7 @@ import dataprovider3.emio as emio
 snemi3d_info = {
     'train':{
         'img': 'train_img.h5',
-        'seg': 'train_seg',
+        'seg': 'train_seg.h5',
         'msk': None,
         'dir': '',
         'loc': True,
