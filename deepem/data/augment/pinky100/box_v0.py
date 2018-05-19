@@ -28,16 +28,17 @@ def get_augmentation(is_train, box=None, **kwargs):
     augs = list()
 
     # Box
-    if box == 'noise':
-        augs.append(
-            NoiseBox(sigma=(1,3), dims=(10,50), margin=(1,10,10),
-                     density=0.3, skip=0.1)
-        )
-    elif box == 'fill':
-        augs.append(
-            FillBox(dims=(10,50), margin=(1,10,10),
-                    density=0.3, skip=0.1)
-        )
+    if is_train:
+        if box == 'noise':
+            augs.append(
+                NoiseBox(sigma=(1,3), dims=(10,50), margin=(1,10,10),
+                         density=0.3, skip=0.1)
+            )
+        elif box == 'fill':
+            augs.append(
+                FillBox(dims=(10,50), margin=(1,10,10),
+                        density=0.3, skip=0.1)
+            )
 
     # Grayscale
     augs.append(
