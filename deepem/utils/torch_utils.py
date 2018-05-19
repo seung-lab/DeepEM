@@ -2,6 +2,8 @@ from __future__ import print_function
 import numpy as np
 
 import torch
+from torch import nn
+from torch.nn import functional as F
 
 
 def get_pair_first(arr, edge):
@@ -72,3 +74,14 @@ def get_pair2(arr, edge):
 def affinity(v1, v2, dim=-4, keepdims=True):
     d2 = torch.sum((v1 - v2)**2, dim=dim, keepdim=keepdims)
     return torch.exp(-d2)
+
+def vec2aff(v):
+    assert(v.ndimension() >= 4)
+    x = affinity(*(get_pair(v, (0,0,1))))
+    y = affinity(*(get_pair(v, (0,1,0))))
+    z = affinity(*(get_pair(v, (1,0,0))))
+    x = F.pad(x, (1,0))
+    y = F.pad(y, (0,0,1,0))
+    z = F.pad(z, (0,0,0,0,1,0))
+    assert(x.size() == y.size() == z.size())
+    return torch.cat((x,y,z), dim=-4)

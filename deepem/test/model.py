@@ -4,6 +4,9 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+from deepem.utils import torch_utils
+
+
 class Model(nn.Module):
     """
     Model wrapper for inference.
@@ -13,11 +16,19 @@ class Model(nn.Module):
         self.model = model
         self.in_spec = dict(opt.in_spec)
         self.pretrain = opt.pretrain
+        self.vec2aff = opt.vec2aff
 
     def forward(self, sample):
         inputs = [sample[k] for k in sorted(self.in_spec)]
         preds = self.model(*inputs)
-        return {k: F.sigmoid(x) for k, x in preds.items()}
+        outputs = dict()
+        for k, x in preds.items():
+            if k == 'embedding' and self.vec2aff:
+                outputs[k] = torch_utils.vec2aff(x)
+            else:
+                outputs[k] = F.sigmoid(x)
+        return outputs
+
 
     def load(self, fpath):
         state_dict = torch.load(fpath)

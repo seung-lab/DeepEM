@@ -119,14 +119,15 @@ class Logger(object):
 
                 # nearest neighbor affinity
                 tag = '{}/images/affinity'.format(phase)
-                x = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,0,1))))
-                y = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,1,0))))
-                z = torch_utils.affinity(*(torch_utils.get_pair(vec, (1,0,0))))
-                x = F.pad(x, (1,0))
-                y = F.pad(y, (0,0,1,0))
-                z = F.pad(z, (0,0,0,0,1,0))
-                assert(x.size() == y.size() == z.size())
-                aff = torch.cat((x,y,z), dim=0)
+                # x = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,0,1))))
+                # y = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,1,0))))
+                # z = torch_utils.affinity(*(torch_utils.get_pair(vec, (1,0,0))))
+                # x = F.pad(x, (1,0))
+                # y = F.pad(y, (0,0,1,0))
+                # z = F.pad(z, (0,0,0,0,1,0))
+                # assert(x.size() == y.size() == z.size())
+                # aff = torch.cat((x,y,z), dim=0)
+                aff = torch_utils.vec2aff(vec)
                 self.log_image(tag, aff, iter_num)
 
                 # Embedding

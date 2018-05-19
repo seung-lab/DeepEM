@@ -49,7 +49,7 @@ class Forward(object):
         inputs = dict()
         for k in sorted(self.in_spec):
             data = np.expand_dims(sample[k], axis=0)
-            tensor = torch.from_numpy(data).cuda()
+            tensor = torch.from_numpy(data)
             inputs[k] = tensor.cuda()
         return inputs
 

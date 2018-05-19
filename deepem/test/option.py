@@ -39,6 +39,10 @@ class Options(object):
         self.parser.add_argument('--psd', action='store_true')
         self.parser.add_argument('--mit', action='store_true')
 
+        # Metric learning
+        self.parser.add_argument('--vec', type=int, default=0)
+        self.parser.add_argument('--vec2aff', action='store_true')
+
         # Forward scanning
         self.parser.add_argument('--out_prefix', default='')
         self.parser.add_argument('--out_tag', default='')
@@ -72,22 +76,29 @@ class Options(object):
         opt.fov = tuple(opt.fov)
         opt.in_spec = dict(input=(1,) + opt.fov)
         opt.out_spec = dict()
-        if opt.aff > 0:
-            opt.out_spec['affinity'] = (opt.aff,) + opt.fov
-        if opt.psd:
-            opt.out_spec['synapse'] = (1,) + opt.fov
-        if opt.mit:
-            opt.out_spec['mitochondria'] = (1,) + opt.fov
+        if opt.vec > 0:
+            opt.out_spec['embedding'] = (opt.vec,) + opt.fov
+        else:
+            if opt.aff > 0:
+                opt.out_spec['affinity'] = (opt.aff,) + opt.fov
+            if opt.psd:
+                opt.out_spec['synapse'] = (1,) + opt.fov
+            if opt.mit:
+                opt.out_spec['mitochondria'] = (1,) + opt.fov
         assert(len(opt.out_spec) > 0)
 
         # Scan spec
         opt.scan_spec = dict()
-        if opt.aff > 0:
-            opt.scan_spec['affinity'] = (3,) + opt.fov
-        if opt.psd:
-            opt.scan_spec['synapse'] = (1,) + opt.fov
-        if opt.mit:
-            opt.scan_spec['mitochondria'] = (1,) + opt.fov
+        if opt.vec > 0:
+            dim = 3 if opt.vec2aff else opt.vec
+            opt.scan_spec['embedding'] = (dim,) + opt.fov
+        else:
+            if opt.aff > 0:
+                opt.scan_spec['affinity'] = (3,) + opt.fov
+            if opt.psd:
+                opt.scan_spec['synapse'] = (1,) + opt.fov
+            if opt.mit:
+                opt.scan_spec['mitochondria'] = (1,) + opt.fov
         stride = self.get_stride(opt.fov, opt.overlap)
         opt.scan_params = dict(stride=stride, blend='bump')
 
