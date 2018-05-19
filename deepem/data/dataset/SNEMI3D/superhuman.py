@@ -21,8 +21,7 @@ def load_data(data_dir, data_ids=None, pad_size=False, **kwargs):
     if data_ids is None:
         data_ids = snemi3d_info.keys()
     data = dict()
-    base = os.path.expanduser(data_dir)
-    dpath = os.path.join(base, pinky_dir)
+    dpath = os.path.expanduser(data_dir)
     for data_id in data_ids:
         info = snemi3d_info[data_id]
         data[data_id] = load_dataset(dpath, data_id, info, pad_size)
