@@ -1,5 +1,6 @@
 from __future__ import print_function
 import imp
+import numpy as np
 
 import torch
 import torch.utils.data
