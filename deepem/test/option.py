@@ -2,6 +2,8 @@ from __future__ import print_function
 import argparse
 import os
 
+from deepem.utils.py_utils import vec3, vec3f
+
 
 class Options(object):
     """
@@ -30,7 +32,7 @@ class Options(object):
         self.parser.add_argument('--pretrain', action='store_true')
 
         # Model
-        self.parser.add_argument('--fov', type=int, default=[20,256,256], nargs='+')
+        self.parser.add_argument('--fov', type=vec3, default=(20,256,256))
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--group', type=int, default=0)
 
@@ -46,19 +48,21 @@ class Options(object):
         # Forward scanning
         self.parser.add_argument('--out_prefix', default='')
         self.parser.add_argument('--out_tag', default='')
-        self.parser.add_argument('--overlap', type=float, default=[0.5,0.5,0.5], nargs='+')
-        self.parser.add_argument('--crop', type=int, default=None, nargs='+')
+        self.parser.add_argument('--overlap', type=vec3f, default=(0.5,0.5,0.5))
+        self.parser.add_argument('--crop', type=vec3, default=None)
 
         # Benchmark
         self.parser.add_argument('--dummy', action='store_true')
-        self.parser.add_argument('--input_size', type=int, default=[128,1024,1024], nargs='+')
+        self.parser.add_argument('--input_size', type=vec3, default=(128,1024,1024))
 
         # Onnx export
         self.parser.add_argument('--onnx', action='store_true')
 
         # Cloud-volume
-        # TODO: Download input from cloud
-        # self.parser.add_argument('--gs_output', default='')
+        self.parser.add_argument('--gs_output', default='')
+        self.parser.add_argument('-p','--parallel', action='store_true')
+        self.parser.add_argument('-d','--downsample', action='store_true')
+        self.parser.add_argument('--mip', type=int, default=0)
 
         self.initialized = True
 

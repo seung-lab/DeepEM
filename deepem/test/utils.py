@@ -6,6 +6,7 @@ import os
 from dataprovider3 import Dataset, ForwardScanner, emio
 
 from deepem.test.model import Model, OnnxModel
+from deepem.test import cv_utils
 from deepem.utils.py_utils import crop_center
 
 
@@ -57,11 +58,16 @@ def save_output(data_name, output, opt):
         data = output.get_data(k)
         if opt.crop:
             data = crop_center(data, opt.crop)
-        dname = data_name.replace('/', '_')
-        fname = "{}_{}_{}".format(dname, k, opt.chkpt_num)
-        if opt.out_prefix:
-            fname = opt.out_prefix + '_' + fname
-        if opt.out_tag:
-            fname = fname + '_' + opt.out_tag
-        fpath = os.path.join(opt.fwd_dir, fname + ".h5")
-        emio.imsave(data, fpath)
+
+        # Cloud-volume
+        if opt.gs_output:
+            cv_utils.ingest(data, opt)
+        else:
+            dname = data_name.replace('/', '_')
+            fname = "{}_{}_{}".format(dname, k, opt.chkpt_num)
+            if opt.out_prefix:
+                fname = opt.out_prefix + '_' + fname
+            if opt.out_tag:
+                fname = fname + '_' + opt.out_tag
+            fpath = os.path.join(opt.fwd_dir, fname + ".h5")
+            emio.imsave(data, fpath)
