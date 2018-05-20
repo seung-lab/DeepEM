@@ -25,7 +25,7 @@ def get_criteria(opt):
         elif k == 'embedding':
             # Edge loss
             criteria[k] = loss.EdgeLoss(
-                opt.max_edge,
+                opt.max_edges,
                 n_edge=opt.n_edge,
                 edges=[],
                 size_average=opt.size_average
