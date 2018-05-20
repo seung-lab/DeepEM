@@ -9,19 +9,20 @@ from deepem.utils import torch_utils
 
 
 class EdgeSampler(object):
-    def __init__(self, max_edge, edges=[]):
-        self.max_edge = tuple(max_edge)
+    def __init__(self, max_edges, edges=[]):
+        self.max_edges = list(max_edges)
         self.edges = list(edges)
 
-    def generate_edges(self, n=32):
+    def generate_edges(self, n):
         edges = list(self.edges)
-        for _ in range(n):
-            x = np.random.randint(0, self.max_edge[-1])
-            y = np.random.randint(0, self.max_edge[-2])
-            z = np.random.randint(0, self.max_edge[-3])
-            edge = (z,y,x)
-            edge = tuple(int(i * np.random.choice([1,-1])) for i in edge)
-            edges.append(edge)
+        for max_edge in self.max_edges:
+            for _ in range(n):
+                x = np.random.randint(0, self.max_edge[2])
+                y = np.random.randint(0, self.max_edge[1])
+                z = np.random.randint(0, self.max_edge[0])
+                edge = (z,y,x)
+                edge = tuple(int(i * np.random.choice([1,-1])) for i in edge)
+                edges.append(edge)
         return edges
 
     def generate_target(self, objs, mask, edge):
@@ -82,9 +83,9 @@ class EdgeCRF(nn.Module):
 
 
 class EdgeLoss(nn.Module):
-    def __init__(self, max_edge, n_edge=32, edges=[], size_average=False):
+    def __init__(self, max_edges, n_edge=32, edges=[], size_average=False):
         super(EdgeLoss, self).__init__()
-        self.sampler = EdgeSampler(max_edge, edges=edges)
+        self.sampler = EdgeSampler(max_edges, edges=edges)
         self.n_edge = max(n_edge, 0)
         self.decoder = EdgeLoss.Decoder()
         self.criterion = EdgeCRF(size_average=size_average)
@@ -93,7 +94,7 @@ class EdgeLoss(nn.Module):
         pred_affs = list()
         true_affs = list()
         mask_affs = list()
-        edges = self.sampler.generate_edges(n=self.n_edge)
+        edges = self.sampler.generate_edges(self.n_edge)
         for edge in edges:
             try:
                 pred_affs.append(self.decoder(vec, edge))

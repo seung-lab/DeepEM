@@ -14,3 +14,11 @@ def crop_center(img, size):
     sy = (img.shape[-2] - y) // 2
     sz = (img.shape[-3] - z) // 2
     return img[..., sz:sz+z, sy:sy+y, sx:sx+x]
+
+
+def vec3(s):
+    try:
+        z, y, x = map(int, s.split(','))
+        return tuple(z,y,x)
+    except:
+        raise argparse.ArgumentTypeError("Vec3 must be z,y,x")

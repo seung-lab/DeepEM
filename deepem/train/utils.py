@@ -5,9 +5,6 @@ import os
 import torch
 from torch.nn.parallel import data_parallel
 
-# from deepem.loss.affinity import AffinityLoss
-# from deepem.loss.edge import EdgeLoss
-# from deepem.loss import loss
 import deepem.loss as loss
 from deepem.train.data import Data
 from deepem.train.model import Model
