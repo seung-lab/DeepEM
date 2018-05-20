@@ -17,9 +17,9 @@ class EdgeSampler(object):
         edges = list(self.edges)
         for max_edge in self.max_edges:
             for _ in range(n):
-                x = np.random.randint(0, self.max_edge[2])
-                y = np.random.randint(0, self.max_edge[1])
-                z = np.random.randint(0, self.max_edge[0])
+                x = np.random.randint(0, max_edge[2])
+                y = np.random.randint(0, max_edge[1])
+                z = np.random.randint(0, max_edge[0])
                 edge = (z,y,x)
                 edge = tuple(int(i * np.random.choice([1,-1])) for i in edge)
                 edges.append(edge)
