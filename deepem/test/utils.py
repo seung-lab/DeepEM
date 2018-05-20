@@ -43,8 +43,8 @@ def make_forward_scanner(data_name, opt):
         img = (img/255.).astype('float32')
 
     # Border mirroring
-    if opt.crop:
-        pad_width = [(x//2,x//2) for x in opt.crop]
+    if opt.mirror:
+        pad_width = [(x//2,x//2) for x in opt.mirror]
         img = np.pad(img, pad_width, 'reflect')
 
     # ForwardScanner
