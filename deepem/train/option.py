@@ -55,7 +55,7 @@ class Options(object):
 
         # Edge-based loss
         # self.parser.add_argument('--max_edge', type=int, default=[5,32,32], nargs='+')
-        self.parser.add_argument('--max_edge', type=vec3, default=[(5,32,32)], nargs='+')
+        self.parser.add_argument('--max_edges', type=vec3, default=[(5,32,32)], nargs='+')
         self.parser.add_argument('--n_edge', type=int, default=32)
 
         # Optimizer

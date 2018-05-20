@@ -1,4 +1,5 @@
 from __future__ import print_function
+import argparse
 import numpy as np
 from collections import namedtuple
 
@@ -19,6 +20,6 @@ def crop_center(img, size):
 def vec3(s):
     try:
         z, y, x = map(int, s.split(','))
-        return tuple(z,y,x)
+        return (z,y,x)
     except:
         raise argparse.ArgumentTypeError("Vec3 must be z,y,x")
