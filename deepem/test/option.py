@@ -49,6 +49,7 @@ class Options(object):
         self.parser.add_argument('--out_prefix', default='')
         self.parser.add_argument('--out_tag', default='')
         self.parser.add_argument('--overlap', type=vec3f, default=(0.5,0.5,0.5))
+        self.parser.add_argument('--mirror', type=vec3, default=None)
         self.parser.add_argument('--crop', type=vec3, default=None)
 
         # Benchmark
