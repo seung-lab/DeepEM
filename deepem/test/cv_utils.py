@@ -24,7 +24,7 @@ def ingest(data, opt):
     info = make_info(num_channels, 'image', str(data.dtype), shape,
                      opt.resolution)
     print(info)
-    cvol = cv.CloudVolume(opt.gs_output, mip=opt.mip, info=info,
+    cvol = cv.CloudVolume(opt.gs_output, mip=0, info=info,
                           parallel=opt.parallel)
     cvol[:,:,:,:] = data
     cvol.commit_info()
@@ -32,5 +32,5 @@ def ingest(data, opt):
     # Downsample
     if opt.downsample:
         with LocalTaskQueue(parallel=opt.parallel) as tq:
-            create_downsampling_tasks(tq, opt.gs_output, mip=opt.mip,
+            create_downsampling_tasks(tq, opt.gs_output, mip=0,
                                       fill_missing=True)
