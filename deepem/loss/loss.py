@@ -81,7 +81,7 @@ class BCELoss2(nn.Module):
     Binary cross entropy loss with logits.
     """
     def __init__(self, size_average=True, margin=0, inverse=True, **kwargs):
-        super(BCELoss, self).__init__()
+        super(BCELoss2, self).__init__()
         self.bce = F.binary_cross_entropy_with_logits
         self.size_average = size_average
         self.margin = np.clip(margin, 0, 1)
