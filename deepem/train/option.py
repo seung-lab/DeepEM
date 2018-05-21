@@ -54,7 +54,6 @@ class Options(object):
         self.parser.add_argument('--class_balancing', action='store_true')
 
         # Edge-based loss
-        # self.parser.add_argument('--max_edge', type=int, default=[5,32,32], nargs='+')
         self.parser.add_argument('--max_edges', type=vec3, default=[(5,32,32)], nargs='+')
         self.parser.add_argument('--n_edge', type=int, default=32)
 
