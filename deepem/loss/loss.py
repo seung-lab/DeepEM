@@ -101,6 +101,6 @@ class BCELoss2(nn.Module):
                 mask *= 1 - (m_int + m_ext).type(mask.dtype)
 
         loss = self.bce(input, target, weight=mask, size_average=self.size_average)
-        nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
+        nmsk = torch.tensor([1], dtype=mask.dtype, device=mask.device)
 
         return loss, nmsk
