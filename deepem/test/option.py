@@ -64,6 +64,7 @@ class Options(object):
         self.parser.add_argument('-p','--parallel', action='store_true')
         self.parser.add_argument('-d','--downsample', action='store_true')
         self.parser.add_argument('--mip', type=int, default=0)
+        self.parser.add_argument('--resolution', type=vec3, default=(4,4,40))
 
         self.initialized = True
 
