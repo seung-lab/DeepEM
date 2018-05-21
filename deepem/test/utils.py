@@ -7,7 +7,7 @@ from dataprovider3 import Dataset, ForwardScanner, emio
 
 from deepem.test.model import Model, OnnxModel
 from deepem.test import cv_utils
-from deepem.utils.py_utils import crop_center
+from deepem.utils import py_utils
 
 
 def load_model(opt):
@@ -56,8 +56,12 @@ def make_forward_scanner(data_name, opt):
 def save_output(data_name, output, opt):
     for k in output.data:
         data = output.get_data(k)
-        if opt.crop:
-            data = crop_center(data, opt.crop)
+
+        # Crop
+        if opt.crop_border:
+            data = py_utils.crop_border(data, opt.crop_border)
+        if opt.crop_center:
+            data = py_utils.crop_center(data, opt.crop_center)
 
         # Cloud-volume
         if opt.gs_output:

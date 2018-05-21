@@ -8,6 +8,12 @@ def dict2tuple(d):
     return namedtuple('GenericDict', d.keys())(**d)
 
 
+def crop_border(img, size):
+    assert(all([a > b for a, b in zip(img.shape[-3:], size[-3:])]))
+    sz, sy, sx = [s // 2 for s in size[-3:]]
+    return img[..., sz:-sz, sy:-sy, sx:-sx]
+
+
 def crop_center(img, size):
     assert(all([a >= b for a, b in zip(img.shape[-3:], size[-3:])]))
     z, y, x = size[-3:]
