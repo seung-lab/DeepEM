@@ -112,8 +112,8 @@ class Options(object):
         # Model
         opt.fov = tuple(opt.fov)
         #defaults -> copy fov
-        opt.inputsz = tuple(opt.fov) if opt.inputsz is None else tuple(opt.inputsz)
-        opt.outputsz = tuple(opt.fov) if opt.outputsz is None else tuple(opt.outputsz)
+        opt.inputsz = opt.fov if opt.inputsz is None else tuple(opt.inputsz)
+        opt.outputsz = opt.fov if opt.outputsz is None else tuple(opt.outputsz)
         opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.edges = self.get_edges(opt)
         opt.out_spec = dict()

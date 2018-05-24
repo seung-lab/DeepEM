@@ -35,7 +35,7 @@ def load_chkpt(model, fpath, chkpt_num):
 def make_forward_scanner(data_name, opt):
     # Read an EM image.
     if opt.dummy:
-        img = np.random.rand(*opt.input_size[-3:]).astype('float32')
+        img = np.random.rand(*opt.dummy_inputsz[-3:]).astype('float32')
     else:
         fpath = os.path.join(opt.data_dir, data_name, opt.input_name)
         img = emio.imread(fpath)
