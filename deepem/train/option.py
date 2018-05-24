@@ -52,6 +52,7 @@ class Options(object):
         self.parser.add_argument('--margin', type=float, default=0)
         self.parser.add_argument('--inverse', action='store_true')
         self.parser.add_argument('--class_balancing', action='store_true')
+        self.parser.add_argument('--no_logits', action='store_true')
 
         # Edge-based loss
         self.parser.add_argument('--max_edges', type=vec3, default=[(5,32,32)], nargs='+')
@@ -104,6 +105,7 @@ class Options(object):
         opt.loss_params['size_average'] = opt.size_average
         opt.loss_params['margin'] = opt.margin
         opt.loss_params['inverse'] = opt.inverse
+        opt.loss_params['logits'] = not opt.no_logits
 
         # Model
         opt.fov = tuple(opt.fov)
