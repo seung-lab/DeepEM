@@ -111,7 +111,6 @@ class Options(object):
         # Optimizer
         if opt.optim == 'Adam':
             optim_keys = ['lr','betas','eps','amsgrad']
-            opt.betas = tuple(opt.betas)
         elif opt.optim == 'SGD':
             optim_keys = ['lr','momentum']
         else:
