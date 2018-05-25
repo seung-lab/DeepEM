@@ -30,6 +30,8 @@ class Options(object):
         self.parser.add_argument('--pretrain', action='store_true')
 
         # Model
+        self.parser.add_argument('--inputsz', type=int, default=None, nargs='+')
+        self.parser.add_argument('--outputsz', type=int, default=None, nargs='+')
         self.parser.add_argument('--fov', type=int, default=[20,256,256], nargs='+')
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--group', type=int, default=0)
@@ -48,10 +50,11 @@ class Options(object):
         self.parser.add_argument('--out_tag', default='')
         self.parser.add_argument('--overlap', type=float, default=[0.5,0.5,0.5], nargs='+')
         self.parser.add_argument('--crop', type=int, default=None, nargs='+')
+        self.parser.add_argument('--blend', default='bump')
 
         # Benchmark
         self.parser.add_argument('--dummy', action='store_true')
-        self.parser.add_argument('--input_size', type=int, default=[128,1024,1024], nargs='+')
+        self.parser.add_argument('--dummy_inputsz', type=int, default=[128,1024,1024], nargs='+')
 
         # Onnx export
         self.parser.add_argument('--onnx', action='store_true')
@@ -74,33 +77,36 @@ class Options(object):
 
         # Model spec
         opt.fov = tuple(opt.fov)
-        opt.in_spec = dict(input=(1,) + opt.fov)
+        #default -> copy opt.fov
+        opt.inputsz = opt.fov if opt.inputsz is None else tuple(opt.inputsz)
+        opt.outputsz = opt.fov if opt.outputsz is None else tuple(opt.outputsz)
+        opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.out_spec = dict()
         if opt.vec > 0:
-            opt.out_spec['embedding'] = (opt.vec,) + opt.fov
+            opt.out_spec['embedding'] = (opt.vec,) + opt.outputsz
         else:
             if opt.aff > 0:
-                opt.out_spec['affinity'] = (opt.aff,) + opt.fov
+                opt.out_spec['affinity'] = (opt.aff,) + opt.outputsz
             if opt.psd:
-                opt.out_spec['synapse'] = (1,) + opt.fov
+                opt.out_spec['synapse'] = (1,) + opt.outputsz
             if opt.mit:
-                opt.out_spec['mitochondria'] = (1,) + opt.fov
+                opt.out_spec['mitochondria'] = (1,) + opt.outputsz
         assert(len(opt.out_spec) > 0)
 
         # Scan spec
         opt.scan_spec = dict()
         if opt.vec > 0:
             dim = 3 if opt.vec2aff else opt.vec
-            opt.scan_spec['embedding'] = (dim,) + opt.fov
+            opt.scan_spec['embedding'] = (dim,) + opt.outputsz
         else:
             if opt.aff > 0:
-                opt.scan_spec['affinity'] = (3,) + opt.fov
+                opt.scan_spec['affinity'] = (3,) + opt.outputsz
             if opt.psd:
-                opt.scan_spec['synapse'] = (1,) + opt.fov
+                opt.scan_spec['synapse'] = (1,) + opt.outputsz
             if opt.mit:
-                opt.scan_spec['mitochondria'] = (1,) + opt.fov
-        stride = self.get_stride(opt.fov, opt.overlap)
-        opt.scan_params = dict(stride=stride, blend='bump')
+                opt.scan_spec['mitochondria'] = (1,) + opt.outputsz
+        stride = self.get_stride(opt.outputsz, opt.overlap)
+        opt.scan_params = dict(stride=stride, blend=opt.blend)
 
         args = vars(opt)
         print('------------ Options -------------')

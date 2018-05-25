@@ -64,6 +64,8 @@ class Options(object):
         self.parser.add_argument('--momentum', type=float, default=0.9)
 
         # Model
+        self.parser.add_argument('--inputsz', type=int, default=None, nargs='+')
+        self.parser.add_argument('--outputsz', type=int, default=None, nargs='+')
         self.parser.add_argument('--fov', type=int, default=[20,256,256], nargs='+')
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--long_range', action='store_true')
@@ -109,25 +111,28 @@ class Options(object):
 
         # Model
         opt.fov = tuple(opt.fov)
-        opt.in_spec = dict(input=(1,) + opt.fov)
+        #defaults -> copy fov
+        opt.inputsz = opt.fov if opt.inputsz is None else tuple(opt.inputsz)
+        opt.outputsz = opt.fov if opt.outputsz is None else tuple(opt.outputsz)
+        opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.edges = self.get_edges(opt)
         opt.out_spec = dict()
         opt.loss_weight = dict()
 
         if opt.vec > 0:
-            opt.out_spec['embedding'] = (opt.vec,) + opt.fov
+            opt.out_spec['embedding'] = (opt.vec,) + opt.outputsz
             opt.loss_weight['embedding'] = 1.0
         else:
             if opt.aff > 0:
-                opt.out_spec['affinity'] = (len(opt.edges),) + opt.fov
+                opt.out_spec['affinity'] = (len(opt.edges),) + opt.outputsz
                 opt.loss_weight['affinity'] = opt.aff
 
             if opt.psd > 0:
-                opt.out_spec['synapse'] = (1,) + opt.fov
+                opt.out_spec['synapse'] = (1,) + opt.outputsz
                 opt.loss_weight['synapse'] = opt.psd
 
             if opt.mit > 0:
-                opt.out_spec['mitochondria'] = (1,) + opt.fov
+                opt.out_spec['mitochondria'] = (1,) + opt.outputsz
                 opt.loss_weight['mitochondria'] = opt.mit
 
         assert len(opt.out_spec) > 0
