@@ -31,7 +31,6 @@ class Options(object):
         self.parser.add_argument('--pad_size', type=int, default=[0,0,0], nargs='+')
 
         # Training
-        self.parser.add_argument('--base_lr', type=float, default=0.001)
         self.parser.add_argument('--max_iter', type=int, default=1000000)
         self.parser.add_argument('--batch_size', type=int, default=1)
         self.parser.add_argument('--num_workers', type=int, default=1)
@@ -59,8 +58,15 @@ class Options(object):
         self.parser.add_argument('--n_edge', type=int, default=32)
 
         # Optimizer
+        self.parser.add_argument('--optim', default='Adam')
+        self.parser.add_argument('--lr', type=float, default=0.001)
+
+        # Adam
+        self.parser.add_argument('--betas', type=float, default=[0.9,0.999], nargs='+')
+        self.parser.add_argument('--eps', type=float, default=1e-08)
         self.parser.add_argument('--amsgrad', action='store_true')
-        self.parser.add_argument('--sgd', action='store_true')
+
+        # SGD
         self.parser.add_argument('--momentum', type=float, default=0.9)
 
         # Model
@@ -101,6 +107,17 @@ class Options(object):
         # Training/validation sets
         if (not opt.train_ids) or (not opt.val_ids):
             raise ValueError("Train/validation IDs unspecified")
+
+        # Optimizer
+        if opt.optim == 'Adam':
+            optim_keys = ['lr','betas','eps','amsgrad']
+            opt.betas = tuple(opt.betas)
+        elif opt.optim == 'SGD':
+            optim_keys = ['lr','momentum']
+        else:
+            optim_keys = ['lr']
+        args = vars(opt)
+        opt.optim_params = {k: v for k, v in args.items() if k in optim_keys}
 
         # Loss
         opt.loss_params = dict()
