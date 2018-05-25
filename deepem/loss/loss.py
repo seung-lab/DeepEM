@@ -45,19 +45,21 @@ class BCELoss(nn.Module):
 
 class MSELoss(nn.Module):
     """
-    Mean squared error loss with logits.
+    Mean squared error loss with (or without) logits.
     """
-    def __init__(self, size_average=True, margin=0, **kwargs):
+    def __init__(self, size_average=True, margin=0, logits=True, **kwargs):
         super(MSELoss, self).__init__()
         self.mse = F.mse_loss
         self.size_average = size_average
+        self.margin = margin
+        self.logits = logits
 
     def forward(self, input, target, mask):
         # Number of valid voxels
         nmsk = (mask > 0).type(mask.type()).sum()
         assert(nmsk.item() > 0)
 
-        activ = F.sigmoid(input)
+        activ = F.sigmoid(input) if self.logits else input
 
         # Margin
         if self.margin > 0:
