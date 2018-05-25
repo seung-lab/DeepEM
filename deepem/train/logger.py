@@ -19,7 +19,7 @@ class Logger(object):
         self.writer = SummaryWriter(opt.log_dir)
         self.in_spec = dict(opt.in_spec)
         self.out_spec = dict(opt.out_spec)
-        self.base_lr = opt.base_lr
+        self.lr = opt.lr
 
     def __enter__(self):
         return self
@@ -54,7 +54,7 @@ class Logger(object):
         disp = "[%s] Iter: %8d, " % (phase, iter_num)
         for k, v in stats.items():
             disp += "%s = %.3f, " % (k, v)
-        disp += "(lr = %.6f). " % self.base_lr
+        disp += "(lr = %.6f). " % self.lr
         print(disp)
 
     class Monitor(object):
