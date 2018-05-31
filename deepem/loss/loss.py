@@ -76,33 +76,3 @@ class MSELoss(nn.Module):
             nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
 
         return loss, nmsk
-
-
-class BCELoss2(nn.Module):
-    """
-    Binary cross entropy loss with logits.
-    """
-    def __init__(self, size_average=True, margin=0, inverse=True, **kwargs):
-        super(BCELoss2, self).__init__()
-        self.bce = F.binary_cross_entropy_with_logits
-        self.size_average = size_average
-        self.margin = np.clip(margin, 0, 1)
-        self.inverse = inverse
-
-    def forward(self, input, target, mask):
-        # Margin
-        if self.margin > 0:
-            m = self.margin
-            if self.inverse:
-                target[torch.eq(target, 1)] = 1 - m
-                target[torch.eq(target, 0)] = m
-            else:
-                activ = F.sigmoid(input)
-                m_int = torch.ge(activ, 1 - m) * torch.eq(target, 1)
-                m_ext = torch.le(activ, m) * torch.eq(target, 0)
-                mask *= 1 - (m_int + m_ext).type(mask.dtype)
-
-        loss = self.bce(input, target, weight=mask, size_average=self.size_average)
-        nmsk = torch.tensor([1], dtype=mask.dtype, device=mask.device)
-
-        return loss, nmsk
