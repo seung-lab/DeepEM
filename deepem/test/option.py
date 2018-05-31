@@ -66,6 +66,7 @@ class Options(object):
         self.parser.add_argument('-d','--downsample', action='store_true')
         # self.parser.add_argument('--mip', type=int, default=0)
         self.parser.add_argument('--resolution', type=vec3, default=(4,4,40))
+        self.parser.add_argument('--offset', type=vec3, default=(0,0,0))
 
         self.initialized = True
 

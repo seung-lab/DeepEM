@@ -22,7 +22,7 @@ def ingest(data, opt):
     num_channels = data.shape[-1]
     shape = data.shape[:-1]
     info = make_info(num_channels, 'image', str(data.dtype), shape,
-                     opt.resolution)
+                     opt.resolution, offset=opt.offset)
     print(info)
     cvol = cv.CloudVolume(opt.gs_output, mip=0, info=info,
                           parallel=opt.parallel)
