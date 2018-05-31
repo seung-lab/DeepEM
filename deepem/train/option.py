@@ -48,7 +48,8 @@ class Options(object):
         # Loss
         self.parser.add_argument('--loss', default='BCELoss')
         self.parser.add_argument('--size_average', action='store_true')
-        self.parser.add_argument('--margin', type=float, default=0)
+        self.parser.add_argument('--margin0', type=float, default=0)
+        self.parser.add_argument('--margin1', type=float, default=0)
         self.parser.add_argument('--inverse', action='store_true')
         self.parser.add_argument('--class_balancing', action='store_true')
         self.parser.add_argument('--no_logits', action='store_true')
@@ -121,7 +122,8 @@ class Options(object):
         # Loss
         opt.loss_params = dict()
         opt.loss_params['size_average'] = opt.size_average
-        opt.loss_params['margin'] = opt.margin
+        opt.loss_params['margin0'] = opt.margin0
+        opt.loss_params['margin1'] = opt.margin1
         opt.loss_params['inverse'] = opt.inverse
         opt.loss_params['logits'] = not opt.no_logits
 
