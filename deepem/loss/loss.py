@@ -15,8 +15,8 @@ class BCELoss(nn.Module):
         super(BCELoss, self).__init__()
         self.bce = F.binary_cross_entropy_with_logits
         self.size_average = size_average
-        self.margin0 = np.clip(margin0, 0, 1)
-        self.margin1 = np.clip(margin1, 0, 1)
+        self.margin0 = float(np.clip(margin0, 0, 1))
+        self.margin1 = float(np.clip(margin1, 0, 1))
         self.inverse = inverse
 
     def forward(self, input, target, mask):
@@ -54,8 +54,8 @@ class MSELoss(nn.Module):
         super(MSELoss, self).__init__()
         self.mse = F.mse_loss
         self.size_average = size_average
-        self.margin0 = np.clip(margin0, 0, 1)
-        self.margin1 = np.clip(margin1, 0, 1)
+        self.margin0 = float(np.clip(margin0, 0, 1))
+        self.margin1 = float(np.clip(margin1, 0, 1))
         self.logits = logits
 
     def forward(self, input, target, mask):
