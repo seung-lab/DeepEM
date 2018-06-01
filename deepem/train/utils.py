@@ -19,7 +19,6 @@ def get_criteria(opt):
             criteria[k] = loss.AffinityLoss(opt.edges,
                 criterion=getattr(loss, opt.loss)(**params),
                 size_average=opt.size_average,
-                margin=opt.margin,
                 class_balancing=opt.class_balancing
             )
         elif k == 'embedding':

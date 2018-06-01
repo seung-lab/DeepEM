@@ -29,12 +29,10 @@ class EdgeSampler(object):
 
 
 class EdgeCRF(nn.Module):
-    def __init__(self, criterion, size_average=False, margin=0,
-                       class_balancing=False):
+    def __init__(self, criterion, size_average=False, class_balancing=False):
         super(EdgeCRF, self).__init__()
         self.criterion = criterion
         self.size_average = size_average
-        self.margin = np.clip(margin, 0, 1)
         self.balancing = class_balancing
 
     def forward(self, preds, targets, masks):
@@ -71,14 +69,12 @@ class EdgeCRF(nn.Module):
 
 
 class AffinityLoss(nn.Module):
-    def __init__(self, edges, criterion, size_average=False, margin=0,
-                       class_balancing=False):
+    def __init__(self, edges, criterion, size_average=False, class_balancing=False):
         super(AffinityLoss, self).__init__()
         self.sampler = EdgeSampler(edges)
         self.decoder = AffinityLoss.Decoder(edges)
         self.criterion = EdgeCRF(criterion,
             size_average=size_average,
-            margin=margin,
             class_balancing=class_balancing
         )
 
