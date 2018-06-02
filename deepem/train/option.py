@@ -27,6 +27,7 @@ class Options(object):
 
         # Training/validation sets
         self.parser.add_argument('--train_ids', type=str, default=[], nargs='+')
+        self.parser.add_argument('--train_prob', type=float, default=None, nargs='+')
         self.parser.add_argument('--val_ids', type=str, default=[], nargs='+')
         self.parser.add_argument('--pad_size', type=int, default=[0,0,0], nargs='+')
 
@@ -108,6 +109,8 @@ class Options(object):
         # Training/validation sets
         if (not opt.train_ids) or (not opt.val_ids):
             raise ValueError("Train/validation IDs unspecified")
+        if opt.train_prob:
+            assert len(opt.train_ids) == len(opt.train_prob)
 
         # Optimizer
         if opt.optim == 'Adam':
