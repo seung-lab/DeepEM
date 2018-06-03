@@ -45,15 +45,15 @@ class OutputBlock(nn.Module):
 class Upsample(nn.Module):
     def __init__(self, up, out_spec):
         super(Upsample, self).__init__()
-        # self.up = nn.Upsample(scale_factor=up, mode='trilinear')
-        for k, v in out_spec.items():
-            channels = v[-4]
-            self.add_module(k, BilinearUp(channels, channels, factor=up))
+        self.up = nn.Upsample(scale_factor=up, mode='trilinear')
+        # for k, v in out_spec.items():
+        #     channels = v[-4]
+        #     self.add_module(k, BilinearUp(channels, channels, factor=up))
         self.keys = out_spec.keys()
 
     def forward(self, x):
-        # return {k: self.up(x[k]) for k in self.keys}
-        return {k: m(x[k]) for k, m in self.named_children()}
+        return {k: self.up(x[k]) for k in self.keys}
+        # return {k: m(x[k]) for k, m in self.named_children()}
 
 
 class Output(nn.Module):
