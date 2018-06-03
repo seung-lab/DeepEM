@@ -67,7 +67,7 @@ class Output(nn.Module):
     def forward(self, x):
         x2 = self.up2x(self.out(x[0]))
         x4 = self.up4x(self.out(x[1]))
-        return {k: (x2[k] + x4[k]) / 2 for k in self.keys}
+        return {k: (x2[k] + x4[k]) / 2.0 for k in self.keys}
 
 
 class Model(nn.Module):
