@@ -23,15 +23,13 @@ class Input(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size):
         super(Input, self).__init__()
         self.down2x = nn.AvgPool3d((1,2,2))
-        self.down3x = nn.AvgPool3d((1,3,3))
         self.down4x = nn.AvgPool3d((1,4,4))
         self.conv = Conv(in_channels, out_channels, kernel_size)
 
     def forward(self, x):
         x2 = self.conv(self.down2x(x))
-        x3 = self.conv(self.down3x(x))
         x4 = self.conv(self.down4x(x))
-        return [x2,x3,x4]
+        return [x2, x4]
 
 
 class OutputBlock(nn.Module):
@@ -47,11 +45,15 @@ class OutputBlock(nn.Module):
 class Upsample(nn.Module):
     def __init__(self, up, out_spec):
         super(Upsample, self).__init__()
-        self.up = nn.Upsample(scale_factor=up, mode='trilinear')
+        # self.up = nn.Upsample(scale_factor=up, mode='trilinear')
+        for k, v in out_spec.items():
+            channels = v[-4]
+            self.add_module(k, BilinearUp(channels, channels, factor=up))
         self.keys = out_spec.keys()
 
     def forward(self, x):
-        return {k: self.up(x[k]) for k in self.keys}
+        # return {k: self.up(x[k]) for k in self.keys}
+        return {k: m(x[k]) for k, m in self.named_children()}
 
 
 class Output(nn.Module):
@@ -59,15 +61,13 @@ class Output(nn.Module):
         super(Output, self).__init__()
         self.out = OutputBlock(in_channels, out_spec, kernel_size)
         self.up2x = Upsample((1,2,2), out_spec)
-        self.up3x = Upsample((1,3,3), out_spec)
         self.up4x = Upsample((1,4,4), out_spec)
         self.keys = out_spec.keys()
 
     def forward(self, x):
         x2 = self.up2x(self.out(x[0]))
-        x3 = self.up3x(self.out(x[1]))
-        x4 = self.up4x(self.out(x[2]))
-        return {k: (x2[k] + x3[k] + x4[k]) / 3 for k in self.keys}
+        x4 = self.up4x(self.out(x[1]))
+        return {k: (x2[k] + x4[k]) / 2 for k in self.keys}
 
 
 class Model(nn.Module):
