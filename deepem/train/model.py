@@ -14,7 +14,7 @@ class Model(nn.Module):
         self.criteria = criteria
         self.in_spec = dict(opt.in_spec)
         self.out_spec = dict(opt.out_spec)
-        self.pretrain = opt.pretrain
+        self.pretrain = opt.pretrain is not None
 
     def forward(self, sample):
         # Forward pass

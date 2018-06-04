@@ -39,7 +39,8 @@ def load_model(opt):
     mod = imp.load_source('model', opt.model)
     model = Model(mod.create_model(opt), get_criteria(opt), opt)
 
-    # Load from a checkpoint, if any.
+    if opt.pretrain:
+        model.load(opt.pretrain)
     if opt.chkpt_num > 0:
         model = load_chkpt(model, opt.model_dir, opt.chkpt_num)
 
