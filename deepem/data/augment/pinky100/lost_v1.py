@@ -34,9 +34,6 @@ def get_augmentation(is_train, box=None, random=True, **kwargs):
         LostPlusMissing(random=random)
     ])
 
-    # Track
-    track = Track()
-
     augs = list()
 
     # Box
@@ -61,10 +58,10 @@ def get_augmentation(is_train, box=None, random=True, **kwargs):
 
     # Missing section & misalignment
     augs.append(Blend([
-        Compose([m1,m2,m3, track]),
-        MisalignTrackMissing((5,30), random=random),
-        Compose([track, missing]),
-        Compose([track, lost])
+        Compose([m1,m2,m3]),
+        MisalignPlusMissing((5,30), random=random),
+        missing,
+        lost
     ]))
 
     # Out-of-focus

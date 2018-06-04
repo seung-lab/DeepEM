@@ -82,6 +82,7 @@ class Options(object):
 
         # Data augmentation
         self.parser.add_argument('--box', default=None)
+        self.parser.add_argument('--random_fill', default=True)
 
         # Multiclass detection
         self.parser.add_argument('--aff', type=float, default=0)
@@ -162,6 +163,7 @@ class Options(object):
         # Data augmentation
         opt.aug_params = dict()
         opt.aug_params['box'] = opt.box
+        opt.aug_params['random'] = opt.random_fill
 
         # Multiclass detection
         opt.data_params = dict()
