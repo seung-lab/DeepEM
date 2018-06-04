@@ -72,12 +72,8 @@ def get_augmentation(is_train, box=None, random=True, skip_track=0.0, **kwargs):
 
     # Warping
     if is_train:
-        warp = Blend([
-            Warp(skip=0.3),
-            Warp(skip=0.3, do_twist=False, rot_max=45.0, scale_max=1.1,
-                 shear_max=0.0, stretch_max=0.0)
-        ])
-        augs.append(warp)
+        # Twist doesn't make sense when it comes to the track mark.
+        augs.append(Warp(skip=0.3, do_twist=False, rot_max=30.0))
 
     # Flip & rotate
     augs.append(FlipRotate())

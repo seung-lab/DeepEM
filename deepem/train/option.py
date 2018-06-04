@@ -82,7 +82,7 @@ class Options(object):
 
         # Data augmentation
         self.parser.add_argument('--box', default=None)
-        self.parser.add_argument('--random_fill', default=True)
+        self.parser.add_argument('--random_fill', action='store_true')
         self.parser.add_argument('--skip_track', type=float, default=0.0)
 
         # Multiclass detection
