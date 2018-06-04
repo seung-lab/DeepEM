@@ -3,7 +3,7 @@ from __future__ import print_function
 from augmentor import *
 
 
-def get_augmentation(is_train, box=None, random=True, **kwargs):
+def get_augmentation(is_train, box=None, random=True, skip_track=0.0, **kwargs):
     # Mild misalignment
     m1 = Blend(
         [Misalign((0,10), margin=1), SlipMisalign((0,10), margin=1)],
@@ -35,7 +35,7 @@ def get_augmentation(is_train, box=None, random=True, **kwargs):
     ])
 
     # Track
-    track = Track()
+    track = Track(skip=skip_track)
 
     augs = list()
 
@@ -62,7 +62,7 @@ def get_augmentation(is_train, box=None, random=True, **kwargs):
     # Missing section & misalignment
     augs.append(Blend([
         Compose([m1,m2,m3, track]),
-        MisalignTrackMissing((5,30), random=random),
+        MisalignTrackMissing(track, (5,30), random=random),
         Compose([track, missing]),
         Compose([track, lost])
     ]))
