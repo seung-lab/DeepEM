@@ -128,7 +128,7 @@ class Logger(object):
 
                 # Embedding
                 tag = '{}/images/embedding'.format(phase)
-                vec = preds[k][0:3,...]
+                vec = vec[0:3,...]
                 vec = vec - torch.min(vec)
                 vec = vec / torch.max(vec)
                 self.log_image(tag, vec, iter_num)
