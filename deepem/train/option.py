@@ -91,7 +91,8 @@ class Options(object):
         self.parser.add_argument('--mit', type=float, default=0)
 
         # Metric learning
-        self.parser.add_argument('--vec', type=int, default=0)
+        self.parser.add_argument('--vec', type=float, default=0)
+        self.parser.add_argument('--embed_dim', type=int, default=10)
 
         # Onnx export
         self.parser.add_argument('--onnx', action='store_true')
@@ -143,8 +144,8 @@ class Options(object):
         opt.loss_weight = dict()
 
         if opt.vec > 0:
-            opt.out_spec['embedding'] = (opt.vec,) + opt.outputsz
-            opt.loss_weight['embedding'] = 1.0
+            opt.out_spec['embedding'] = (opt.embed_dim,) + opt.outputsz
+            opt.loss_weight['embedding'] = opt.vec
         else:
             if opt.aff > 0:
                 opt.out_spec['affinity'] = (len(opt.edges),) + opt.outputsz
