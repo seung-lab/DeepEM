@@ -29,7 +29,7 @@ class Options(object):
         self.parser.add_argument('--train_ids', type=str, default=[], nargs='+')
         self.parser.add_argument('--train_prob', type=float, default=None, nargs='+')
         self.parser.add_argument('--val_ids', type=str, default=[], nargs='+')
-        self.parser.add_argument('--pad_size', type=int, default=[0,0,0], nargs='+')
+        self.parser.add_argument('--pad_size', type=vec3, default=(0,0,0))
 
         # Training
         self.parser.add_argument('--max_iter', type=int, default=1000000)
@@ -74,7 +74,7 @@ class Options(object):
         # Model
         self.parser.add_argument('--inputsz', type=int, default=None, nargs='+')
         self.parser.add_argument('--outputsz', type=int, default=None, nargs='+')
-        self.parser.add_argument('--fov', type=int, default=[20,256,256], nargs='+')
+        self.parser.add_argument('--fov', type=vec3, default=(20,256,256))
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--long_range', action='store_true')
         self.parser.add_argument('--symmetric', action='store_true')

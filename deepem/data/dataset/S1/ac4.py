@@ -5,11 +5,11 @@ import os
 import dataprovider3.emio as emio
 
 
-# SNEMI3D dataset
-snemi3d_info = {
+# AC4 dataset
+ac4_info = {
     'train':{
-        'img': 'train_img.h5',
-        'seg': 'train_seg.h5',
+        'img': 'img.h5',
+        'seg': 'seg.h5',
         'msk': None,
         'dir': '',
         'loc': True,
@@ -19,11 +19,11 @@ snemi3d_info = {
 
 def load_data(data_dir, data_ids=None, pad_size=(0,0,0), **kwargs):
     if data_ids is None:
-        data_ids = snemi3d_info.keys()
+        data_ids = ac4_info.keys()
     data = dict()
     dpath = os.path.expanduser(data_dir)
     for data_id in data_ids:
-        info = snemi3d_info[data_id]
+        info = ac4_info[data_id]
         data[data_id] = load_dataset(dpath, data_id, info, pad_size)
     return data
 
@@ -51,7 +51,7 @@ def load_dataset(dpath, tag, info, pad_size):
     dset['seg'] = seg
 
     # Train mask
-    fpath = os.path.join(dpath, info['dir'], 'train_msk.h5')
+    fpath = os.path.join(dpath, info['dir'], 'msk_train.h5')
     print(fpath)
     msk = emio.imread(fpath).astype('uint8')
     if pad:
@@ -59,7 +59,7 @@ def load_dataset(dpath, tag, info, pad_size):
     dset['msk_train'] = msk
 
     # Validation mask
-    fpath = os.path.join(dpath, info['dir'], 'val_msk.h5')
+    fpath = os.path.join(dpath, info['dir'], 'msk_val.h5')
     print(fpath)
     msk = emio.imread(fpath).astype('uint8')
     if pad:
