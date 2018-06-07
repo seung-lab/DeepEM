@@ -19,7 +19,6 @@ def get_criteria(opt):
             criteria[k] = loss.AffinityLoss(opt.edges,
                 criterion=getattr(loss, opt.loss)(**params),
                 size_average=opt.size_average,
-                margin=opt.margin,
                 class_balancing=opt.class_balancing
             )
         elif k == 'embedding':
@@ -40,7 +39,8 @@ def load_model(opt):
     mod = imp.load_source('model', opt.model)
     model = Model(mod.create_model(opt), get_criteria(opt), opt)
 
-    # Load from a checkpoint, if any.
+    if opt.pretrain:
+        model.load(opt.pretrain)
     if opt.chkpt_num > 0:
         model = load_chkpt(model, opt.model_dir, opt.chkpt_num)
 
@@ -67,7 +67,11 @@ def load_data(opt):
 
     # Train
     train_data = {k: data[k] for k in opt.train_ids}
-    train_loader = Data(opt, train_data, is_train=True)
+    if opt.train_prob:
+        prob = dict(zip(opt.train_ids, opt.train_prob))
+    else:
+        prob = None
+    train_loader = Data(opt, train_data, is_train=True, prob=prob)
 
     # Validation
     val_data = {k: data[k] for k in opt.val_ids}

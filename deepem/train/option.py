@@ -27,11 +27,11 @@ class Options(object):
 
         # Training/validation sets
         self.parser.add_argument('--train_ids', type=str, default=[], nargs='+')
+        self.parser.add_argument('--train_prob', type=float, default=None, nargs='+')
         self.parser.add_argument('--val_ids', type=str, default=[], nargs='+')
-        self.parser.add_argument('--pad_size', type=int, default=[0,0,0], nargs='+')
+        self.parser.add_argument('--pad_size', type=vec3, default=(0,0,0))
 
         # Training
-        self.parser.add_argument('--base_lr', type=float, default=0.001)
         self.parser.add_argument('--max_iter', type=int, default=1000000)
         self.parser.add_argument('--batch_size', type=int, default=1)
         self.parser.add_argument('--num_workers', type=int, default=1)
@@ -44,26 +44,37 @@ class Options(object):
         self.parser.add_argument('--chkpt_intv', type=int, default=10000)
         self.parser.add_argument('--chkpt_num', type=int, default=0)
         self.parser.add_argument('--no_eval', action='store_true')
-        self.parser.add_argument('--pretrain', action='store_true')
+        self.parser.add_argument('--pretrain', default=None)
 
         # Loss
         self.parser.add_argument('--loss', default='BCELoss')
         self.parser.add_argument('--size_average', action='store_true')
-        self.parser.add_argument('--margin', type=float, default=0)
+        self.parser.add_argument('--margin0', type=float, default=0)
+        self.parser.add_argument('--margin1', type=float, default=0)
         self.parser.add_argument('--inverse', action='store_true')
         self.parser.add_argument('--class_balancing', action='store_true')
+        self.parser.add_argument('--no_logits', action='store_true')
 
         # Edge-based loss
         self.parser.add_argument('--max_edges', type=vec3, default=[(5,32,32)], nargs='+')
         self.parser.add_argument('--n_edge', type=int, default=32)
 
         # Optimizer
+        self.parser.add_argument('--optim', default='Adam')
+        self.parser.add_argument('--lr', type=float, default=0.001)
+
+        # Adam
+        self.parser.add_argument('--betas', type=float, default=[0.9,0.999], nargs='+')
+        self.parser.add_argument('--eps', type=float, default=1e-08)
         self.parser.add_argument('--amsgrad', action='store_true')
-        self.parser.add_argument('--sgd', action='store_true')
+
+        # SGD
         self.parser.add_argument('--momentum', type=float, default=0.9)
 
         # Model
-        self.parser.add_argument('--fov', type=int, default=[20,256,256], nargs='+')
+        self.parser.add_argument('--inputsz', type=int, default=None, nargs='+')
+        self.parser.add_argument('--outputsz', type=int, default=None, nargs='+')
+        self.parser.add_argument('--fov', type=vec3, default=(20,256,256))
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--long_range', action='store_true')
         self.parser.add_argument('--symmetric', action='store_true')
@@ -71,6 +82,8 @@ class Options(object):
 
         # Data augmentation
         self.parser.add_argument('--box', default=None)
+        self.parser.add_argument('--random_fill', action='store_true')
+        self.parser.add_argument('--skip_track', type=float, default=0.0)
 
         # Multiclass detection
         self.parser.add_argument('--aff', type=float, default=0)
@@ -78,7 +91,8 @@ class Options(object):
         self.parser.add_argument('--mit', type=float, default=0)
 
         # Metric learning
-        self.parser.add_argument('--vec', type=int, default=0)
+        self.parser.add_argument('--vec', type=float, default=0)
+        self.parser.add_argument('--embed_dim', type=int, default=10)
 
         # Onnx export
         self.parser.add_argument('--onnx', action='store_true')
@@ -98,34 +112,51 @@ class Options(object):
         # Training/validation sets
         if (not opt.train_ids) or (not opt.val_ids):
             raise ValueError("Train/validation IDs unspecified")
+        if opt.train_prob:
+            assert len(opt.train_ids) == len(opt.train_prob)
+
+        # Optimizer
+        if opt.optim == 'Adam':
+            optim_keys = ['lr','betas','eps','amsgrad']
+        elif opt.optim == 'SGD':
+            optim_keys = ['lr','momentum']
+        else:
+            optim_keys = ['lr']
+        args = vars(opt)
+        opt.optim_params = {k: v for k, v in args.items() if k in optim_keys}
 
         # Loss
         opt.loss_params = dict()
         opt.loss_params['size_average'] = opt.size_average
-        opt.loss_params['margin'] = opt.margin
+        opt.loss_params['margin0'] = opt.margin0
+        opt.loss_params['margin1'] = opt.margin1
         opt.loss_params['inverse'] = opt.inverse
+        opt.loss_params['logits'] = not opt.no_logits
 
         # Model
         opt.fov = tuple(opt.fov)
-        opt.in_spec = dict(input=(1,) + opt.fov)
+        #defaults -> copy fov
+        opt.inputsz = opt.fov if opt.inputsz is None else tuple(opt.inputsz)
+        opt.outputsz = opt.fov if opt.outputsz is None else tuple(opt.outputsz)
+        opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.edges = self.get_edges(opt)
         opt.out_spec = dict()
         opt.loss_weight = dict()
 
         if opt.vec > 0:
-            opt.out_spec['embedding'] = (opt.vec,) + opt.fov
-            opt.loss_weight['embedding'] = 1.0
+            opt.out_spec['embedding'] = (opt.embed_dim,) + opt.outputsz
+            opt.loss_weight['embedding'] = opt.vec
         else:
             if opt.aff > 0:
-                opt.out_spec['affinity'] = (len(opt.edges),) + opt.fov
+                opt.out_spec['affinity'] = (len(opt.edges),) + opt.outputsz
                 opt.loss_weight['affinity'] = opt.aff
 
             if opt.psd > 0:
-                opt.out_spec['synapse'] = (1,) + opt.fov
+                opt.out_spec['synapse'] = (1,) + opt.outputsz
                 opt.loss_weight['synapse'] = opt.psd
 
             if opt.mit > 0:
-                opt.out_spec['mitochondria'] = (1,) + opt.fov
+                opt.out_spec['mitochondria'] = (1,) + opt.outputsz
                 opt.loss_weight['mitochondria'] = opt.mit
 
         assert len(opt.out_spec) > 0
@@ -134,6 +165,8 @@ class Options(object):
         # Data augmentation
         opt.aug_params = dict()
         opt.aug_params['box'] = opt.box
+        opt.aug_params['random'] = opt.random_fill
+        opt.aug_params['skip_track'] = opt.skip_track
 
         # Multiclass detection
         opt.data_params = dict()

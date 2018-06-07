@@ -19,7 +19,7 @@ class Logger(object):
         self.writer = SummaryWriter(opt.log_dir)
         self.in_spec = dict(opt.in_spec)
         self.out_spec = dict(opt.out_spec)
-        self.base_lr = opt.base_lr
+        self.lr = opt.lr
 
     def __enter__(self):
         return self
@@ -54,7 +54,7 @@ class Logger(object):
         disp = "[%s] Iter: %8d, " % (phase, iter_num)
         for k, v in stats.items():
             disp += "%s = %.3f, " % (k, v)
-        disp += "(lr = %.6f). " % self.base_lr
+        disp += "(lr = %.6f). " % self.lr
         print(disp)
 
     class Monitor(object):
@@ -123,22 +123,17 @@ class Logger(object):
 
                 # nearest neighbor affinity
                 tag = '{}/images/affinity'.format(phase)
-                # x = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,0,1))))
-                # y = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,1,0))))
-                # z = torch_utils.affinity(*(torch_utils.get_pair(vec, (1,0,0))))
-                # x = F.pad(x, (1,0))
-                # y = F.pad(y, (0,0,1,0))
-                # z = F.pad(z, (0,0,0,0,1,0))
-                # assert(x.size() == y.size() == z.size())
-                # aff = torch.cat((x,y,z), dim=0)
                 aff = torch_utils.vec2aff(vec)
                 self.log_image(tag, aff, iter_num)
 
                 # Embedding
                 tag = '{}/images/embedding'.format(phase)
+                vec = preds[k].cpu()
+                vec = vec.select(0,0)
+                vec = vec.narrow(0,0,3)
                 vec = vec - torch.min(vec)
                 vec = vec / torch.max(vec)
-                self.log_image(tag, vec[0:3,...], iter_num)
+                self.log_image(tag, vec, iter_num)
 
     def log_image(self, tag, tensor, iter_num):
         assert(torch.is_tensor(tensor))

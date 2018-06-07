@@ -19,14 +19,9 @@ def train(opt):
 
     # Optimizer
     trainable = filter(lambda p: p.requires_grad, model.parameters())
-    if opt.sgd:
-        optimizer = torch.optim.SGD(trainable,
-                                    lr=opt.base_lr,
-                                    momentum=opt.momentum)
-    else:
-        optimizer = torch.optim.Adam(trainable,
-                                     lr=opt.base_lr,
-                                     amsgrad=opt.amsgrad)
+    optimizer = getattr(torch.optim, opt.optim)(
+                        trainable, **opt.optim_params)
+    print(optimizer)
 
     # Initial checkpoint
     save_chkpt(model, opt.model_dir, opt.chkpt_num)

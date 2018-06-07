@@ -28,8 +28,8 @@ class Dataset(torch.utils.data.Dataset):
 
 
 class Data(object):
-    def __init__(self, opt, data, is_train):
-        self.build(opt, data, is_train)
+    def __init__(self, opt, data, is_train=True, prob=None):
+        self.build(opt, data, is_train, prob)
 
     def __call__(self):
         sample = next(self.dataiter)
@@ -42,7 +42,7 @@ class Data(object):
     def requires_grad(self, key):
         return self.is_train and (key in self.inputs)
 
-    def build(self, opt, data, is_train):
+    def build(self, opt, data, is_train, prob):
         # Data augmentation
         mod = imp.load_source('augment', opt.augment)
         aug = mod.get_augmentation(is_train, **opt.aug_params)
@@ -50,7 +50,7 @@ class Data(object):
         # Data sampler
         mod = imp.load_source('sampler', opt.sampler)
         spec = mod.get_spec(opt.in_spec, opt.out_spec)
-        sampler = mod.Sampler(data, spec, is_train, aug)
+        sampler = mod.Sampler(data, spec, is_train, aug, prob=prob)
 
         # Data loader
         size = (opt.max_iter - opt.chkpt_num) * opt.batch_size

@@ -20,9 +20,9 @@ def get_spec(in_spec, out_spec):
 
 
 class Sampler(object):
-    def __init__(self, data, spec, is_train, aug=None):
+    def __init__(self, data, spec, is_train, aug=None, prob=None):
         self.is_train = is_train
-        self.build(data, spec, aug)
+        self.build(data, spec, aug, prob)
 
     def __call__(self):
         sample = self.dataprovider()
@@ -39,12 +39,17 @@ class Sampler(object):
             sample[k] = v.astype('float32')
         return sample
 
-    def build(self, data, spec, aug):
+    def build(self, data, spec, aug, prob):
         dp = DataProvider(spec)
-        for k, v in data.items():
-            dp.add_dataset(self.build_dataset(k, v))
+        keys = data.keys()
+        for k in keys:
+            dp.add_dataset(self.build_dataset(k, data[k]))
         dp.set_augment(aug)
         dp.set_imgs(['input'])
+        if prob:
+            dp.set_sampling_weights(p=[prob[k] for k in keys])
+        else:
+            dp.set_sampling_weights(p=None)
         self.dataprovider = dp
 
     def build_dataset(self, key, data):
