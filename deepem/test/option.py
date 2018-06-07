@@ -32,9 +32,9 @@ class Options(object):
         self.parser.add_argument('--pretrain', action='store_true')
 
         # Model
-        self.parser.add_argument('--inputsz', type=int, default=None, nargs='+')
-        self.parser.add_argument('--outputsz', type=int, default=None, nargs='+')
-        self.parser.add_argument('--fov', type=int, default=[20,256,256], nargs='+')
+        self.parser.add_argument('--inputsz', type=vec3, default=None)
+        self.parser.add_argument('--outputsz', type=vec3, default=None)
+        self.parser.add_argument('--fov', type=vec3, default=(20,256,256))
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--group', type=int, default=0)
 
@@ -87,8 +87,8 @@ class Options(object):
         # Model spec
         opt.fov = tuple(opt.fov)
         #default -> copy opt.fov
-        opt.inputsz = opt.fov if opt.inputsz is None else tuple(opt.inputsz)
-        opt.outputsz = opt.fov if opt.outputsz is None else tuple(opt.outputsz)
+        opt.inputsz = opt.fov if opt.inputsz is None else opt.inputsz
+        opt.outputsz = opt.fov if opt.outputsz is None else opt.outputsz
         opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.out_spec = dict()
         if opt.vec > 0:
