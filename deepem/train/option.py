@@ -22,6 +22,9 @@ class Options(object):
         self.parser.add_argument('--augment',  required=True)
         self.parser.add_argument('--sampler',  required=True)
 
+        # Sampler options
+        self.parser.add_argument('--recompute', action='store_true')
+
         # cuDNN auto-tuning
         self.parser.add_argument('--autotune', action='store_true')
 
