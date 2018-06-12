@@ -82,18 +82,18 @@ def load_dataset(dpath, tag, info):
     dset = dict()
 
     # Image
-    fpath = os.path.join(dpath, info['dir'], info['img'])
+    fpath = os.path.join(dpath, tag, info['dir'], info['img'])
     print(fpath)
     dset['img']  = emio.imread(fpath).astype('float32')
     dset['img'] /= 255.0
 
     # Segmentation
-    fpath = os.path.join(dpath, info['dir'], info['seg'])
+    fpath = os.path.join(dpath, tag, info['dir'], info['seg'])
     print(fpath)
     dset['seg'] = emio.imread(fpath).astype('uint32')
 
     # Mask
-    fpath = os.path.join(dpath, info['dir'], info['msk'])
+    fpath = os.path.join(dpath, tag, info['dir'], info['msk'])
     print(fpath)
     dset['msk'] = emio.imread(fpath).astype('uint8')
 
