@@ -24,7 +24,7 @@ class BCELoss(nn.Module):
         nmsk = (mask > 0).type(mask.dtype).sum()
         assert(nmsk.item() >= 0)
         if nmsk.item() == 0:
-            loss = torch.tensor([0], dtype=target.dtype, device=target.device)
+            loss = 0
             return loss, nmsk
 
         # Margin
@@ -66,7 +66,7 @@ class MSELoss(nn.Module):
         nmsk = (mask > 0).type(mask.type()).sum()
         assert(nmsk.item() >= 0)
         if nmsk.item() == 0:
-            loss = torch.tensor([0], dtype=target.dtype, device=target.device)
+            loss = 0
             return loss, nmsk
 
         activ = F.sigmoid(input) if self.logits else input
