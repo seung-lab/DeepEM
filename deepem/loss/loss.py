@@ -64,7 +64,10 @@ class MSELoss(nn.Module):
     def forward(self, input, target, mask):
         # Number of valid voxels
         nmsk = (mask > 0).type(mask.type()).sum()
-        assert(nmsk.item() > 0)
+        assert(nmsk.item() >= 0)
+        if nmsk.item() == 0:
+            loss = torch.tensor([0], dtype=target.dtype, device=target.device)
+            return loss, nmsk
 
         activ = F.sigmoid(input) if self.logits else input
 
