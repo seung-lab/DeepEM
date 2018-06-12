@@ -22,7 +22,10 @@ class BCELoss(nn.Module):
     def forward(self, input, target, mask):
         # Number of valid voxels
         nmsk = (mask > 0).type(mask.dtype).sum()
-        assert(nmsk.item() > 0)
+        assert(nmsk.item() >= 0)
+        if nmsk.item() == 0:
+            loss = torch.tensor([0], dtype=target.dtype, device=target.device)
+            return loss, nmsk
 
         # Margin
         m0, m1 = self.margin0, self.margin1
