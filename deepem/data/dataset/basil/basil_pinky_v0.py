@@ -180,10 +180,10 @@ def load_dataset(dpath, tag, info):
 
     # Mask
     if tag == 'stitched_vol19-vol34':
-        fpath = os.path.join(dpath, info['dir'], 'msk_train.h5')
+        fpath = os.path.join(dpath, tag, info['dir'], 'msk_train.h5')
         print(fpath)
         dset['msk_train'] = emio.imread(fpath).astype('uint8')
-        fpath = os.path.join(dpath, info['dir'], 'msk_val.h5')
+        fpath = os.path.join(dpath, tag, info['dir'], 'msk_val.h5')
         print(fpath)
         dset['msk_val'] = emio.imread(fpath).astype('uint8')
     else:
