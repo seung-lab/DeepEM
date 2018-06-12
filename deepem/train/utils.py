@@ -75,7 +75,11 @@ def load_data(opt):
 
     # Validation
     val_data = {k: data[k] for k in opt.val_ids}
-    val_loader = Data(opt, val_data, is_train=False)
+    if opt.val_prob:
+        prob = dict(zip(opt.val_ids, opt.val_prob))
+    else:
+        prob = None
+    val_loader = Data(opt, val_data, is_train=False, prob=prob)
 
     return train_loader, val_loader
 

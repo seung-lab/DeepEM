@@ -32,6 +32,7 @@ class Options(object):
         self.parser.add_argument('--train_ids', type=str, default=[], nargs='+')
         self.parser.add_argument('--train_prob', type=float, default=None, nargs='+')
         self.parser.add_argument('--val_ids', type=str, default=[], nargs='+')
+        self.parser.add_argument('--val_prob', type=float, default=None, nargs='+')
         self.parser.add_argument('--pad_size', type=vec3, default=(0,0,0))
 
         # Training
@@ -117,6 +118,8 @@ class Options(object):
             raise ValueError("Train/validation IDs unspecified")
         if opt.train_prob:
             assert len(opt.train_ids) == len(opt.train_prob)
+        if opt.val_prob:
+            assert len(opt.val_ids) == len(opt.val_prob)
 
         # Optimizer
         if opt.optim == 'Adam':
