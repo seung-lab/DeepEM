@@ -45,14 +45,14 @@ basil_info = {
     'vol006':{
         'img': 'img.h5',
         'seg': 'seg.d10.b1.h5',
-        'msk': 'msk.d20.h5',
+        'msk': 'msk.d50.h5',
         'dir': 'mip0/padded_x512_y512_z32',
         'loc': True,
     },
     'vol008':{
         'img': 'img.h5',
         'seg': 'seg.d10.b1.h5',
-        'msk': 'msk.h5',
+        'msk': 'msk.d10.h5',
         'dir': 'mip0/padded_x512_y512_z32',
         'loc': True,
     },
