@@ -3,7 +3,7 @@ from __future__ import print_function
 from augmentor import *
 
 
-def get_augmentation(is_train, box=None, random=True, **kwargs):
+def get_augmentation(is_train, box=None, lost=True, random=True, **kwargs):
     # Mild misalignment
     m1 = Blend(
         [Misalign((0,10), margin=1), SlipMisalign((0,10), margin=1)],
@@ -57,12 +57,20 @@ def get_augmentation(is_train, box=None, random=True, **kwargs):
             prob=1, skip=0.3))
 
     # Missing section & misalignment
-    augs.append(Blend([
-        Compose([m1,m2,m3]),
-        MisalignPlusMissing((5,30), random=random),
-        missing,
-        lost
-    ]))
+    if lost:
+        augs.append(Blend([
+            Compose([m1,m2,m3]),
+            MisalignPlusMissing((5,30), random=random),
+            missing,
+            lost
+        ]))
+    else:
+        augs.append(Blend([
+            Compose([m1,m2,m3]),
+            MisalignPlusMissing((5,30), random=random),
+            missing,
+            lost
+        ]))
 
     # Out-of-focus
     augs.append(MixedBlurrySection(maxsec=7))

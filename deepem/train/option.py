@@ -82,6 +82,7 @@ class Options(object):
 
         # Data augmentation
         self.parser.add_argument('--box', default=None)
+        self.parser.add_argument('--lost', action='store_true')
         self.parser.add_argument('--random_fill', action='store_true')
         self.parser.add_argument('--skip_track', type=float, default=0.0)
 
@@ -165,6 +166,7 @@ class Options(object):
         # Data augmentation
         opt.aug_params = dict()
         opt.aug_params['box'] = opt.box
+        opt.aug_params['lost'] = opt.lost
         opt.aug_params['random'] = opt.random_fill
         opt.aug_params['skip_track'] = opt.skip_track
 
