@@ -64,13 +64,21 @@ class Options(object):
         # Onnx export
         self.parser.add_argument('--onnx', action='store_true')
 
-        # Cloud-volume
+        # Cloud-volume input
+        self.parser.add_argument('--gs_input', default='')
+        self.parser.add_argument('--in_mip', type=int, default=0)
+        self.parser.add_argument('--cache', action='store_true')
+        self.parser.add_argument('-b','--begin', type=vec3, default=(0,0,0))
+        self.parser.add_argument('-e','--end', type=vec3, default=None)
+        self.parser.add_argument('-s','--size', type=vec3, default=None)
+
+        # Cloud-volume output
         self.parser.add_argument('--gs_output', default='')
         self.parser.add_argument('-p','--parallel', action='store_true')
         self.parser.add_argument('-d','--downsample', action='store_true')
-        # self.parser.add_argument('--mip', type=int, default=0)
-        self.parser.add_argument('--resolution', type=vec3, default=(4,4,40))
-        self.parser.add_argument('--offset', type=vec3, default=(0,0,0))
+        self.parser.add_argument('-r','--resolution', type=vec3, default=(4,4,40))
+        self.parser.add_argument('-o','--offset', type=vec3, default=(0,0,0))
+        # self.parser.add_argument('--out_mip', type=int, default=0)
 
         self.initialized = True
 

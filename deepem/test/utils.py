@@ -33,19 +33,26 @@ def load_chkpt(model, fpath, chkpt_num):
     return model
 
 
-def make_forward_scanner(data_name, opt):
-    # Read an EM image.
-    if opt.dummy:
-        img = np.random.rand(*opt.dummy_inputsz[-3:]).astype('float32')
-    else:
-        fpath = os.path.join(opt.data_dir, data_name, opt.input_name)
-        img = emio.imread(fpath)
+def make_forward_scanner(opt, data_name=None):
+    # Cloud-volume
+    if opt.gs_input:
+        img = cv_utils.cutout(opt)
         img = (img/255.).astype('float32')
+    else:
+        assert data_name is not None
+        print(dname)        
+        # Read an EM image.
+        if opt.dummy:
+            img = np.random.rand(*opt.dummy_inputsz[-3:]).astype('float32')
+        else:
+            fpath = os.path.join(opt.data_dir, data_name, opt.input_name)
+            img = emio.imread(fpath)
+            img = (img/255.).astype('float32')
 
-    # Border mirroring
-    if opt.mirror:
-        pad_width = [(x//2,x//2) for x in opt.mirror]
-        img = np.pad(img, pad_width, 'reflect')
+        # Border mirroring
+        if opt.mirror:
+            pad_width = [(x//2,x//2) for x in opt.mirror]
+            img = np.pad(img, pad_width, 'reflect')
 
     # ForwardScanner
     dataset = Dataset(spec=opt.in_spec)

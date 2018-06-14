@@ -14,11 +14,16 @@ def test(opt):
 
     # Forward scan
     forward = Forward(opt)
-    for dname in opt.data_names:
-        print(dname)
-        scanner = make_forward_scanner(dname, opt)
+
+    if opt.gs_input:
+        scanner = make_forward_scanner(opt)
         output = forward(model, scanner)
         save_output(dname, output, opt)
+    else:
+        for dname in opt.data_names:            
+            scanner = make_forward_scanner(opt, dname=dname)
+            output = forward(model, scanner)
+            save_output(dname, output, opt)
 
 
 if __name__ == "__main__":
