@@ -49,9 +49,14 @@ def ingest(data, opt):
     data = data.transpose((3,2,1,0))
     num_channels = data.shape[-1]
     shape = data.shape[:-1]
+    if opt.gs_input and opt.in_mip > 0:
+        o = opt.offset
+        p = pow(2,opt.in_mip)
+        offset = (o[0]//p, o[1]//p, o[2])
+    else:
+        offset = opt.offset
     info = make_info(num_channels, 'image', str(data.dtype), shape,
-                     opt.resolution, offset=opt.offset,
-                     chunk_size=opt.chunk_size)
+                     opt.resolution, offset=offset, chunk_size=opt.chunk_size)
     print(info)
     if '{}' in opt.gs_output:
         coords = '_'.join(['{}-{}'.format(b,e) for b,e in zip(opt.begin,opt.end)])
