@@ -78,6 +78,7 @@ class Options(object):
         self.parser.add_argument('-d','--downsample', action='store_true')
         self.parser.add_argument('-r','--resolution', type=vec3, default=(4,4,40))
         self.parser.add_argument('-o','--offset', type=vec3, default=(0,0,0))
+        self.parser.add_argument('--chunk_size', type=vec3, default=(64,64,16))
         # self.parser.add_argument('--out_mip', type=int, default=0)
 
         self.initialized = True
