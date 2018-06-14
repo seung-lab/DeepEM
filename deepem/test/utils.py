@@ -40,7 +40,7 @@ def make_forward_scanner(opt, data_name=None):
         img = (img/255.).astype('float32')
     else:
         assert data_name is not None
-        print(dname)        
+        print(data_name)
         # Read an EM image.
         if opt.dummy:
             img = np.random.rand(*opt.dummy_inputsz[-3:]).astype('float32')
@@ -60,7 +60,7 @@ def make_forward_scanner(opt, data_name=None):
     return ForwardScanner(dataset, opt.scan_spec, **opt.scan_params)
 
 
-def save_output(data_name, output, opt):
+def save_output(output, opt, data_name=None):
     for k in output.data:
         data = output.get_data(k)
 

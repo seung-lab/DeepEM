@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import cloudvolume as cv
+from cloudvolume.lib import Vec, Bbox
 from taskqueue import LocalTaskQueue
 import igneous
 from igneous.task_creation import *
@@ -25,12 +26,16 @@ def cutout(opt, dtype='uint8'):
     # Cutout
     if not opt.end:
         assert opt.size is not None
-        end = tuple(x + y for x, y in zip(opt.begin, opt.size))
-        sl = [slice(x,y) for x, y in zip(opt.begin, opt.end)]
+        opt.end = tuple(x + y for x, y in zip(opt.begin, opt.size))
+    sl = [slice(x,y) for x, y in zip(opt.begin, opt.end)]
     print('begin = {}'.format(opt.begin))
-    print('size = {}'.format(opt.size))
     print('end = {}'.format(opt.end))
-    cutout = vol[sl]  # Download partial image (and cache).
+
+    # Coordinates
+    print('mip 0 = {}'.format(sl))
+    sl = cvol.slices_from_global_coords(sl)
+    print('mip {} = {}'.format(opt.in_mip, sl))
+    cutout = cvol[sl]
 
     # Transpose & squeeze
     cutout = cutout.transpose([3,2,1,0])
@@ -48,7 +53,12 @@ def ingest(data, opt):
                      opt.resolution, offset=opt.offset,
                      chunk_size=opt.chunk_size)
     print(info)
-    cvol = cv.CloudVolume(opt.gs_output, mip=0, info=info,
+    if '{}' in opt.gs_output:
+        coords = '_'.join(['{}-{}'.format(b,e) for b,e in zip(opt.begin,opt.end)])
+        gs_path = opt.gs_output.format(coords)
+    else:
+        gs_path = opt.gs_output
+    cvol = cv.CloudVolume(gs_path, mip=0, info=info,
                           parallel=opt.parallel)
     cvol[:,:,:,:] = data
     cvol.commit_info()
@@ -56,5 +66,5 @@ def ingest(data, opt):
     # Downsample
     if opt.downsample:
         with LocalTaskQueue(parallel=opt.parallel) as tq:
-            create_downsampling_tasks(tq, opt.gs_output, mip=0,
+            create_downsampling_tasks(tq, gs_path, mip=0,
                                       fill_missing=True)
