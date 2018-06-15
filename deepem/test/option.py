@@ -74,7 +74,7 @@ class Options(object):
 
         # Cloud-volume output
         self.parser.add_argument('--gs_output', default='')
-        self.parser.add_argument('-p','--parallel', action='store_true')
+        self.parser.add_argument('-p','--parallel', type=int, default=16)
         self.parser.add_argument('-d','--downsample', action='store_true')
         self.parser.add_argument('-r','--resolution', type=vec3, default=(4,4,40))
         self.parser.add_argument('-o','--offset', type=vec3, default=(0,0,0))
