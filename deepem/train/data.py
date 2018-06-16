@@ -50,7 +50,8 @@ class Data(object):
         # Data sampler
         mod = imp.load_source('sampler', opt.sampler)
         spec = mod.get_spec(opt.in_spec, opt.out_spec)
-        sampler = mod.Sampler(data, spec, is_train, aug, prob=prob)
+        sampler = mod.Sampler(data, spec, is_train, aug, prob=prob,
+                              recompute=opt.recompute)
 
         # Data loader
         size = (opt.max_iter - opt.chkpt_num) * opt.batch_size

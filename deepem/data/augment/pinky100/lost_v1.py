@@ -68,8 +68,7 @@ def get_augmentation(is_train, box=None, lost=True, random=True, **kwargs):
         augs.append(Blend([
             Compose([m1,m2,m3]),
             MisalignPlusMissing((5,30), random=random),
-            missing,
-            lost
+            missing
         ]))
 
     # Out-of-focus

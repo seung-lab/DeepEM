@@ -20,8 +20,10 @@ def get_spec(in_spec, out_spec):
 
 
 class Sampler(object):
-    def __init__(self, data, spec, is_train, aug=None, prob=None):
+    def __init__(self, data, spec, is_train, aug=None, prob=None,
+                 recompute=True):
         self.is_train = is_train
+        self.recompute = recompute
         self.build(data, spec, aug, prob)
 
     def __call__(self):
@@ -30,7 +32,8 @@ class Sampler(object):
 
     def postprocess(self, sample):
         assert('affinity' in sample)
-        sample['affinity'] = recompute_CC(sample['affinity'])
+        if self.recompute:
+            sample['affinity'] = recompute_CC(sample['affinity'])
         sample = Augment.to_tensor(sample)
         return self.to_float32(sample)
 
