@@ -6,7 +6,7 @@ import dataprovider3.emio as emio
 
 
 # Kasthuri11 dataset
-info = {
+data_info = {
     'AC3':{
         'img': 'img.h5',
         'seg': 'segb.h5',
@@ -26,16 +26,16 @@ info = {
 
 def load_data(data_dir, data_ids=None, **kwargs):
     if data_ids is None:
-        data_ids = info.keys()
+        data_ids = data_info.keys()
     data = dict()
     dpath = os.path.expanduser(data_dir)
     for data_id in data_ids:
-        info = info[data_id]
+        info = data_info[data_id]
         data[data_id] = load_dataset(dpath, data_id, info)
     return data
 
 
-def load_dataset(dpath, tag, info, border):
+def load_dataset(dpath, tag, info):
     dset = dict()
 
     # Image
