@@ -81,10 +81,16 @@ class Options(object):
         self.parser.add_argument('--fov', type=vec3, default=(20,256,256))
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--long_range', action='store_true')
+        self.parser.add_argument('--long_range2', action='store_true')
         self.parser.add_argument('--symmetric', action='store_true')
         self.parser.add_argument('--group', type=int, default=0)
 
         # Data augmentation
+        self.parser.add_argument('--grayscale', action='store_true')
+        self.parser.add_argument('--warping', action='store_true')
+        self.parser.add_argument('--misalign', action='store_true')
+        self.parser.add_argument('--missing', type=int, default=0)
+        self.parser.add_argument('--blur', type=int, default=0)
         self.parser.add_argument('--box', default=None)
         self.parser.add_argument('--lost', action='store_true')
         self.parser.add_argument('--random_fill', action='store_true')
