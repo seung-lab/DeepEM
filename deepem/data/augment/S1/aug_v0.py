@@ -5,26 +5,29 @@ from augmentor import *
 
 def get_augmentation(is_train, grayscale=False, warping=False, misalign=False,
                      missing=0, blur=0, random=True, **kwargs):
-    # Mild misalignment
-    m1 = Blend(
-        [Misalign((0,10), margin=1), SlipMisalign((0,10), margin=1)],
-        props=[0.7,0.3]
-    )
+    # Misalignment
+    if misalign:
+        # Mild misalignment
+        m1 = Blend(
+            [Misalign((0,10), margin=1), SlipMisalign((0,10), margin=1)],
+            props=[0.7,0.3]
+        )
 
-    # Medium misalignment
-    m2 = Blend(
-        [Misalign((0,20), margin=1), SlipMisalign((0,20), margin=1)],
-        props=[0.7,0.3]
-    )
+        # Medium misalignment
+        m2 = Blend(
+            [Misalign((0,20), margin=1), SlipMisalign((0,20), margin=1)],
+            props=[0.7,0.3]
+        )
 
-    # Large misalignment
-    m3 = Blend(
-        [Misalign((0,30), margin=1), SlipMisalign((0,30), margin=1)],
-        props=[0.7,0.3]
-    )
+        # Large misalignment
+        m3 = Blend(
+            [Misalign((0,30), margin=1), SlipMisalign((0,30), margin=1)],
+            props=[0.7,0.3]
+        )
 
     # Missing sections
-    m4 = MixedMissingSection(maxsec=missing, double=False, random=random)
+    if missing > 0:
+        m4 = MixedMissingSection(maxsec=missing, double=False, random=random)
 
     augs = list()
 
