@@ -19,8 +19,8 @@ class Options(object):
         self.parser.add_argument('--data_dir', required=True)
         self.parser.add_argument('--data',     required=True)
         self.parser.add_argument('--model',    required=True)
-        self.parser.add_argument('--augment',  required=True)
         self.parser.add_argument('--sampler',  required=True)
+        self.parser.add_argument('--augment',  default=None)
 
         # Sampler options
         self.parser.add_argument('--recompute', action='store_true')
