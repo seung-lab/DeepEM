@@ -115,7 +115,10 @@ class Options(object):
         opt = self.parser.parse_args()
 
         # Directories
-        opt.exp_dir = 'experiments/{}'.format(opt.exp_name)
+        if opt.exp_name.split('/')[0] == 'experiments':
+            opt.exp_dir = opt.exp_name
+        else:
+            opt.exp_dir = 'experiments/{}'.format(opt.exp_name)
         opt.log_dir = os.path.join(opt.exp_dir, 'logs')
         opt.model_dir = os.path.join(opt.exp_dir, 'models')
 
