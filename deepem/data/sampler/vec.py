@@ -18,8 +18,10 @@ def get_spec(in_spec, out_spec):
 
 
 class Sampler(object):
-    def __init__(self, data, spec, is_train, aug=None, prob=None):
+    def __init__(self, data, spec, is_train, aug=None, prob=None,
+                 recompute=False):
         self.is_train = is_train
+        self.recompute = recompute
         self.build(data, spec, aug, prob)
 
     def __call__(self):
@@ -27,8 +29,9 @@ class Sampler(object):
         return self.postprocess(sample)
 
     def postprocess(self, sample):
-        assert('embedding' in sample)
-        sample['embedding'] = recompute_CC(sample['embedding'])
+        assert 'embedding' in sample
+        if self.recompute:
+            sample['embedding'] = recompute_CC(sample['embedding'])
         sample = Augment.to_tensor(sample)
         return self.to_float32(sample)
 
@@ -66,5 +69,5 @@ class Sampler(object):
         key = 'msk_train' if self.is_train else 'msk_val'
         if key in data:
             return data[key]
-        assert('msk' in data)
+        assert 'msk' in data
         return data['msk']

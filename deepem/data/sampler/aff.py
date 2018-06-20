@@ -21,7 +21,7 @@ def get_spec(in_spec, out_spec):
 
 class Sampler(object):
     def __init__(self, data, spec, is_train, aug=None, prob=None,
-                 recompute=True):
+                 recompute=False):
         self.is_train = is_train
         self.recompute = recompute
         self.build(data, spec, aug, prob)
@@ -31,7 +31,7 @@ class Sampler(object):
         return self.postprocess(sample)
 
     def postprocess(self, sample):
-        assert('affinity' in sample)
+        assert 'affinity' in sample
         if self.recompute:
             sample['affinity'] = recompute_CC(sample['affinity'])
         sample = Augment.to_tensor(sample)
@@ -72,5 +72,5 @@ class Sampler(object):
         key = 'msk_train' if self.is_train else 'msk_val'
         if key in data:
             return data[key]
-        assert('msk' in data)
+        assert 'msk' in data
         return data['msk']
