@@ -19,8 +19,8 @@ class Options(object):
         self.parser.add_argument('--data_dir', required=True)
         self.parser.add_argument('--data',     required=True)
         self.parser.add_argument('--model',    required=True)
-        self.parser.add_argument('--augment',  required=True)
         self.parser.add_argument('--sampler',  required=True)
+        self.parser.add_argument('--augment',  default=None)
 
         # Sampler options
         self.parser.add_argument('--recompute', action='store_true')
@@ -85,6 +85,11 @@ class Options(object):
         self.parser.add_argument('--group', type=int, default=0)
 
         # Data augmentation
+        self.parser.add_argument('--grayscale', action='store_true')
+        self.parser.add_argument('--warping', action='store_true')
+        self.parser.add_argument('--misalign', action='store_true')
+        self.parser.add_argument('--missing', type=int, default=0)
+        self.parser.add_argument('--blur', type=int, default=0)
         self.parser.add_argument('--box', default=None)
         self.parser.add_argument('--lost', action='store_true')
         self.parser.add_argument('--random_fill', action='store_true')
@@ -110,7 +115,10 @@ class Options(object):
         opt = self.parser.parse_args()
 
         # Directories
-        opt.exp_dir = 'experiments/{}'.format(opt.exp_name)
+        if opt.exp_name.split('/')[0] == 'experiments':
+            opt.exp_dir = opt.exp_name
+        else:
+            opt.exp_dir = 'experiments/{}'.format(opt.exp_name)
         opt.log_dir = os.path.join(opt.exp_dir, 'logs')
         opt.model_dir = os.path.join(opt.exp_dir, 'models')
 
@@ -171,6 +179,11 @@ class Options(object):
 
         # Data augmentation
         opt.aug_params = dict()
+        opt.aug_params['grayscale'] = opt.grayscale
+        opt.aug_params['warping'] = opt.warping
+        opt.aug_params['misalign'] = opt.misalign
+        opt.aug_params['missing'] = opt.missing
+        opt.aug_params['blur'] = opt.blur
         opt.aug_params['box'] = opt.box
         opt.aug_params['lost'] = opt.lost
         opt.aug_params['random'] = opt.random_fill

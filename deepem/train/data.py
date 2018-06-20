@@ -44,8 +44,11 @@ class Data(object):
 
     def build(self, opt, data, is_train, prob):
         # Data augmentation
-        mod = imp.load_source('augment', opt.augment)
-        aug = mod.get_augmentation(is_train, **opt.aug_params)
+        if opt.augment:
+            mod = imp.load_source('augment', opt.augment)
+            aug = mod.get_augmentation(is_train, **opt.aug_params)
+        else:
+            aug = None
 
         # Data sampler
         mod = imp.load_source('sampler', opt.sampler)

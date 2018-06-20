@@ -52,7 +52,7 @@ class MSELoss(nn.Module):
     """
     Mean squared error loss with (or without) logits.
     """
-    def __init__(self, size_average=True, margin0=0, margin10=0, logits=True,
+    def __init__(self, size_average=True, margin0=0, margin1=0, logits=True,
                        **kwargs):
         super(MSELoss, self).__init__()
         self.mse = F.mse_loss
