@@ -68,7 +68,7 @@ class Options(object):
         self.parser.add_argument('--gs_input', default='')
         self.parser.add_argument('--in_mip', type=int, default=0)
         self.parser.add_argument('--cache', action='store_true')
-        self.parser.add_argument('-b','--begin', type=vec3, default=(0,0,0))
+        self.parser.add_argument('-b','--begin', type=vec3, default=None)
         self.parser.add_argument('-e','--end', type=vec3, default=None)
         self.parser.add_argument('-s','--size', type=vec3, default=None)
 

@@ -24,9 +24,14 @@ def cutout(opt, dtype='uint8'):
                           fill_missing=True, parallel=opt.parallel)
 
     # Cutout
+    offset0 = cvol.mip_voxel_offset(0)
+    if not opt.begin:
+        opt.begin = offset0
     if not opt.end:
-        assert opt.size is not None
-        opt.end = tuple(x + y for x, y in zip(opt.begin, opt.size))
+        if not opt.size:
+            opt.end = offset0 + cvol.mip_volume_size(0)
+        else:
+            opt.end = tuple(x + y for x, y in zip(opt.begin, opt.size))
     sl = [slice(x,y) for x, y in zip(opt.begin, opt.end)]
     print('begin = {}'.format(opt.begin))
     print('end = {}'.format(opt.end))
