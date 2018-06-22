@@ -3,8 +3,6 @@ from __future__ import print_function
 from augmentor import Augment
 from dataprovider3 import DataProvider, Dataset
 
-from deepem.data.sampler.utils import recompute_CC
-
 
 def get_spec(in_spec, out_spec):
     spec = dict()
@@ -20,10 +18,8 @@ def get_spec(in_spec, out_spec):
 
 
 class Sampler(object):
-    def __init__(self, data, spec, is_train, aug=None, prob=None,
-                 recompute=False):
+    def __init__(self, data, spec, is_train, aug=None, prob=None):
         self.is_train = is_train
-        self.recompute = recompute
         self.build(data, spec, aug, prob)
 
     def __call__(self):
@@ -32,8 +28,6 @@ class Sampler(object):
 
     def postprocess(self, sample):
         assert 'affinity' in sample
-        if self.recompute:
-            sample['affinity'] = recompute_CC(sample['affinity'])
         sample = Augment.to_tensor(sample)
         return self.to_float32(sample)
 

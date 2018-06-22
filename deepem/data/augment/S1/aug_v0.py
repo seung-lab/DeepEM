@@ -4,7 +4,7 @@ from augmentor import *
 
 
 def get_augmentation(is_train, grayscale=False, warping=False, misalign=False,
-                     missing=0, blur=0, random=True, **kwargs):
+                     missing=0, blur=0, random=True, recompute=False, **kwargs):
     # Misalignment
     if misalign:
         # Mild misalignment
@@ -30,6 +30,10 @@ def get_augmentation(is_train, grayscale=False, warping=False, misalign=False,
         m4 = MixedMissingSection(maxsec=missing, double=False, random=random)
 
     augs = list()
+
+    # Recompute connected components
+    if recompute:
+        augs.append(Label())
 
     # Grayscale
     if grayscale:
