@@ -43,6 +43,7 @@ class Sampler(object):
             dp.add_dataset(self.build_dataset(k, data[k]))
         dp.set_augment(aug)
         dp.set_imgs(['input'])
+        dp.set_segs(['affinity'])
         if prob:
             dp.set_sampling_weights(p=[prob[k] for k in keys])
         else:
