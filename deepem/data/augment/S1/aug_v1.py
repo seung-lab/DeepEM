@@ -48,7 +48,7 @@ def get_augmentation(is_train, grayscale=False, warping=False, misalign=False,
         elif box == 'fill':
             augs.append(
                 FillBox(dims=(10,50), margin=(1,10,10),
-                        density=0.3, skip=0.1)
+                        density=0.3, skip=0.1, random=random)
             )
 
     # Grayscale
