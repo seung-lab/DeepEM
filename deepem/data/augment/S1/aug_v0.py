@@ -27,7 +27,10 @@ def get_augmentation(is_train, grayscale=False, warping=False, misalign=False,
 
     # Missing sections
     if missing > 0:
-        m4 = MixedMissingSection(maxsec=missing, double=False, random=random)
+        m4 = Compose([
+            MixedMissingSection(maxsec=1, double=True, random=random),
+            MixedMissingSection(maxsec=missing, double=False, random=random)
+        ])
 
     augs = list()
 
