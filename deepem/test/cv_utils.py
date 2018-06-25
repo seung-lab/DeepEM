@@ -54,6 +54,8 @@ def ingest(data, opt):
     data = data.transpose((3,2,1,0))
     num_channels = data.shape[-1]
     shape = data.shape[:-1]
+    if opt.offset is None:
+        opt.offset = opt.begin
     if opt.gs_input and opt.in_mip > 0:
         o = opt.offset
         p = pow(2,opt.in_mip)
