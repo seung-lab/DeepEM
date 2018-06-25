@@ -3,7 +3,7 @@ from __future__ import print_function
 from augmentor import *
 
 
-def get_augmentation(is_train, box=None, **kwargs):
+def get_augmentation(is_train, box=None, recompute=False, **kwargs):
     # Mild misalignment
     m1 = Blend(
         [Misalign((0,5), margin=1), SlipMisalign((0,5), margin=1)],
@@ -26,6 +26,10 @@ def get_augmentation(is_train, box=None, **kwargs):
     ])
 
     augs = list()
+
+    # Recompute connected components
+    if recompute:
+        augs.append(Label())
 
     # Box
     if is_train:

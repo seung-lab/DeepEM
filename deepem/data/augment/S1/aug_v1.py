@@ -4,36 +4,53 @@ from augmentor import *
 
 
 def get_augmentation(is_train, grayscale=False, warping=False, misalign=False,
-                     missing=0, blur=0, random=True, recompute=False, **kwargs):
+                     missing=0, blur=0, random=True, recompute=False, box=None,
+                    **kwargs):
     # Misalignment
     if misalign:
         # Mild misalignment
         m1 = Blend(
-            [Misalign((0,10), margin=1), SlipMisalign((0,10), margin=1)],
-            props=[0.7,0.3]
+            [Misalign((0,10), margin=1), SlipMisalign((0,10), interp=True, margin=1)],
+            props=[0.5,0.5]
         )
 
         # Medium misalignment
         m2 = Blend(
-            [Misalign((0,20), margin=1), SlipMisalign((0,20), margin=1)],
-            props=[0.7,0.3]
+            [Misalign((0,20), margin=1), SlipMisalign((0,20), interp=True, margin=1)],
+            props=[0.5,0.5]
         )
 
         # Large misalignment
         m3 = Blend(
-            [Misalign((0,30), margin=1), SlipMisalign((0,30), margin=1)],
-            props=[0.7,0.3]
+            [Misalign((0,30), margin=1), SlipMisalign((0,30), interp=True, margin=1)],
+            props=[0.5,0.5]
         )
 
     # Missing sections
     if missing > 0:
-        m4 = MixedMissingSection(maxsec=missing, double=False, random=random)
+        m4 = Compose([
+            MixedMissingSection(maxsec=1, double=True, random=random),
+            MixedMissingSection(maxsec=missing, double=False, random=random)
+        ])
 
     augs = list()
 
     # Recompute connected components
     if recompute:
         augs.append(Label())
+
+    # Box
+    if is_train:
+        if box == 'noise':
+            augs.append(
+                NoiseBox(sigma=(1,3), dims=(10,50), margin=(1,10,10),
+                         density=0.3, skip=0.1)
+            )
+        elif box == 'fill':
+            augs.append(
+                FillBox(dims=(10,50), margin=(1,10,10),
+                        density=0.3, skip=0.1, random=random)
+            )
 
     # Grayscale
     if grayscale:

@@ -3,8 +3,6 @@ from __future__ import print_function
 from augmentor import Augment
 from dataprovider3 import DataProvider, Dataset
 
-from deepem.data.sampler.utils import recompute_CC
-
 
 def get_spec(in_spec, out_spec):
     spec = dict()
@@ -20,10 +18,8 @@ def get_spec(in_spec, out_spec):
 
 
 class Sampler(object):
-    def __init__(self, data, spec, is_train, aug=None, prob=None,
-                 recompute=True):
+    def __init__(self, data, spec, is_train, aug=None, prob=None):
         self.is_train = is_train
-        self.recompute = recompute
         self.build(data, spec, aug, prob)
 
     def __call__(self):
@@ -31,9 +27,7 @@ class Sampler(object):
         return self.postprocess(sample)
 
     def postprocess(self, sample):
-        assert('affinity' in sample)
-        if self.recompute:
-            sample['affinity'] = recompute_CC(sample['affinity'])
+        assert 'affinity' in sample
         sample = Augment.to_tensor(sample)
         return self.to_float32(sample)
 
@@ -49,6 +43,7 @@ class Sampler(object):
             dp.add_dataset(self.build_dataset(k, data[k]))
         dp.set_augment(aug)
         dp.set_imgs(['input'])
+        dp.set_segs(['affinity'])
         if prob:
             dp.set_sampling_weights(p=[prob[k] for k in keys])
         else:
@@ -72,5 +67,5 @@ class Sampler(object):
         key = 'msk_train' if self.is_train else 'msk_val'
         if key in data:
             return data[key]
-        assert('msk' in data)
+        assert 'msk' in data
         return data['msk']

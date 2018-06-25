@@ -22,9 +22,6 @@ class Options(object):
         self.parser.add_argument('--sampler',  required=True)
         self.parser.add_argument('--augment',  default=None)
 
-        # Sampler options
-        self.parser.add_argument('--recompute', action='store_true')
-
         # cuDNN auto-tuning
         self.parser.add_argument('--autotune', action='store_true')
 
@@ -85,6 +82,7 @@ class Options(object):
         self.parser.add_argument('--group', type=int, default=0)
 
         # Data augmentation
+        self.parser.add_argument('--recompute', action='store_true')
         self.parser.add_argument('--grayscale', action='store_true')
         self.parser.add_argument('--warping', action='store_true')
         self.parser.add_argument('--misalign', action='store_true')
@@ -179,6 +177,7 @@ class Options(object):
 
         # Data augmentation
         opt.aug_params = dict()
+        opt.aug_params['recompute'] = opt.recompute
         opt.aug_params['grayscale'] = opt.grayscale
         opt.aug_params['warping'] = opt.warping
         opt.aug_params['misalign'] = opt.misalign
