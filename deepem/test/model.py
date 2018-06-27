@@ -23,8 +23,11 @@ class Model(nn.Module):
         preds = self.model(*inputs)
         outputs = dict()
         for k, x in preds.items():
-            if k == 'embedding' and self.vec2aff:
-                outputs[k] = torch_utils.vec2aff(x)
+            if k == 'embedding':
+                if self.vec2aff:
+                    outputs[k] = torch_utils.vec2aff(x)
+                else:
+                    outputs[k] = x
             else:
                 outputs[k] = F.sigmoid(x)
         return outputs
