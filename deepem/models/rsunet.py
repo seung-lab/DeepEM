@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 
 import emvision
+
 from deepem.models.layers import Conv, Scale
 
 
