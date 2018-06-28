@@ -70,6 +70,7 @@ class Options(object):
         self.parser.add_argument('--cache', action='store_true')
         self.parser.add_argument('-b','--begin', type=vec3, default=None)
         self.parser.add_argument('-e','--end', type=vec3, default=None)
+        self.parser.add_argument('-c','--center', type=vec3, default=None)
         self.parser.add_argument('-s','--size', type=vec3, default=None)
 
         # Cloud-volume output
