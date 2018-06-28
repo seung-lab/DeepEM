@@ -5,7 +5,7 @@ import torch.nn as nn
 
 import emvision
 from emvision.models.layers import BilinearUp
-from deepem.models.layers import Conv
+from deepem.models.layers import Conv, Scale
 
 
 def create_model(opt):
@@ -30,9 +30,15 @@ class OutputBlock(nn.Module):
         super(OutputBlock, self).__init__()
         for k, v in out_spec.items():
             out_channels = v[-4]
-            self.add_module(k, nn.Sequential(
-                Conv(in_channels, out_channels, kernel_size, bias=True)
-            ))
+            if k == 'embedding':
+                self.add_module(k, nn.Sequential(
+                    Conv(in_channels, out_channels, kernel_size, bias=True),
+                    Scale()
+                ))
+            else:
+                self.add_module(k, nn.Sequential(
+                    Conv(in_channels, out_channels, kernel_size, bias=True)
+                ))
         self.is_onnx = is_onnx
 
     def forward(self, x):
