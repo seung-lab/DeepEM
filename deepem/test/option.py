@@ -45,7 +45,7 @@ class Options(object):
 
         # Metric learning
         self.parser.add_argument('--vec', type=int, default=0)
-        self.parser.add_argument('--vec2aff', action='store_true')
+        self.parser.add_argument('--vec_to', default=None)
 
         # Forward scanning
         self.parser.add_argument('--out_prefix', default='')
@@ -116,7 +116,7 @@ class Options(object):
         # Scan spec
         opt.scan_spec = dict()
         if opt.vec > 0:
-            dim = 3 if opt.vec2aff else opt.vec
+            dim = 3 if opt.vec_to else opt.vec
             opt.scan_spec['embedding'] = (dim,) + opt.outputsz
         else:
             if opt.aff > 0:

@@ -16,7 +16,7 @@ class Model(nn.Module):
         self.model = model
         self.in_spec = dict(opt.in_spec)
         self.pretrain = opt.pretrain
-        self.vec2aff = opt.vec2aff
+        self.vec_to = opt.vec_to
 
     def forward(self, sample):
         inputs = [sample[k] for k in sorted(self.in_spec)]
@@ -24,8 +24,10 @@ class Model(nn.Module):
         outputs = dict()
         for k, x in preds.items():
             if k == 'embedding':
-                if self.vec2aff:
+                if self.vec_to == 'aff':
                     outputs[k] = torch_utils.vec2aff(x)
+                elif self.vec_to == 'pca':
+                    outputs[k] = torch_utils.vec2pca(x)
                 else:
                     outputs[k] = x
             else:
