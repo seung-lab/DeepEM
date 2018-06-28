@@ -92,6 +92,7 @@ def vec2aff(v):
 
 def vec2pca(v):
     assert v.ndimension() == 5
-    pca = py_utils.fit_pca(v)
-    vec = py_utils.pca_scale_vec(v, pca)
+    vec = v.cpu().numpy()
+    pca = py_utils.fit_pca(vec)
+    vec = py_utils.pca_scale_vec(vec, pca)
     return torch.from_numpy(vec)
