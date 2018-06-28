@@ -75,6 +75,7 @@ def affinity(v1, v2, dim=-4, keepdims=True):
     d2 = torch.sum((v1 - v2)**2, dim=dim, keepdim=keepdims)
     return torch.exp(-d2)
 
+
 def vec2aff(v):
     assert(v.ndimension() >= 4)
     x = affinity(*(get_pair(v, (0,0,1))))
