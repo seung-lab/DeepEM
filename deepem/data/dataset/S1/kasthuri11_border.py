@@ -21,6 +21,14 @@ data_info = {
         'dir': 'AC4/mip0/padded_x512_y512_z32',
         'loc': True,
     },
+    'SNEMI3D':{
+        'img': 'img.h5',
+        'seg': 'SNEMI3D_segb.h5',
+        'msk': 'msk.h5',
+        'mye': 'mye.h5',
+        'dir': 'AC4/mip0/padded_x512_y512_z32',
+        'loc': True,
+    },
 }
 
 
