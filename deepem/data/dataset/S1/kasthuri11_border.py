@@ -59,7 +59,7 @@ def load_dataset(dpath, tag, info):
     dset['seg'] = seg
 
     # Train mask
-    if tag == 'AC4':
+    if tag == 'AC4' or tag == 'SNEMI3D':
         fpath = os.path.join(dpath, info['dir'], 'msk_train.h5')
         print(fpath)
         dset['msk_train'] = emio.imread(fpath).astype('uint8')
