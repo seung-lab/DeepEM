@@ -97,6 +97,7 @@ class Options(object):
         self.parser.add_argument('--aff', type=float, default=0)
         self.parser.add_argument('--psd', type=float, default=0)
         self.parser.add_argument('--mit', type=float, default=0)
+        self.parser.add_argument('--mye', type=float, default=0)
 
         # Metric learning
         self.parser.add_argument('--vec', type=float, default=0)
@@ -159,18 +160,22 @@ class Options(object):
         if opt.vec > 0:
             opt.out_spec['embedding'] = (opt.embed_dim,) + opt.outputsz
             opt.loss_weight['embedding'] = opt.vec
-        else:
-            if opt.aff > 0:
-                opt.out_spec['affinity'] = (len(opt.edges),) + opt.outputsz
-                opt.loss_weight['affinity'] = opt.aff
 
-            if opt.psd > 0:
-                opt.out_spec['synapse'] = (1,) + opt.outputsz
-                opt.loss_weight['synapse'] = opt.psd
+        if opt.aff > 0:
+            opt.out_spec['affinity'] = (len(opt.edges),) + opt.outputsz
+            opt.loss_weight['affinity'] = opt.aff
 
-            if opt.mit > 0:
-                opt.out_spec['mitochondria'] = (1,) + opt.outputsz
-                opt.loss_weight['mitochondria'] = opt.mit
+        if opt.psd > 0:
+            opt.out_spec['synapse'] = (1,) + opt.outputsz
+            opt.loss_weight['synapse'] = opt.psd
+
+        if opt.mit > 0:
+            opt.out_spec['mitochondria'] = (1,) + opt.outputsz
+            opt.loss_weight['mitochondria'] = opt.mit
+
+        if opt.mye > 0:
+            opt.out_spec['myelin'] = (1,) + opt.outputsz
+            opt.loss_weight['myelin'] = opt.mye
 
         assert len(opt.out_spec) > 0
         assert len(opt.out_spec) == len(opt.loss_weight)
@@ -193,6 +198,7 @@ class Options(object):
         opt.data_params['seg'] = opt.aff > 0 or opt.vec > 0
         opt.data_params['psd'] = opt.psd > 0
         opt.data_params['mit'] = opt.mit > 0
+        opt.data_params['mye'] = opt.mye > 0
         opt.data_params['pad_size'] = opt.pad_size
         assert(len(opt.pad_size) == 3 and all(x >= 0 for x in opt.pad_size))
 

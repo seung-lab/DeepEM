@@ -11,6 +11,7 @@ data_info = {
         'img': 'img.h5',
         'seg': 'segb.h5',
         'msk': 'msk.h5',
+        'mye': 'mye.h5',
         'dir': 'AC3/mip0/padded_x512_y512_z32',
         'loc': True,
     },
@@ -32,18 +33,18 @@ data_info = {
 }
 
 
-def load_data(data_dir, data_ids=None, **kwargs):
+def load_data(data_dir, data_ids=None, mye=False, **kwargs):
     if data_ids is None:
         data_ids = data_info.keys()
     data = dict()
     dpath = os.path.expanduser(data_dir)
     for data_id in data_ids:
         info = data_info[data_id]
-        data[data_id] = load_dataset(dpath, data_id, info)
+        data[data_id] = load_dataset(dpath, data_id, info, mye=mye)
     return data
 
 
-def load_dataset(dpath, tag, info):
+def load_dataset(dpath, tag, info, mye=False):
     dset = dict()
 
     # Image
@@ -57,6 +58,13 @@ def load_dataset(dpath, tag, info):
     print(fpath)
     seg = emio.imread(fpath).astype('uint32')
     dset['seg'] = seg
+
+    # Myelin
+    if mye:
+        fpath = os.path.join(dpath, info['dir'], info['mye'])
+        print(fpath)
+        mye = emio.imread(fpath).astype('uint8')
+        dset['mye'] = mye
 
     # Train mask
     if tag == 'AC4' or tag == 'SNEMI3D':
