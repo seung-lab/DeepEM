@@ -63,7 +63,7 @@ def load_dataset(dpath, tag, info, mye=False):
     if mye:
         fpath = os.path.join(dpath, info['dir'], info['mye'])
         print(fpath)
-        mye = emio.imread(fpath).astype('uint8')
+        mye = emio.imread(fpath).astype('float32')
         dset['mye'] = mye
 
     # Train mask

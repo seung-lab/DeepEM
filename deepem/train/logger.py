@@ -103,6 +103,11 @@ class Logger(object):
                 tag = '{}/labels/{}'.format(phase, k)
                 tensor = sample[k][0,...]
                 self.log_image(tag, tensor, iter_num)
+            elif k == 'myelin':
+                # Prediction
+                tag = '{}/images/{}'.format(phase, k)
+                tensor = F.sigmoid(preds[k].data[0,...])
+                self.log_image(tag, tensor, iter_num)
             elif k == 'embedding':
                 vec = preds[k][0,...]
 
