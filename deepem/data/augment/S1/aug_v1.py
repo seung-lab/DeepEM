@@ -5,7 +5,7 @@ from augmentor import *
 
 def get_augmentation(is_train, grayscale=False, warping=False, misalign=False,
                      missing=0, blur=0, random=True, recompute=False, box=None,
-                     flip=True, **kwargs):
+                     flip=False, **kwargs):
     # Misalignment
     if misalign:
         # Mild misalignment
