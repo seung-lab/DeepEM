@@ -97,7 +97,7 @@ class Logger(object):
             elif k == 'synapse' or k == 'mitochondria':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
-                tensor = F.sigmoid(preds[k].data[0,...])
+                tensor = F.sigmoid(preds[k][0,...])
                 self.log_image(tag, tensor, iter_num)
                 # Target
                 tag = '{}/labels/{}'.format(phase, k)
@@ -106,7 +106,7 @@ class Logger(object):
             elif k == 'myelin':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
-                tensor = F.sigmoid(preds[k].data[0,...])
+                tensor = F.sigmoid(preds[k][0,...])
                 self.log_image(tag, tensor, iter_num)
             elif k == 'embedding':
                 vec = preds[k][0,...]
