@@ -16,6 +16,8 @@ class BlendLoss(nn.Module):
 
     def forward(self, x, label, mask):
         if np.random.rand() > 0.5:
+            print("EdgeLoss")
             return self.edge(x, label, mask)
         else:
+            print("MeanLoss")
             return self.mean(x, label, mask)
