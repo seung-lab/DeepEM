@@ -58,6 +58,7 @@ class Options(object):
 
         # Metric learning
         self.parser.add_argument('--metric_loss', default='EdgeLoss')
+        self.parser.add_argument('--blending_prop', type=float, default=0.5)
 
         # Edge-based loss
         self.parser.add_argument('--max_edges', type=vec3, default=[(5,32,32)], nargs='+')
@@ -160,16 +161,18 @@ class Options(object):
 
         # Metric loss
         opt.metric_params = dict()
-        # Edge loss
+        # EdgeLoss
         opt.metric_params['max_edges'] = opt.max_edges
         opt.metric_params['n_edge'] = opt.n_edge
         opt.metric_params['size_average'] = opt.size_average
-        # Mean loss
+        # MeanLoss
         opt.metric_params['alpha'] = opt.alpha
         opt.metric_params['beta'] = opt.beta
         opt.metric_params['gamma'] = opt.gamma
         opt.metric_params['delta_v'] = opt.delta_v
         opt.metric_params['delta_d'] = opt.delta_d
+        # BlendLoss
+        opt.metric_params['blending_prop'] = opt.blending_prop
 
         # Model
         opt.fov = tuple(opt.fov)
