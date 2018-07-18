@@ -84,7 +84,7 @@ class EdgeCRF(nn.Module):
 
 class EdgeLoss(nn.Module):
     def __init__(self, max_edges=[(5,32,32)], n_edge=32, edges=[],
-                       size_average=False):
+                 size_average=False, **kwargs):
         super(EdgeLoss, self).__init__()
         self.sampler = EdgeSampler(max_edges=max_edges, edges=edges)
         self.n_edge = max(n_edge, 0)

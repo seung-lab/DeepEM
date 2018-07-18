@@ -7,7 +7,7 @@ import torch.nn as nn
 
 class MeanLoss(nn.Module):
     def __init__(self, alpha=1.0, beta=1.0, gamma=0.001, delta_v=0.0,
-                       delta_d=1.5):
+                 delta_d=1.5, **kwargs):
         super(MeanLoss, self).__init__()
         self.alpha = alpha
         self.beta = beta
@@ -15,36 +15,41 @@ class MeanLoss(nn.Module):
         self.delta_v = delta_v  # variance (intra-cluster pull force) hinge
         self.delta_d = delta_d  # distance (inter-cluster push force) hinge
 
-    def forward(self, x, objs):
+    def forward(self, x, objs, msks):
         objs = objs.type(torch.cuda.IntTensor)
+        msks = (msks > 0).type(torch.cuda.IntTensor)
+        objs *= msks
         assert objs.type() == 'torch.cuda.IntTensor'
 
         ids = self.unique_ids(objs)
         idm = dict([(x,i) for i, x in enumerate(ids)])
 
-        vecs = self.generate_vecs(x, objs, ids)
+        vecs = self.generate_vecs(x, objs, msks, ids)
         means = self.generate_means(vecs)
         weights = self.generate_weights(vecs)
+
+        # Dummny nmsk
+        nmsk = torch.tensor([1]).type(torch.cuda.FloatTensor)
 
         # Compute loss
         loss_int = self.compute_loss_int(vecs, means, weights)
         loss_ext = self.compute_loss_ext(means, weights)
         loss_nrm = self.compute_loss_nrm(means)
-        loss = (self.alpha * loss_int) +
-               (self.beta * loss_ext)  +
+        loss = (self.alpha * loss_int) + \
+               (self.beta  * loss_ext) + \
                (self.gamma * loss_nrm)
-        return loss
+        return loss, nmsk
 
     def unique_ids(self, objs):
         ids = np.unique(objs.cpu().numpy())
         return ids[ids != 0]
 
-    def generate_vecs(self, embedding, objs, ids):
+    def generate_vecs(self, embedding, objs, msks, ids):
         vecs = list()
         for i, obj_id in enumerate(ids):
             obj = torch.nonzero(objs == int(obj_id))
             z, y, x = obj[:,-3], obj[:,-2], obj[:,-1]
-            vec = embedding[0,:,z,y,x].transpose(0,1)  # C x D
+            vec = embedding[0,:,z,y,x].transpose(0,1)  # Cnt x Dim
             vecs.append(vec)
         return vecs
 
@@ -55,7 +60,7 @@ class MeanLoss(nn.Module):
         return [torch.mean(v, dim=0) for v in vecs]
 
     def compute_loss_int(self, vecs, means, weights):
-        zero = lambda: torch.zeros(1).type(torch.cuda.FloatTensor)
+        zero = lambda: torch.zeros(1).type(torch.cuda.FloatTensor).squeeze()
         loss = zero()
 
         if len(vecs) > 0:
@@ -67,14 +72,14 @@ class MeanLoss(nn.Module):
         return loss
 
     def compute_loss_ext(self, means, weights):
-        zero = lambda: torch.zeros(1).type(torch.cuda.FloatTensor)
+        zero = lambda: torch.zeros(1).type(torch.cuda.FloatTensor).squeeze()
         loss = zero()
 
         C = len(means)
         if C > 1:
             ms = torch.stack(means)
-            m1 = ms.unsqueeze(0)  # 1 x C x D
-            m2 = ms.unsqueeze(1)  # C x 1 x D
+            m1 = ms.unsqueeze(0)  # 1 x Cnt x Dim
+            m2 = ms.unsqueeze(1)  # Cnt x 1 x Dim
 
             margin = 2 * self.delta_d - torch.norm(m2 - m1, p=1, dim=2)
             margin = margin[1 - torch.eye(C).type(torch.cuda.ByteTensor)]
