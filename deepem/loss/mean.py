@@ -6,13 +6,14 @@ import torch.nn as nn
 
 
 class MeanLoss(nn.Module):
-    def __init__(self, loss_weight, delta_v=0.0, delta_d=1.5, gamma=0.001):
+    def __init__(self, alpha=1.0, beta=1.0, gamma=0.001, delta_v=0.0,
+                       delta_d=1.5):
         super(MeanLoss, self).__init__()
-        assert len(loss_weight) == 2
-        self.loss_weight = tuple(loss_weight)
+        self.alpha = alpha
+        self.beta = beta
+        self.gamma = gamma
         self.delta_v = delta_v  # variance (intra-cluster pull force) hinge
         self.delta_d = delta_d  # distance (inter-cluster push force) hinge
-        self.gamma = gamma
 
     def forward(self, x, objs):
         objs = objs.type(torch.cuda.IntTensor)
@@ -29,8 +30,9 @@ class MeanLoss(nn.Module):
         loss_int = self.compute_loss_int(vecs, means, weights)
         loss_ext = self.compute_loss_ext(means, weights)
         loss_nrm = self.compute_loss_nrm(means)
-        w_int, w_ext = self.loss_weight
-        loss = (w_int * loss_int) + (w_ext * loss_ext) + (self.gamma * loss_nrm)
+        loss = (self.alpha * loss_int) +
+               (self.beta * loss_ext)  +
+               (self.gamma * loss_nrm)
         return loss
 
     def unique_ids(self, objs):

@@ -56,9 +56,19 @@ class Options(object):
         self.parser.add_argument('--class_balancing', action='store_true')
         self.parser.add_argument('--no_logits', action='store_true')
 
+        # Metric learning
+        self.parser.add_argument('--metric_loss', default='EdgeLoss')
+
         # Edge-based loss
         self.parser.add_argument('--max_edges', type=vec3, default=[(5,32,32)], nargs='+')
         self.parser.add_argument('--n_edge', type=int, default=32)
+
+        # Mean-based loss
+        self.parser.add_argument('--alpha', type=float, default=1.0)
+        self.parser.add_argument('--beta', type=float, default=1.0)
+        self.parser.add_argument('--gamma', type=float, default=0.001)
+        self.parser.add_argument('--delta_v', type=float, default=0.0)
+        self.parser.add_argument('--delta_d', type=float, default=1.5)
 
         # Optimizer
         self.parser.add_argument('--optim', default='Adam')
@@ -147,6 +157,21 @@ class Options(object):
         opt.loss_params['margin1'] = opt.margin1
         opt.loss_params['inverse'] = opt.inverse
         opt.loss_params['logits'] = not opt.no_logits
+
+        # Metric loss
+        opt.metric_params = dict()
+        if opt.metric_loss == 'EdgeLoss':
+            opt.metric_params['max_edges'] = opt.max_edges
+            opt.metric_params['n_edge'] = opt.n_edge
+            opt.metric_params['size_average'] = opt.size_average
+        elif opt.metric_loss == 'MeanLoss':
+            opt.metric_params['alpha'] = opt.alpha
+            opt.metric_params['beta'] = opt.beta
+            opt.metric_params['gamma'] = opt.gamma
+            opt.metric_params['delta_v'] = opt.delta_v
+            opt.metric_params['delta_d'] = opt.delta_d
+        else:
+            raise ValueError("Unknown metric loss: " + opt.metric_loss)
 
         # Model
         opt.fov = tuple(opt.fov)

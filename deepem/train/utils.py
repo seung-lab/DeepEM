@@ -22,13 +22,7 @@ def get_criteria(opt):
                 class_balancing=opt.class_balancing
             )
         elif k == 'embedding':
-            # Edge loss
-            criteria[k] = loss.EdgeLoss(
-                opt.max_edges,
-                n_edge=opt.n_edge,
-                edges=[],
-                size_average=opt.size_average
-            )
+            criteria[k] = getattr(loss, opt.metric_loss)(**opt.metric_params)
         else:
             criteria[k] = getattr(loss, opt.loss)(**opt.loss_params)
     return criteria
