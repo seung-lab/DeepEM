@@ -89,7 +89,7 @@ class Logger(object):
 
         # Outputs
         for k  in sorted(self.out_spec):
-            if k == 'affinity':
+            if k == 'affinity_graph':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
                 tensor = F.sigmoid(preds[k][0,0:3,...])
@@ -111,23 +111,8 @@ class Logger(object):
             elif k == 'embedding':
                 vec = preds[k][0,...]
 
-                # # x-affinity
-                # tag = '{}/images/x-affinity'.format(phase)
-                # aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,0,1))))
-                # self.log_image(tag, aff, iter_num)
-                #
-                # # y-affinity
-                # tag = '{}/images/y-affinity'.format(phase)
-                # aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (0,1,0))))
-                # self.log_image(tag, aff, iter_num)
-                #
-                # # z-affinity
-                # tag = '{}/images/z-affinity'.format(phase)
-                # aff = torch_utils.affinity(*(torch_utils.get_pair(vec, (1,0,0))))
-                # self.log_image(tag, aff, iter_num)
-
                 # nearest neighbor affinity
-                tag = '{}/images/affinity'.format(phase)
+                tag = '{}/images/metric_graph'.format(phase)
                 aff = torch_utils.vec2aff(vec)
                 self.log_image(tag, aff, iter_num)
 
