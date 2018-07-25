@@ -89,9 +89,9 @@ class Logger(object):
 
         # Outputs
         for k  in sorted(self.out_spec):
-            if k == 'affinity_graph':
+            if k == 'affinity':
                 # Prediction
-                tag = '{}/images/{}'.format(phase, k)
+                tag = '{}/images/affinity_graph'.format(phase)
                 tensor = F.sigmoid(preds[k][0,0:3,...])
                 self.log_image(tag, tensor, iter_num)
             elif k == 'synapse' or k == 'mitochondria':
