@@ -42,10 +42,11 @@ class Options(object):
         self.parser.add_argument('--aff', type=int, default=0)
         self.parser.add_argument('--psd', action='store_true')
         self.parser.add_argument('--mit', action='store_true')
+        self.parser.add_argument('--mye', action='store_true')
 
         # Metric learning
         self.parser.add_argument('--vec', type=int, default=0)
-        self.parser.add_argument('--vec_to', default=None)
+        self.parser.add_argument('--vec_to', default=None)  # 'aff' or 'pca'
 
         # Forward scanning
         self.parser.add_argument('--out_prefix', default='')
@@ -98,20 +99,20 @@ class Options(object):
 
         # Model spec
         opt.fov = tuple(opt.fov)
-        #default -> copy opt.fov
         opt.inputsz = opt.fov if opt.inputsz is None else opt.inputsz
         opt.outputsz = opt.fov if opt.outputsz is None else opt.outputsz
         opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.out_spec = dict()
         if opt.vec > 0:
             opt.out_spec['embedding'] = (opt.vec,) + opt.outputsz
-        else:
-            if opt.aff > 0:
-                opt.out_spec['affinity'] = (opt.aff,) + opt.outputsz
-            if opt.psd:
-                opt.out_spec['synapse'] = (1,) + opt.outputsz
-            if opt.mit:
-                opt.out_spec['mitochondria'] = (1,) + opt.outputsz
+        if opt.aff > 0:
+            opt.out_spec['affinity'] = (opt.aff,) + opt.outputsz
+        if opt.psd:
+            opt.out_spec['synapse'] = (1,) + opt.outputsz
+        if opt.mit:
+            opt.out_spec['mitochondria'] = (1,) + opt.outputsz
+        if opt.mye:
+            opt.out_spec['myelin'] = (1,) + opt.outputsz
         assert(len(opt.out_spec) > 0)
 
         # Scan spec
@@ -119,13 +120,14 @@ class Options(object):
         if opt.vec > 0:
             dim = 3 if opt.vec_to else opt.vec
             opt.scan_spec['embedding'] = (dim,) + opt.outputsz
-        else:
-            if opt.aff > 0:
-                opt.scan_spec['affinity'] = (3,) + opt.outputsz
-            if opt.psd:
-                opt.scan_spec['synapse'] = (1,) + opt.outputsz
-            if opt.mit:
-                opt.scan_spec['mitochondria'] = (1,) + opt.outputsz
+        if opt.aff > 0:
+            opt.scan_spec['affinity'] = (3,) + opt.outputsz
+        if opt.psd:
+            opt.scan_spec['synapse'] = (1,) + opt.outputsz
+        if opt.mit:
+            opt.scan_spec['mitochondria'] = (1,) + opt.outputsz
+        if opt.mye:
+            opt.scan_spec['myelin'] = (1,) + opt.outputsz
         stride = self.get_stride(opt.outputsz, opt.overlap)
         opt.scan_params = dict(stride=stride, blend=opt.blend)
 
