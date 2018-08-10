@@ -56,9 +56,20 @@ class Options(object):
         self.parser.add_argument('--class_balancing', action='store_true')
         self.parser.add_argument('--no_logits', action='store_true')
 
+        # Metric learning
+        self.parser.add_argument('--metric_loss', default='EdgeLoss')
+        self.parser.add_argument('--blending_prop', type=float, default=0.5)
+
         # Edge-based loss
         self.parser.add_argument('--max_edges', type=vec3, default=[(5,32,32)], nargs='+')
         self.parser.add_argument('--n_edge', type=int, default=32)
+
+        # Mean-based loss
+        self.parser.add_argument('--alpha', type=float, default=1.0)
+        self.parser.add_argument('--beta', type=float, default=1.0)
+        self.parser.add_argument('--gamma', type=float, default=0.001)
+        self.parser.add_argument('--delta_v', type=float, default=0.0)
+        self.parser.add_argument('--delta_d', type=float, default=1.5)
 
         # Optimizer
         self.parser.add_argument('--optim', default='Adam')
@@ -83,6 +94,7 @@ class Options(object):
 
         # Data augmentation
         self.parser.add_argument('--recompute', action='store_true')
+        self.parser.add_argument('--flip', action='store_true')
         self.parser.add_argument('--grayscale', action='store_true')
         self.parser.add_argument('--warping', action='store_true')
         self.parser.add_argument('--misalign', action='store_true')
@@ -97,6 +109,7 @@ class Options(object):
         self.parser.add_argument('--aff', type=float, default=0)
         self.parser.add_argument('--psd', type=float, default=0)
         self.parser.add_argument('--mit', type=float, default=0)
+        self.parser.add_argument('--mye', type=float, default=0)
 
         # Metric learning
         self.parser.add_argument('--vec', type=float, default=0)
@@ -146,6 +159,21 @@ class Options(object):
         opt.loss_params['inverse'] = opt.inverse
         opt.loss_params['logits'] = not opt.no_logits
 
+        # Metric loss
+        opt.metric_params = dict()
+        # EdgeLoss
+        opt.metric_params['max_edges'] = opt.max_edges
+        opt.metric_params['n_edge'] = opt.n_edge
+        opt.metric_params['size_average'] = opt.size_average
+        # MeanLoss
+        opt.metric_params['alpha'] = opt.alpha
+        opt.metric_params['beta'] = opt.beta
+        opt.metric_params['gamma'] = opt.gamma
+        opt.metric_params['delta_v'] = opt.delta_v
+        opt.metric_params['delta_d'] = opt.delta_d
+        # BlendLoss
+        opt.metric_params['blending_prop'] = opt.blending_prop
+
         # Model
         opt.fov = tuple(opt.fov)
         #defaults -> copy fov
@@ -159,18 +187,22 @@ class Options(object):
         if opt.vec > 0:
             opt.out_spec['embedding'] = (opt.embed_dim,) + opt.outputsz
             opt.loss_weight['embedding'] = opt.vec
-        else:
-            if opt.aff > 0:
-                opt.out_spec['affinity'] = (len(opt.edges),) + opt.outputsz
-                opt.loss_weight['affinity'] = opt.aff
 
-            if opt.psd > 0:
-                opt.out_spec['synapse'] = (1,) + opt.outputsz
-                opt.loss_weight['synapse'] = opt.psd
+        if opt.aff > 0:
+            opt.out_spec['affinity'] = (len(opt.edges),) + opt.outputsz
+            opt.loss_weight['affinity'] = opt.aff
 
-            if opt.mit > 0:
-                opt.out_spec['mitochondria'] = (1,) + opt.outputsz
-                opt.loss_weight['mitochondria'] = opt.mit
+        if opt.psd > 0:
+            opt.out_spec['synapse'] = (1,) + opt.outputsz
+            opt.loss_weight['synapse'] = opt.psd
+
+        if opt.mit > 0:
+            opt.out_spec['mitochondria'] = (1,) + opt.outputsz
+            opt.loss_weight['mitochondria'] = opt.mit
+
+        if opt.mye > 0:
+            opt.out_spec['myelin'] = (1,) + opt.outputsz
+            opt.loss_weight['myelin'] = opt.mye
 
         assert len(opt.out_spec) > 0
         assert len(opt.out_spec) == len(opt.loss_weight)
@@ -178,6 +210,7 @@ class Options(object):
         # Data augmentation
         opt.aug_params = dict()
         opt.aug_params['recompute'] = opt.recompute
+        opt.aug_params['flip'] = opt.flip
         opt.aug_params['grayscale'] = opt.grayscale
         opt.aug_params['warping'] = opt.warping
         opt.aug_params['misalign'] = opt.misalign
@@ -193,6 +226,7 @@ class Options(object):
         opt.data_params['seg'] = opt.aff > 0 or opt.vec > 0
         opt.data_params['psd'] = opt.psd > 0
         opt.data_params['mit'] = opt.mit > 0
+        opt.data_params['mye'] = opt.mye > 0
         opt.data_params['pad_size'] = opt.pad_size
         assert(len(opt.pad_size) == 3 and all(x >= 0 for x in opt.pad_size))
 
