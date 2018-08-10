@@ -166,6 +166,7 @@ class Options(object):
         opt.metric_params['n_edge'] = opt.n_edge
         opt.metric_params['size_average'] = opt.size_average
         # MeanLoss
+        opt.mean_loss = (opt.metric_loss == 'MeanLoss')
         opt.metric_params['alpha'] = opt.alpha
         opt.metric_params['beta'] = opt.beta
         opt.metric_params['gamma'] = opt.gamma

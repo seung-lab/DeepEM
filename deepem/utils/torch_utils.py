@@ -71,15 +71,21 @@ def get_pair2(arr, edge):
     return arr1, arr2
 
 
-def affinity(v1, v2, dim=-4, keepdims=True):
-    d2 = torch.sum((v1 - v2)**2, dim=dim, keepdim=keepdims)
-    return torch.exp(-d2)
+def affinity(v1, v2, dim=-4, keepdims=True, mean_loss=False, gamma=3.0):
+    if mean_loss:
+        norm = torch.norm(v1 - v2, p=1, dim=dim, keepdim=keepdims)
+        margin = (gamma - norm) / gamma
+        zero = torch.zeros(1).type(v1.type())
+        return torch.max(zero, margin)**2
+    else:
+        d2 = torch.sum((v1 - v2)**2, dim=dim, keepdim=keepdims)
+        return torch.exp(-d2)
 
-def vec2aff(v):
+def vec2aff(v, mean_loss=False, gamma=3.0):
     assert(v.ndimension() >= 4)
-    x = affinity(*(get_pair(v, (0,0,1))))
-    y = affinity(*(get_pair(v, (0,1,0))))
-    z = affinity(*(get_pair(v, (1,0,0))))
+    x = affinity(*(get_pair(v, (0,0,1))), mean_loss=mean_loss, gamma=gamma)
+    y = affinity(*(get_pair(v, (0,1,0))), mean_loss=mean_loss, gamma=gamma)
+    z = affinity(*(get_pair(v, (1,0,0))), mean_loss=mean_loss, gamma=gamma)
     x = F.pad(x, (1,0))
     y = F.pad(y, (0,0,1,0))
     z = F.pad(z, (0,0,0,0,1,0))
