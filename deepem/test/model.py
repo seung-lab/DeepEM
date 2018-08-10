@@ -17,6 +17,8 @@ class Model(nn.Module):
         self.in_spec = dict(opt.in_spec)
         self.pretrain = opt.pretrain
         self.vec_to = opt.vec_to
+        self.mean_loss = opt.mean_loss
+        self.gamma = 2 * opt.delta_d
 
     def forward(self, sample):
         inputs = [sample[k] for k in sorted(self.in_spec)]
@@ -25,7 +27,9 @@ class Model(nn.Module):
         for k, x in preds.items():
             if k == 'embedding':
                 if self.vec_to == 'aff':
-                    outputs[k] = torch_utils.vec2aff(x)
+                    outputs[k] = torch_utils.vec2aff(x,
+                                            mean_loss=self.mean_loss,
+                                            gamma=self.gamma)
                 elif self.vec_to == 'pca':
                     outputs[k] = torch_utils.vec2pca(x)
                 else:
