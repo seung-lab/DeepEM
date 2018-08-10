@@ -16,6 +16,8 @@ class Model(nn.Module):
         self.model = model
         self.in_spec = dict(opt.in_spec)
         self.pretrain = opt.pretrain
+
+        # Metric learning
         self.vec_to = opt.vec_to
         self.mean_loss = opt.mean_loss
         self.gamma = 2 * opt.delta_d
