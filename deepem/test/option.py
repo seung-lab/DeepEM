@@ -61,6 +61,9 @@ class Options(object):
         self.parser.add_argument('--crop_center', type=vec3, default=None)
         self.parser.add_argument('--blend', default='bump')
 
+        # Test-time augmentation
+        self.parser.add_argument('--test_aug', type=int, default=None, nargs='+')
+
         # Benchmark
         self.parser.add_argument('--dummy', action='store_true')
         self.parser.add_argument('--dummy_inputsz', type=int, default=[128,1024,1024], nargs='+')
