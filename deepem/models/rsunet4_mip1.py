@@ -16,7 +16,7 @@ def create_model(opt):
         width = [16,32,64,128,256,512]
         depth = opt.depth
     core = emvision.models.rsunet_v3.RSUNet(width=width[:depth])
-    return Model(core, opt.in_spec, opt.out_spec)
+    return Model(core, opt.in_spec, opt.out_spec, width[0])
 
 
 class InputBlock(nn.Sequential):
@@ -51,12 +51,11 @@ class Model(nn.Sequential):
     """
     Residual Symmetric U-Net with down/upsampling in/output.
     """
-    def __init__(self, core, in_spec, out_spec):
+    def __init__(self, core, in_spec, out_spec, out_channels):
         super(Model, self).__init__()
 
         assert len(in_spec)==1, "model takes a single input"
         in_channels = 1
-        out_channels = 16
         io_kernel = (1,5,5)
 
         self.add_module('in', InputBlock(in_channels, out_channels, io_kernel))
