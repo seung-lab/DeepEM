@@ -10,6 +10,9 @@ from deepem.models.layers import Conv, Scale
 
 def create_model(opt):
     width = [16,32,64,128,256,512]
+    if opt.width:
+        opt.depth = len(opt.width)
+        width = opt.width
     if opt.group > 0:
         # Group normalization
         core = emvision.models.rsunet_gn(width=width[:opt.depth], group=opt.group)

@@ -88,6 +88,7 @@ class Options(object):
         self.parser.add_argument('--outputsz', type=int, default=None, nargs='+')
         self.parser.add_argument('--fov', type=vec3, default=(20,256,256))
         self.parser.add_argument('--depth', type=int, default=4)
+        self.parser.add_argument('--width', type=int, default=None, nargs='+')
         self.parser.add_argument('--long_range', action='store_true')
         self.parser.add_argument('--symmetric', action='store_true')
         self.parser.add_argument('--group', type=int, default=0)
