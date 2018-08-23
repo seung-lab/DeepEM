@@ -9,11 +9,13 @@ from deepem.models.layers import Conv
 
 
 def create_model(opt):
-    width = [16,32,64,128,256,512]
     if opt.width:
-        opt.depth = len(opt.width)
         width = opt.width
-    core = emvision.models.rsunet_v3.RSUNet(width=width[:opt.depth])
+        depth = len(width)
+    else:
+        width = [16,32,64,128,256,512]
+        depth = opt.depth
+    core = emvision.models.rsunet_v3.RSUNet(width=width[:depth])
     return Model(core, opt.in_spec, opt.out_spec)
 
 
