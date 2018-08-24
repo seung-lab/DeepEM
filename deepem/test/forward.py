@@ -24,8 +24,8 @@ class Forward(object):
         dataset = scanner.dataset
 
         # Test-time augmentation
-        count = 0.0
         if self.test_aug:
+            count = 0.0
             for aug in self.test_aug:
                 # dec2bin
                 rule = np.array([int(x) for x in bin(aug)[2:].zfill(4)])
@@ -41,7 +41,7 @@ class Forward(object):
 
                 # Accumulate.
                 for k, v in scanner.outputs.data.items():
-                    print("Accumulate...")
+                    print("Accumulate to {}...".format(k))
                     output = outputs.get_data(k)
                     # Revert output.
                     dst = (1,1,1) if k == 'affinity' else None
@@ -53,9 +53,9 @@ class Forward(object):
                     v._data = fwd_utils.revert_flip(v._data, rule=rule)
 
             # Normalize.
-            for v in scanner.outputs.data.values():
-                print("Normalize...")
-                v._data /= count
+            for k, v in scanner.outputs.data.items():
+                print("Normalize {}...".format(k))
+                v._norm._data[...] = count
 
             return scanner.outputs
 
