@@ -50,10 +50,10 @@ class Forward(object):
 
                 # Revert dataset.
                 for v in dataset.data.values():
-                    v._data = revert_flip(v._data, rule=rule)
+                    v._data = fwd_utils.revert_flip(v._data, rule=rule)
 
             # Normalize.
-            for k, v in scanner.outputs.data.items():
+            for v in scanner.outputs.data.values():
                 print("Normalize...")
                 v._data /= count
 
