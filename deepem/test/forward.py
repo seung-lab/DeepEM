@@ -40,7 +40,7 @@ class Forward(object):
                 outputs = self.forward(model, aug_scanner)
 
                 # Accumulate.
-                for k, v in scanner.outputs.data.iteritems():
+                for k, v in scanner.outputs.data.items():
                     print("Accumulate...")
                     output = outputs.get_data(k)
                     # Revert output.
@@ -53,7 +53,7 @@ class Forward(object):
                     v._data = revert_flip(v._data, rule=rule)
 
             # Normalize.
-            for k, v in scanner.outputs.data.iteritems():
+            for k, v in scanner.outputs.data.items():
                 print("Normalize...")
                 v._data /= count
 
