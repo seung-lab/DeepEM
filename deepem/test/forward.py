@@ -32,7 +32,7 @@ class Forward(object):
                 print("Test-time augmentation {}".format(rule))
 
                 # Augment dataset.
-                for v in dataset.data.itervalues():
+                for v in dataset.data.values():
                     v._data = fwd_utils.flip(v._data, rule=rule)
 
                 # Forward scan
@@ -49,7 +49,7 @@ class Forward(object):
                 count += 1
 
                 # Revert dataset.
-                for v in dataset.data.itervalues():
+                for v in dataset.data.values():
                     v._data = revert_flip(v._data, rule=rule)
 
             # Normalize.
