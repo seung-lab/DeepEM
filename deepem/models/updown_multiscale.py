@@ -21,7 +21,7 @@ def create_model(opt):
     else:
         # Batch (instance) normalization
         core = emvision.models.RSUNet(width=width[:depth])
-    return Model(core, opt.in_spec, opt.out_spec)
+    return Model(core, opt.in_spec, opt.out_spec, width[0])
 
 
 class Input(nn.Module):
@@ -79,12 +79,11 @@ class Model(nn.Module):
     """
     Residual Symmetric U-Net with down/upsampling in/output.
     """
-    def __init__(self, core, in_spec, out_spec):
+    def __init__(self, core, in_spec, out_spec, out_channels):
         super(Model, self).__init__()
 
         assert len(in_spec)==1, "model takes a single input"
         in_channels = 1
-        out_channels = 16
         io_kernel = (1,5,5)
 
         self.input = Input(in_channels, out_channels, io_kernel)
