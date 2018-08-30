@@ -92,6 +92,7 @@ class Options(object):
         self.parser.add_argument('--long_range', action='store_true')
         self.parser.add_argument('--symmetric', action='store_true')
         self.parser.add_argument('--group', type=int, default=0)
+        self.parser.add_argument('--depth2d', type=int, default=0)
 
         # Data augmentation
         self.parser.add_argument('--recompute', action='store_true')
