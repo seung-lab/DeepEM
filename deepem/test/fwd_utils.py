@@ -86,7 +86,7 @@ def revert_flip(data, rule, dst=None):
 
     # z-flip
     if rule[0]:
-        data = np.flip(data, axis=-1)
+        data = np.flip(data, axis=-3)
         # Special treatment for z-affinity.
         if is_affinity:
             if dz > 0:
