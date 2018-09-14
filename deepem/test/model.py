@@ -18,6 +18,7 @@ class Model(nn.Module):
         self.pretrain = opt.pretrain
 
         # Metric learning
+        self.vec_to = opt.vec_to
         self.mean_loss = opt.mean_loss
         self.gamma = 2 * opt.delta_d
 
@@ -27,10 +28,12 @@ class Model(nn.Module):
         outputs = dict()
         for k, x in preds.items():
             if k == 'embedding':
-                if self.vec2aff:
+                if self.vec_to == 'aff':
                     outputs[k] = torch_utils.vec2aff(x,
                                             mean_loss=self.mean_loss,
                                             gamma=self.gamma)
+                elif self.vec_to == 'pca':
+                    outputs[k] = torch_utils.vec2pca(x)
                 else:
                     outputs[k] = x
             else:

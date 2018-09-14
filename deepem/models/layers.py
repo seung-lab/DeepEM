@@ -23,7 +23,7 @@ class Conv(nn.Module):
 
 
 class Scale(nn.Module):
-    def __init__(self, init_value=0.1):
+    def __init__(self, init_value=1.0):
         super(Scale, self).__init__()
         self.scale = nn.Parameter(torch.FloatTensor([init_value]))
 

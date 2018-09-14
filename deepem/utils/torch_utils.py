@@ -5,6 +5,8 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+from deepem.utils import py_utils
+
 
 def get_pair_first(arr, edge):
     shape = arr.size()[-3:]
@@ -81,6 +83,7 @@ def affinity(v1, v2, dim=-4, keepdims=True, mean_loss=False, gamma=3.0):
         d2 = torch.sum((v1 - v2)**2, dim=dim, keepdim=keepdims)
         return torch.exp(-d2)
 
+
 def vec2aff(v, mean_loss=False, gamma=3.0):
     assert(v.ndimension() >= 4)
     x = affinity(*(get_pair(v, (0,0,1))), mean_loss=mean_loss, gamma=gamma)
@@ -89,5 +92,13 @@ def vec2aff(v, mean_loss=False, gamma=3.0):
     x = F.pad(x, (1,0))
     y = F.pad(y, (0,0,1,0))
     z = F.pad(z, (0,0,0,0,1,0))
-    assert(x.size() == y.size() == z.size())
+    assert x.size() == y.size() == z.size()
     return torch.cat((x,y,z), dim=-4)
+
+
+def vec2pca(v):
+    assert v.ndimension() == 5
+    vec = v.cpu().numpy()
+    pca = py_utils.fit_pca(vec)
+    vec = py_utils.pca_scale_vec(vec, pca)
+    return torch.from_numpy(vec)

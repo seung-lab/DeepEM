@@ -6,7 +6,8 @@ import os
 from dataprovider3 import Dataset, ForwardScanner, emio
 
 from deepem.test.model import Model, OnnxModel
-from deepem.utils.py_utils import crop_center
+from deepem.test import cv_utils
+from deepem.utils import py_utils
 
 
 def load_model(opt):
@@ -32,19 +33,26 @@ def load_chkpt(model, fpath, chkpt_num):
     return model
 
 
-def make_forward_scanner(data_name, opt):
-    # Read an EM image.
-    if opt.dummy:
-        img = np.random.rand(*opt.dummy_inputsz[-3:]).astype('float32')
-    else:
-        fpath = os.path.join(opt.data_dir, data_name, opt.input_name)
-        img = emio.imread(fpath)
+def make_forward_scanner(opt, data_name=None):
+    # Cloud-volume
+    if opt.gs_input:
+        img = cv_utils.cutout(opt)
         img = (img/255.).astype('float32')
+    else:
+        assert data_name is not None
+        print(data_name)
+        # Read an EM image.
+        if opt.dummy:
+            img = np.random.rand(*opt.dummy_inputsz[-3:]).astype('float32')
+        else:
+            fpath = os.path.join(opt.data_dir, data_name, opt.input_name)
+            img = emio.imread(fpath)
+            img = (img/255.).astype('float32')
 
-    # Border mirroring
-    if opt.crop:
-        pad_width = [(x//2,x//2) for x in opt.crop]
-        img = np.pad(img, pad_width, 'reflect')
+        # Border mirroring
+        if opt.mirror:
+            pad_width = [(x//2,x//2) for x in opt.mirror]
+            img = np.pad(img, pad_width, 'reflect')
 
     # ForwardScanner
     dataset = Dataset(spec=opt.in_spec)
@@ -52,16 +60,25 @@ def make_forward_scanner(data_name, opt):
     return ForwardScanner(dataset, opt.scan_spec, **opt.scan_params)
 
 
-def save_output(data_name, output, opt):
+def save_output(output, opt, data_name=None):
     for k in output.data:
         data = output.get_data(k)
-        if opt.crop:
-            data = crop_center(data, opt.crop)
-        dname = data_name.replace('/', '_')
-        fname = "{}_{}_{}".format(dname, k, opt.chkpt_num)
-        if opt.out_prefix:
-            fname = opt.out_prefix + '_' + fname
-        if opt.out_tag:
-            fname = fname + '_' + opt.out_tag
-        fpath = os.path.join(opt.fwd_dir, fname + ".h5")
-        emio.imsave(data, fpath)
+
+        # Crop
+        if opt.crop_border:
+            data = py_utils.crop_border(data, opt.crop_border)
+        if opt.crop_center:
+            data = py_utils.crop_center(data, opt.crop_center)
+
+        # Cloud-volume
+        if opt.gs_output:
+            cv_utils.ingest(data, opt)
+        else:
+            dname = data_name.replace('/', '_')
+            fname = "{}_{}_{}".format(dname, k, opt.chkpt_num)
+            if opt.out_prefix:
+                fname = opt.out_prefix + '_' + fname
+            if opt.out_tag:
+                fname = fname + '_' + opt.out_tag
+            fpath = os.path.join(opt.fwd_dir, fname + ".h5")
+            emio.imsave(data, fpath)
