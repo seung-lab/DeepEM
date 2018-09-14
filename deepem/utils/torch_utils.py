@@ -92,7 +92,7 @@ def vec2aff(v, aff=(1,1,1), mean_loss=False, gamma=3.0):
     zaff = affinity(*(get_pair(v, (z,0,0))), mean_loss=mean_loss, gamma=gamma)
     xaff = F.pad(xaff, (x,0))
     yaff = F.pad(yaff, (0,0,y,0))
-    zzff = F.pad(zaff, (0,0,0,0,z,0))
+    zaff = F.pad(zaff, (0,0,0,0,z,0))
     assert xaff.size() == yaff.size() == zaff.size()
     return torch.cat((xaff,yaff,zaff), dim=-4)
 
