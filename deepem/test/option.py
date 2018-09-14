@@ -49,6 +49,7 @@ class Options(object):
         # Metric learning
         self.parser.add_argument('--vec', type=int, default=0)
         self.parser.add_argument('--vec_to', default=None)  # 'aff' or 'pca'
+        self.parser.add_argument('--vec_aff', type=vec3, default=(1,1,1))
         self.parser.add_argument('--mean_loss', action='store_true')
         self.parser.add_argument('--delta_d', type=float, default=1.5)
 
