@@ -6,7 +6,6 @@ import os
 from dataprovider3 import Dataset, ForwardScanner, emio
 
 from deepem.test.model import Model, OnnxModel
-from deepem.test import cv_utils
 from deepem.utils import py_utils
 
 
@@ -36,8 +35,12 @@ def load_chkpt(model, fpath, chkpt_num):
 def make_forward_scanner(opt, data_name=None):
     # Cloud-volume
     if opt.gs_input:
-        img = cv_utils.cutout(opt)
-        img = (img/255.).astype('float32')
+        try:
+            from deepem.test import cv_utils
+            img = cv_utils.cutout(opt)
+            img = (img/255.).astype('float32')
+        except ImportError:
+            raise
     else:
         assert data_name is not None
         print(data_name)
@@ -72,7 +75,11 @@ def save_output(output, opt, data_name=None):
 
         # Cloud-volume
         if opt.gs_output:
-            cv_utils.ingest(data, opt)
+            try:
+                from deepem.test import cv_utils
+                cv_utils.ingest(data, opt)
+            except ImportError:
+                raise
         else:
             dname = data_name.replace('/', '_')
             fname = "{}_{}_{}".format(dname, k, opt.chkpt_num)
