@@ -30,7 +30,7 @@ class Model(nn.Module):
         for k, x in preds.items():
             if k == 'embedding':
                 if self.vec_to == 'aff':
-                    outputs[k] = torch_utils.vec2aff(x, aff=self.vec_ff,
+                    outputs[k] = torch_utils.vec2aff(x, aff=self.vec_aff,
                                             mean_loss=self.mean_loss,
                                             gamma=self.gamma)
                 elif self.vec_to == 'pca':
