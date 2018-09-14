@@ -84,16 +84,17 @@ def affinity(v1, v2, dim=-4, keepdims=True, mean_loss=False, gamma=3.0):
         return torch.exp(-d2)
 
 
-def vec2aff(v, mean_loss=False, gamma=3.0):
+def vec2aff(v, aff=(1,1,1), mean_loss=False, gamma=3.0):
     assert(v.ndimension() >= 4)
-    x = affinity(*(get_pair(v, (0,0,1))), mean_loss=mean_loss, gamma=gamma)
-    y = affinity(*(get_pair(v, (0,1,0))), mean_loss=mean_loss, gamma=gamma)
-    z = affinity(*(get_pair(v, (1,0,0))), mean_loss=mean_loss, gamma=gamma)
-    x = F.pad(x, (1,0))
-    y = F.pad(y, (0,0,1,0))
-    z = F.pad(z, (0,0,0,0,1,0))
-    assert x.size() == y.size() == z.size()
-    return torch.cat((x,y,z), dim=-4)
+    x,y,z = aff
+    xaff = affinity(*(get_pair(v, (0,0,x))), mean_loss=mean_loss, gamma=gamma)
+    yaff = affinity(*(get_pair(v, (0,y,0))), mean_loss=mean_loss, gamma=gamma)
+    zaff = affinity(*(get_pair(v, (z,0,0))), mean_loss=mean_loss, gamma=gamma)
+    xaff = F.pad(xaff, (x,0))
+    yaff = F.pad(yaff, (0,0,y,0))
+    zzff = F.pad(zaff, (0,0,0,0,z,0))
+    assert xaff.size() == yaff.size() == zaff.size()
+    return torch.cat((xaff,yaff,zaff), dim=-4)
 
 
 def vec2pca(v):
