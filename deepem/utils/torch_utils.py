@@ -86,7 +86,7 @@ def affinity(v1, v2, dim=-4, keepdims=True, mean_loss=False, gamma=3.0):
 
 def vec2aff(v, aff=(1,1,1), mean_loss=False, gamma=3.0):
     assert(v.ndimension() >= 4)
-    x,y,z = aff
+    z,y,x = aff
     xaff = affinity(*(get_pair(v, (0,0,x))), mean_loss=mean_loss, gamma=gamma)
     yaff = affinity(*(get_pair(v, (0,y,0))), mean_loss=mean_loss, gamma=gamma)
     zaff = affinity(*(get_pair(v, (z,0,0))), mean_loss=mean_loss, gamma=gamma)
