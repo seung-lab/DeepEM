@@ -88,6 +88,7 @@ class Options(object):
         self.parser.add_argument('--outputsz', type=int, default=None, nargs='+')
         self.parser.add_argument('--fov', type=vec3, default=(20,256,256))
         self.parser.add_argument('--depth', type=int, default=4)
+        self.parser.add_argument('--width', type=int, default=None, nargs='+')
         self.parser.add_argument('--long_range', action='store_true')
         self.parser.add_argument('--symmetric', action='store_true')
         self.parser.add_argument('--group', type=int, default=0)
@@ -166,6 +167,7 @@ class Options(object):
         opt.metric_params['n_edge'] = opt.n_edge
         opt.metric_params['size_average'] = opt.size_average
         # MeanLoss
+        opt.mean_loss = (opt.metric_loss == 'MeanLoss')
         opt.metric_params['alpha'] = opt.alpha
         opt.metric_params['beta'] = opt.beta
         opt.metric_params['gamma'] = opt.gamma

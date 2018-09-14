@@ -21,6 +21,10 @@ class Logger(object):
         self.out_spec = dict(opt.out_spec)
         self.lr = opt.lr
 
+        # Metric learning
+        self.mean_loss = opt.mean_loss
+        self.gamma = 2 * opt.delta_d
+
     def __enter__(self):
         return self
 
@@ -113,7 +117,8 @@ class Logger(object):
 
                 # nearest neighbor affinity
                 tag = '{}/images/metric_graph'.format(phase)
-                aff = torch_utils.vec2aff(vec)
+                aff = torch_utils.vec2aff(vec, mean_loss=self.mean_loss,
+                                               gamma=self.gamma)
                 self.log_image(tag, aff, iter_num)
 
                 # Embedding
