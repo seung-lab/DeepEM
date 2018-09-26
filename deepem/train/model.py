@@ -35,11 +35,16 @@ class Model(nn.Module):
             nmasks[k] = nmsk.unsqueeze(0)
         return losses, nmasks
 
+    def state_dict(self):
+        return self.model.state_dict()
+
     def save(self, fpath):
         torch.save(self.model.state_dict(), fpath)
 
     def load(self, fpath):
-        state_dict = torch.load(fpath)
+        chkpt = torch.load(fpath)
+        # Backward compatibility
+        state_dict = chkpt['state_dict'] if 'state_dict' in chkpt else chkpt
         if self.pretrain:
             model_dict = self.model.state_dict()
             state_dict = {k:v for k, v in state_dict.items() if k in model_dict}

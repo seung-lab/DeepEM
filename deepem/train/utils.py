@@ -41,6 +41,27 @@ def load_model(opt):
     return model.train().cuda()
 
 
+def load_optimizer(opt, trainable):
+    # Create an optimizer.
+    optimizer = getattr(torch.optim, opt.optim)(
+                        trainable, **opt.optim_params)
+
+    if not opt.pretrain and opt.chkpt_num > 0:
+        n = opt.chkpt_num
+        fname = os.path.join(opt.model_dir, "model{}.chkpt".format(n))
+        chkpt = torch.load(fname)
+        if 'optimizer' in chkpt:
+            print("LOAD OPTIM STATE: {} iters.".format(n))
+            optimizer.load_state_dict(chkpt['optimizer'])
+            for state in optimizer.state.values():
+                for k, v in state.items():
+                    if isinstance(v, torch.Tensor):
+                        state[k] = v.cuda()
+
+    print(optimizer)
+    return optimizer
+
+
 def load_chkpt(model, fpath, chkpt_num):
     print("LOAD CHECKPOINT: {} iters.".format(chkpt_num))
     fname = os.path.join(fpath, "model{}.chkpt".format(chkpt_num))
@@ -48,10 +69,13 @@ def load_chkpt(model, fpath, chkpt_num):
     return model
 
 
-def save_chkpt(model, fpath, chkpt_num):
+def save_chkpt(model, fpath, chkpt_num, optimizer):
     print("SAVE CHECKPOINT: {} iters.".format(chkpt_num))
     fname = os.path.join(fpath, "model{}.chkpt".format(chkpt_num))
-    model.save(fname)
+    state = {'iter': chkpt_num,
+             'state_dict': model.state_dict(),
+             'optimizer': optimizer.state_dict()}
+    torch.save(state, fname)
 
 
 def load_data(opt):

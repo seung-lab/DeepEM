@@ -14,17 +14,15 @@ def train(opt):
     # Model
     model = load_model(opt)
 
+    # Optimizer
+    trainable = filter(lambda p: p.requires_grad, model.parameters())
+    optimizer = load_optimizer(opt, trainable)
+
     # Data loaders
     train_loader, val_loader = load_data(opt)
 
-    # Optimizer
-    trainable = filter(lambda p: p.requires_grad, model.parameters())
-    optimizer = getattr(torch.optim, opt.optim)(
-                        trainable, **opt.optim_params)
-    print(optimizer)
-
     # Initial checkpoint
-    save_chkpt(model, opt.model_dir, opt.chkpt_num)
+    save_chkpt(model, opt.model_dir, opt.chkpt_num, optimizer)
 
     # Training loop
     print("========== BEGIN TRAINING LOOP ==========")
@@ -69,7 +67,7 @@ def train(opt):
 
             # Model checkpoint
             if (i+1) % opt.chkpt_intv == 0:
-                save_chkpt(model, opt.model_dir, i+1)
+                save_chkpt(model, opt.model_dir, i+1, optimizer)
 
             # Reset timer.
             t0 = time.time()
