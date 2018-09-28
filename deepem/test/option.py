@@ -39,6 +39,7 @@ class Options(object):
         self.parser.add_argument('--width', type=int, default=None, nargs='+')
         self.parser.add_argument('--group', type=int, default=0)
         self.parser.add_argument('--depth2d', type=int, default=0)
+        self.parser.add_argument('--act', default='ReLU')
 
         # Multiclass detection
         self.parser.add_argument('--aff', type=int, default=0)
