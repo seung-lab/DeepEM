@@ -43,6 +43,7 @@ class Options(object):
 
         # Multiclass detection
         self.parser.add_argument('--aff', type=int, default=0)
+        self.parser.add_argument('--bdr', action='store_true')
         self.parser.add_argument('--psd', action='store_true')
         self.parser.add_argument('--mit', action='store_true')
         self.parser.add_argument('--mye', action='store_true')
@@ -116,6 +117,8 @@ class Options(object):
             opt.out_spec['embedding'] = (opt.vec,) + opt.outputsz
         if opt.aff > 0:
             opt.out_spec['affinity'] = (opt.aff,) + opt.outputsz
+        if opt.bdr:
+            opt.out_spec['boundary'] = (1,) + opt.outputsz
         if opt.psd:
             opt.out_spec['synapse'] = (1,) + opt.outputsz
         if opt.mit:
@@ -131,6 +134,8 @@ class Options(object):
             opt.scan_spec['embedding'] = (dim,) + opt.outputsz
         if opt.aff > 0:
             opt.scan_spec['affinity'] = (3,) + opt.outputsz
+        if opt.bdr:
+            opt.scan_spec['boundary'] = (1,) + opt.outputsz
         if opt.psd:
             opt.scan_spec['synapse'] = (1,) + opt.outputsz
         if opt.mit:

@@ -21,6 +21,11 @@ def get_criteria(opt):
                 size_average=opt.size_average,
                 class_balancing=opt.class_balancing
             )
+        elif k == 'boundary':
+            criteria[k] = loss.BoundaryLoss(
+                getattr(loss, opt.loss)(**opt.loss_params),
+                class_balancing=opt.class_balancing
+            )
         elif k == 'embedding':
             criteria[k] = getattr(loss, opt.metric_loss)(**opt.metric_params)
         else:

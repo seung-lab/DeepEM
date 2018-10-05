@@ -107,7 +107,7 @@ class Logger(object):
                 tag = '{}/labels/{}'.format(phase, k)
                 tensor = sample[k][0,...]
                 self.log_image(tag, tensor, iter_num)
-            elif k == 'myelin':
+            elif k == 'myelin' or k == 'boundary':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
                 tensor = F.sigmoid(preds[k][0,...])

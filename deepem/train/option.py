@@ -110,6 +110,7 @@ class Options(object):
 
         # Multiclass detection
         self.parser.add_argument('--aff', type=float, default=0)
+        self.parser.add_argument('--bdr', type=float, default=0)
         self.parser.add_argument('--psd', type=float, default=0)
         self.parser.add_argument('--mit', type=float, default=0)
         self.parser.add_argument('--mye', type=float, default=0)
@@ -196,6 +197,10 @@ class Options(object):
             opt.out_spec['affinity'] = (len(opt.edges),) + opt.outputsz
             opt.loss_weight['affinity'] = opt.aff
 
+        if opt.bdr > 0:
+            opt.out_spec['boundary'] = (1,) + opt.outputsz
+            opt.loss_weight['boundary'] = opt.bdr
+
         if opt.psd > 0:
             opt.out_spec['synapse'] = (1,) + opt.outputsz
             opt.loss_weight['synapse'] = opt.psd
@@ -228,6 +233,7 @@ class Options(object):
         # Multiclass detection
         opt.data_params = dict()
         opt.data_params['seg'] = opt.aff > 0 or opt.vec > 0
+        opt.data_params['bdr'] = opt.bdr > 0
         opt.data_params['psd'] = opt.psd > 0
         opt.data_params['mit'] = opt.mit > 0
         opt.data_params['mye'] = opt.mye > 0
