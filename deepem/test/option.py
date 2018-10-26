@@ -111,6 +111,7 @@ class Options(object):
         opt.fov = tuple(opt.fov)
         opt.inputsz = opt.fov if opt.inputsz is None else opt.inputsz
         opt.outputsz = opt.fov if opt.outputsz is None else opt.outputsz
+        opt.cropsz = tuple((i-o)//2 for i, o in zip(opt.inputsz, opt.outputsz))
         opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.out_spec = dict()
         if opt.vec > 0:

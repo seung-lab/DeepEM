@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import numpy as np
+
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -16,6 +18,7 @@ class Model(nn.Module):
         self.model = model
         self.in_spec = dict(opt.in_spec)
         self.pretrain = opt.pretrain
+        self.cropsz = np.maximum(opt.cropsz, 0)
 
         # Metric learning
         self.vec_to = opt.vec_to
@@ -39,6 +42,12 @@ class Model(nn.Module):
                     outputs[k] = x
             else:
                 outputs[k] = F.sigmoid(x)
+
+            # Crop outputs.
+            if any(self.cropsz):
+                cz, cy, cx = self.cropsz
+                outputs[k] = outputs[k][...,cz:-cz,cy:-cy,cx:-cx]
+
         return outputs
 
 
