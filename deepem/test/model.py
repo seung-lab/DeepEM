@@ -45,8 +45,15 @@ class Model(nn.Module):
 
             # Crop outputs.
             if any(self.cropsz):
-                cz, cy, cx = self.cropsz
-                outputs[k] = outputs[k][...,cz:-cz,cy:-cy,cx:-cx]
+                ndim = outputs[k].dim()
+                cropsz = [0] * ndim
+                cropsz[-3:] = self.cropsz
+                for cs in cropsz:
+                    if cs > 0:
+                        slices.append(slice(cs,-cs))
+                    else:
+                        slices.append(slice(None))
+                outputs[k] = outputs[k][slices]
 
         return outputs
 
