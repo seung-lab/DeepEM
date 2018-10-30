@@ -58,10 +58,10 @@ def load_dataset(dpath, tag, info):
     dset['seg'] = emio.imread(fpath).astype('uint32')
 
     # Mask
-    fpath = os.path.join(dpath, info['dir'], info['msk'], '_train.h5')
+    fpath = os.path.join(dpath, info['dir'], info['msk'] + '_train.h5')
     print(fpath)
     dset['msk_train'] = emio.imread(fpath).astype('uint8')
-    fpath = os.path.join(dpath, info['dir'], info['msk'], '_val.h5')
+    fpath = os.path.join(dpath, info['dir'], info['msk'] + '_val.h5')
     print(fpath)
     dset['msk_val'] = emio.imread(fpath).astype('uint8')
 
