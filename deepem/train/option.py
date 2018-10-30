@@ -101,6 +101,7 @@ class Options(object):
         self.parser.add_argument('--grayscale', action='store_true')
         self.parser.add_argument('--warping', action='store_true')
         self.parser.add_argument('--misalign', action='store_true')
+        self.parser.add_argument('--interp', action='store_true')
         self.parser.add_argument('--missing', type=int, default=0)
         self.parser.add_argument('--blur', type=int, default=0)
         self.parser.add_argument('--box', default=None)
@@ -223,6 +224,7 @@ class Options(object):
         opt.aug_params['grayscale'] = opt.grayscale
         opt.aug_params['warping'] = opt.warping
         opt.aug_params['misalign'] = opt.misalign
+        opt.aug_params['interp'] = opt.interp
         opt.aug_params['missing'] = opt.missing
         opt.aug_params['blur'] = opt.blur
         opt.aug_params['box'] = opt.box

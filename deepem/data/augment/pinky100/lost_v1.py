@@ -4,22 +4,22 @@ from augmentor import *
 
 
 def get_augmentation(is_train, box=None, lost=True, random=True,
-                     recompute=False, **kwargs):
+                     recompute=False, interp=False, **kwargs):
     # Mild misalignment
     m1 = Blend(
-        [Misalign((0,10), margin=1), SlipMisalign((0,10), margin=1)],
+        [Misalign((0,10), margin=1), SlipMisalign((0,10), interp=interp, margin=1)],
         props=[0.7,0.3]
     )
 
     # Medium misalignment
     m2 = Blend(
-        [Misalign((0,30), margin=1), SlipMisalign((0,30), margin=1)],
+        [Misalign((0,30), margin=1), SlipMisalign((0,30), interp=interp, margin=1)],
         props=[0.7,0.3]
     )
 
     # Large misalignment
     m3 = Blend(
-        [Misalign((0,50), margin=1), SlipMisalign((0,50), margin=1)],
+        [Misalign((0,50), margin=1), SlipMisalign((0,50), interp=interp, margin=1)],
         props=[0.7,0.3]
     )
 
