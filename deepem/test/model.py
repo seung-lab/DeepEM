@@ -48,6 +48,7 @@ class Model(nn.Module):
                 ndim = outputs[k].dim()
                 cropsz = [0] * ndim
                 cropsz[-3:] = self.cropsz
+                slices = list()
                 for cs in cropsz:
                     if cs > 0:
                         slices.append(slice(cs,-cs))
