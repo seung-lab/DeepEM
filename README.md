@@ -1,2 +1,2 @@
-# pytorch-deepem
-Connectomics with PyTorch
+# DeepEM
+Deep Learning for EM Connectomics
