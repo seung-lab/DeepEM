@@ -30,7 +30,6 @@ class Options(object):
         self.parser.add_argument('--train_prob', type=float, default=None, nargs='+')
         self.parser.add_argument('--val_ids', type=str, default=[], nargs='+')
         self.parser.add_argument('--val_prob', type=float, default=None, nargs='+')
-        self.parser.add_argument('--pad_size', type=vec3, default=(0,0,0))
 
         # Training
         self.parser.add_argument('--max_iter', type=int, default=1000000)
@@ -56,21 +55,6 @@ class Options(object):
         self.parser.add_argument('--class_balancing', action='store_true')
         self.parser.add_argument('--no_logits', action='store_true')
 
-        # Metric learning
-        self.parser.add_argument('--metric_loss', default='EdgeLoss')
-        self.parser.add_argument('--blending_prop', type=float, default=0.5)
-
-        # Edge-based loss
-        self.parser.add_argument('--max_edges', type=vec3, default=[(5,32,32)], nargs='+')
-        self.parser.add_argument('--n_edge', type=int, default=32)
-
-        # Mean-based loss
-        self.parser.add_argument('--alpha', type=float, default=1.0)
-        self.parser.add_argument('--beta', type=float, default=1.0)
-        self.parser.add_argument('--gamma', type=float, default=0.001)
-        self.parser.add_argument('--delta_v', type=float, default=0.0)
-        self.parser.add_argument('--delta_d', type=float, default=1.5)
-
         # Optimizer
         self.parser.add_argument('--optim', default='Adam')
         self.parser.add_argument('--lr', type=float, default=0.001)
@@ -83,16 +67,14 @@ class Options(object):
         # SGD
         self.parser.add_argument('--momentum', type=float, default=0.9)
 
-        # Model
+        # Model architecture
         self.parser.add_argument('--inputsz', type=int, default=None, nargs='+')
         self.parser.add_argument('--outputsz', type=int, default=None, nargs='+')
         self.parser.add_argument('--fov', type=vec3, default=(20,256,256))
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--width', type=int, default=None, nargs='+')
         self.parser.add_argument('--long_range', action='store_true')
-        self.parser.add_argument('--symmetric', action='store_true')
         self.parser.add_argument('--group', type=int, default=0)
-        self.parser.add_argument('--depth2d', type=int, default=0)
         self.parser.add_argument('--act', default='ReLU')
 
         # Data augmentation
@@ -107,7 +89,6 @@ class Options(object):
         self.parser.add_argument('--box', default=None)
         self.parser.add_argument('--lost', action='store_true')
         self.parser.add_argument('--random_fill', action='store_true')
-        self.parser.add_argument('--skip_track', type=float, default=0.0)
 
         # Multiclass detection
         self.parser.add_argument('--aff', type=float, default=0)
@@ -115,13 +96,8 @@ class Options(object):
         self.parser.add_argument('--psd', type=float, default=0)
         self.parser.add_argument('--mit', type=float, default=0)
         self.parser.add_argument('--mye', type=float, default=0)
-
-        # Metric learning
-        self.parser.add_argument('--vec', type=float, default=0)
-        self.parser.add_argument('--embed_dim', type=int, default=10)
-
-        # Onnx export
-        self.parser.add_argument('--onnx', action='store_true')
+        self.parser.add_argument('--bld', type=float, default=0)
+        self.parser.add_argument('--som', type=float, default=0)
 
         self.initialized = True
 
@@ -164,35 +140,14 @@ class Options(object):
         opt.loss_params['inverse'] = opt.inverse
         opt.loss_params['logits'] = not opt.no_logits
 
-        # Metric loss
-        opt.metric_params = dict()
-        # EdgeLoss
-        opt.metric_params['max_edges'] = opt.max_edges
-        opt.metric_params['n_edge'] = opt.n_edge
-        opt.metric_params['size_average'] = opt.size_average
-        # MeanLoss
-        opt.mean_loss = (opt.metric_loss == 'MeanLoss')
-        opt.metric_params['alpha'] = opt.alpha
-        opt.metric_params['beta'] = opt.beta
-        opt.metric_params['gamma'] = opt.gamma
-        opt.metric_params['delta_v'] = opt.delta_v
-        opt.metric_params['delta_d'] = opt.delta_d
-        # BlendLoss
-        opt.metric_params['blending_prop'] = opt.blending_prop
-
         # Model
         opt.fov = tuple(opt.fov)
-        #defaults -> copy fov
         opt.inputsz = opt.fov if opt.inputsz is None else tuple(opt.inputsz)
         opt.outputsz = opt.fov if opt.outputsz is None else tuple(opt.outputsz)
         opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.edges = self.get_edges(opt)
         opt.out_spec = dict()
         opt.loss_weight = dict()
-
-        if opt.vec > 0:
-            opt.out_spec['embedding'] = (opt.embed_dim,) + opt.outputsz
-            opt.loss_weight['embedding'] = opt.vec
 
         if opt.aff > 0:
             opt.out_spec['affinity'] = (len(opt.edges),) + opt.outputsz
@@ -234,13 +189,13 @@ class Options(object):
 
         # Multiclass detection
         opt.data_params = dict()
-        opt.data_params['seg'] = opt.aff > 0 or opt.vec > 0
+        opt.data_params['seg'] = opt.aff > 0
         opt.data_params['bdr'] = opt.bdr > 0
         opt.data_params['psd'] = opt.psd > 0
         opt.data_params['mit'] = opt.mit > 0
         opt.data_params['mye'] = opt.mye > 0
-        opt.data_params['pad_size'] = opt.pad_size
-        assert(len(opt.pad_size) == 3 and all(x >= 0 for x in opt.pad_size))
+        opt.data_params['bld'] = opt.bld > 0
+        opt.data_params['som'] = opt.som > 0
 
         args = vars(opt)
         print('------------ Options -------------')
@@ -276,8 +231,5 @@ class Options(object):
             edges.append((2,0,0))
             edges.append((3,0,0))
             edges.append((4,0,0))
-
-        if opt.symmetric:
-            edges += [tuple(-x for x in e) for e in edges]
 
         return edges

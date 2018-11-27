@@ -38,7 +38,6 @@ class Options(object):
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--width', type=int, default=None, nargs='+')
         self.parser.add_argument('--group', type=int, default=0)
-        self.parser.add_argument('--depth2d', type=int, default=0)
         self.parser.add_argument('--act', default='ReLU')
 
         # Multiclass detection
@@ -47,13 +46,8 @@ class Options(object):
         self.parser.add_argument('--psd', action='store_true')
         self.parser.add_argument('--mit', action='store_true')
         self.parser.add_argument('--mye', action='store_true')
-
-        # Metric learning
-        self.parser.add_argument('--vec', type=int, default=0)
-        self.parser.add_argument('--vec_to', default=None)  # 'aff' or 'pca'
-        self.parser.add_argument('--vec_aff', type=vec3, default=(1,1,1))
-        self.parser.add_argument('--mean_loss', action='store_true')
-        self.parser.add_argument('--delta_d', type=float, default=1.5)
+        self.parser.add_argument('--bld', action='store_true')
+        self.parser.add_argument('--som', action='store_true')
 
         # Forward scanning
         self.parser.add_argument('--out_prefix', default='')
@@ -71,9 +65,6 @@ class Options(object):
         # Benchmark
         self.parser.add_argument('--dummy', action='store_true')
         self.parser.add_argument('--dummy_inputsz', type=int, default=[128,1024,1024], nargs='+')
-
-        # Onnx export
-        self.parser.add_argument('--onnx', action='store_true')
 
         # Cloud-volume input
         self.parser.add_argument('--gs_input', default='')
@@ -126,6 +117,10 @@ class Options(object):
             opt.out_spec['mitochondria'] = (1,) + opt.outputsz
         if opt.mye:
             opt.out_spec['myelin'] = (1,) + opt.outputsz
+        if opt.bld:
+            opt.out_spec['bloodvessel'] = (1,) + opt.outputsz
+        if opt.som:
+            opt.out_spec['soma'] = (1,) + opt.outputsz
         assert(len(opt.out_spec) > 0)
 
         # Scan spec
@@ -143,6 +138,10 @@ class Options(object):
             opt.scan_spec['mitochondria'] = (1,) + opt.outputsz
         if opt.mye:
             opt.scan_spec['myelin'] = (1,) + opt.outputsz
+        if opt.bld:
+            opt.scan_spec['bloodvessel'] = (1,) + opt.outputsz
+        if opt.som:
+            opt.scan_spec['soma'] = (1,) + opt.outputsz
         stride = self.get_stride(opt.outputsz, opt.overlap)
         opt.scan_params = dict(stride=stride, blend=opt.blend)
 

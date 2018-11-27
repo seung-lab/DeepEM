@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 
 import emvision
+from emvision.models import rsunet_act, rsunet_act_gn
 
 from deepem.models.layers import Conv, Scale
 
@@ -17,10 +18,10 @@ def create_model(opt):
         depth = opt.depth
     if opt.group > 0:
         # Group normalization
-        core = emvision.models.rsunet_gn(width=width[:depth], group=opt.group)
+        core = rsunet_act_gn(width=width[:depth], group=opt.group, act=opt.act)
     else:
         # Batch (instance) normalization
-        core = emvision.models.RSUNet(width=width[:depth])
+        core = rsunet_act(width=width[:depth], act=opt.act)
     return Model(core, opt.in_spec, opt.out_spec, width[0], is_onnx=opt.onnx)
 
 
@@ -34,16 +35,10 @@ class OutputBlock(nn.Module):
     def __init__(self, in_channels, out_spec, kernel_size, is_onnx=False):
         super(OutputBlock, self).__init__()
         for k, v in out_spec.items():
-            out_channels = v[-4]
-            if k == 'embedding':
-                self.add_module(k, nn.Sequential(
-                    Conv(in_channels, out_channels, kernel_size, bias=True),
-                    Scale()
-                ))
-            else:
-                self.add_module(k, nn.Sequential(
-                    Conv(in_channels, out_channels, kernel_size, bias=True)
-                ))
+            out_channels = v[-4]            
+            self.add_module(k, nn.Sequential(
+                Conv(in_channels, out_channels, kernel_size, bias=True)
+            ))
         self.is_onnx = is_onnx
 
     def forward(self, x):

@@ -57,7 +57,7 @@ def train(opt):
             if (i+1) % opt.avgs_intv == 0 or i < opt.warm_up:
                 logger.check('train', i+1)
 
-            # Logging images
+            # Image logging
             if (i+1) % opt.imgs_intv == 0:
                 logger.log_images('train', i+1, preds, sample)
 
@@ -100,6 +100,7 @@ def eval_loop(iter_num, model, data_loader, opt, logger):
 
 
 if __name__ == "__main__":
+
     # Options
     opt = Options().parse()
 

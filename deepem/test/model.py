@@ -31,17 +31,7 @@ class Model(nn.Module):
         preds = self.model(*inputs)
         outputs = dict()
         for k, x in preds.items():
-            if k == 'embedding':
-                if self.vec_to == 'aff':
-                    outputs[k] = torch_utils.vec2aff(x, aff=self.vec_aff,
-                                            mean_loss=self.mean_loss,
-                                            gamma=self.gamma)
-                elif self.vec_to == 'pca':
-                    outputs[k] = torch_utils.vec2pca(x)
-                else:
-                    outputs[k] = x
-            else:
-                outputs[k] = F.sigmoid(x)
+            outputs[k] = F.sigmoid(x)
 
             # Crop outputs.
             if any(self.cropsz):

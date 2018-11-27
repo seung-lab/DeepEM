@@ -3,8 +3,6 @@ import argparse
 import numpy as np
 from collections import namedtuple
 
-from sklearn.decomposition import PCA
-
 
 def dict2tuple(d):
     return namedtuple('GenericDict', d.keys())(**d)
@@ -70,26 +68,3 @@ def to_tensor(data):
         raise RuntimeError("data must be a numpy 4D array")
     assert data.ndim == 4
     return data
-
-
-def fit_pca(vec):
-    assert vec.ndim == 5
-    n,d,z,y,x = vec.shape
-    assert n == 1
-    vec = np.transpose(vec, (0,2,3,4,1))
-    pca = PCA(d)
-    pca.fit(vec.reshape((-1,d)))
-    return pca
-
-
-def pca_scale_vec(vec, pca, c=0):
-    assert vec.ndim == 5
-    n,d,z,y,x = vec.shape
-    assert n == 1
-    vec = np.transpose(vec, (0,2,3,4,1))
-    vec = pca.transform(vec.reshape((-1,d)))
-    vec = vec.reshape((n,z,y,x,d))[...,c:c+3]
-    vec = np.transpose(vec, (0,4,1,2,3))
-    vec = vec - np.min(vec)
-    vec = vec / np.max(vec)
-    return vec

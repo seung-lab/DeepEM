@@ -8,6 +8,7 @@ class Model(nn.Module):
     """
     Model wrapper for training.
     """
+
     def __init__(self, model, criteria, opt):
         super(Model, self).__init__()
         self.model = model
@@ -20,6 +21,7 @@ class Model(nn.Module):
         # Forward pass
         inputs = [sample[k] for k in sorted(self.in_spec)]
         preds = self.model(*inputs)
+
         # Loss evaluation
         losses, nmasks = self.eval_loss(preds, sample)
         return losses, nmasks, preds
@@ -30,7 +32,7 @@ class Model(nn.Module):
             target = sample[k]
             mask = sample[k + '_mask']
             loss, nmsk = self.criteria[k](preds[k], target, mask)
-            # TODO: PyTorch 0.4.0 bug
+            # PyTorch 0.4.0-specific workaround
             losses[k] = loss.unsqueeze(0)
             nmasks[k] = nmsk.unsqueeze(0)
         return losses, nmasks
