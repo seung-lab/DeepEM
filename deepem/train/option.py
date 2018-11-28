@@ -142,15 +142,6 @@ class Options(object):
                     'interp','missing','blur','box','lost','random']
         opt.aug_params = {k: args[k] for k in aug_keys}
 
-        # Multiclass detection
-
-        opt.data_params['seg'] = opt.aff > 0 or opt.long > 0
-        opt.data_params['bdr'] = opt.bdr > 0
-        opt.data_params['syn'] = opt.syn > 0
-        opt.data_params['mit'] = opt.mit > 0
-        opt.data_params['mye'] = opt.mye > 0
-        opt.data_params['bld'] = opt.bld > 0
-
         # Model
         opt.fov = tuple(opt.fov)
         opt.inputsz = opt.fov if opt.inputsz is None else tuple(opt.inputsz)
