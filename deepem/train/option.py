@@ -174,7 +174,7 @@ class Options(object):
         for k, v in class_dict.items():
             loss_w = args[k]
             if loss_w > 0:
-                output_name, num_channels = *v
+                output_name, num_channels = v
                 assert num_channels > 0
                 opt.out_spec[output_name] = (num_channels,) + opt.outputsz
                 opt.loss_weight[output_name] = loss_w

@@ -6,7 +6,7 @@ import torch.nn as nn
 import emvision
 from emvision.models import rsunet_act, rsunet_act_gn
 
-from deepem.models.layers import Conv, Scale
+from deepem.models.layers import Conv
 
 
 def create_model(opt):
@@ -20,9 +20,9 @@ def create_model(opt):
         # Group normalization
         core = rsunet_act_gn(width=width[:depth], group=opt.group, act=opt.act)
     else:
-        # Batch (instance) normalization
+        # Batch normalization
         core = rsunet_act(width=width[:depth], act=opt.act)
-    return Model(core, opt.in_spec, opt.out_spec, width[0], is_onnx=opt.onnx)
+    return Model(core, opt.in_spec, opt.out_spec, width[0])
 
 
 class InputBlock(nn.Sequential):
@@ -32,34 +32,27 @@ class InputBlock(nn.Sequential):
 
 
 class OutputBlock(nn.Module):
-    def __init__(self, in_channels, out_spec, kernel_size, is_onnx=False):
+    def __init__(self, in_channels, out_spec, kernel_size):
         super(OutputBlock, self).__init__()
         for k, v in out_spec.items():
-            out_channels = v[-4]            
-            self.add_module(k, nn.Sequential(
-                Conv(in_channels, out_channels, kernel_size, bias=True)
-            ))
-        self.is_onnx = is_onnx
+            out_channels = v[-4]
+            self.add_module(k,
+                    Conv(in_channels, out_channels, kernel_size, bias=True))
 
     def forward(self, x):
-        outs = {k: m(x) for k, m in self.named_children()}
-        # ONNX doesn't support dictionary.
-        if self.is_onnx:
-            outs = [x[1] for x in sorted(outs.items(), key=lambda x: x[0])]
-        return outs
+        return {k: m(x) for k, m in self.named_children()}
 
 
 class Model(nn.Sequential):
     """
     Residual Symmetric U-Net.
     """
-    def __init__(self, core, in_spec, out_spec, out_channels, is_onnx=False):
+    def __init__(self, core, in_spec, out_spec, out_channels, io_kernel=(1,5,5)):
         super(Model, self).__init__()
 
         assert len(in_spec)==1, "model takes a single input"
         in_channels = 1
-        io_kernel = (1,5,5)
 
         self.add_module('in', InputBlock(in_channels, out_channels, io_kernel))
         self.add_module('core', core)
-        self.add_module('out', OutputBlock(out_channels, out_spec, io_kernel, is_onnx=is_onnx))
+        self.add_module('out', OutputBlock(out_channels, out_spec, io_kernel))
