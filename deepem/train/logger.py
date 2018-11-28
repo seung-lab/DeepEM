@@ -93,21 +93,7 @@ class Logger(object):
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
                 tensor = F.sigmoid(preds[k][0,0:3,...])
-                self.log_image(tag, tensor, iter_num)
-            elif k == 'synapse' or k == 'mitochondria':
-                # Prediction
-                tag = '{}/images/{}'.format(phase, k)
-                tensor = F.sigmoid(preds[k][0,...])
-                self.log_image(tag, tensor, iter_num)
-                # Target
-                tag = '{}/labels/{}'.format(phase, k)
-                tensor = sample[k][0,...]
-                self.log_image(tag, tensor, iter_num)
-            elif k == 'myelin' or k == 'boundary':
-                # Prediction
-                tag = '{}/images/{}'.format(phase, k)
-                tensor = F.sigmoid(preds[k][0,...])
-                self.log_image(tag, tensor, iter_num)
+                self.log_image(tag, tensor, iter_num)            
 
     def log_image(self, tag, tensor, iter_num):
         assert(torch.is_tensor(tensor))

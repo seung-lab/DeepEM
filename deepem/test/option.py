@@ -14,57 +14,34 @@ class Options(object):
         self.initialized = False
 
     def initialize(self):
-        self.parser.add_argument('--exp_name', required=True)
-        self.parser.add_argument('--model',    required=True)
-
-        # Data
-        self.parser.add_argument('--data_dir', default="")
-        self.parser.add_argument('--data_names', nargs='+')
-        self.parser.add_argument('--input_name', default="img.h5")
+        self.parser.add_argument('--log_name', required=True)
+        self.parser.add_argument('--chkpt_num', type=int, default=0)
+        self.parser.add_argument('--gpu_id', type=str, default='0')
 
         # cuDNN auto-tuning
-        self.parser.add_argument('--autotune', action='store_true')
+        self.parser.add_argument('--no_autotune', action='store_false')
 
-        # Inference
-        self.parser.add_argument('--gpu_id', type=str, default='0')
-        self.parser.add_argument('--chkpt_num', type=int, default=0)
-        self.parser.add_argument('--no_eval', action='store_true')
+        # Overwriting
+        self.parser.add_argument('--model', default=None)
         self.parser.add_argument('--pretrain', action='store_true')
-
-        # Model
+        self.parser.add_argument('--no_eval', action='store_true')
         self.parser.add_argument('--inputsz', type=vec3, default=None)
         self.parser.add_argument('--outputsz', type=vec3, default=None)
-        self.parser.add_argument('--fov', type=vec3, default=(20,256,256))
+        self.parser.add_argument('--fov', type=vec3, default=None)
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--width', type=int, default=None, nargs='+')
-        self.parser.add_argument('--group', type=int, default=0)
-        self.parser.add_argument('--act', default='ReLU')
 
         # Multiclass detection
-        self.parser.add_argument('--aff', type=int, default=0)
-        self.parser.add_argument('--bdr', action='store_true')
-        self.parser.add_argument('--psd', action='store_true')
-        self.parser.add_argument('--mit', action='store_true')
-        self.parser.add_argument('--mye', action='store_true')
-        self.parser.add_argument('--bld', action='store_true')
-        self.parser.add_argument('--som', action='store_true')
-
-        # Forward scanning
-        self.parser.add_argument('--out_prefix', default='')
-        self.parser.add_argument('--out_tag', default='')
-
-        self.parser.add_argument('--overlap', type=vec3f, default=(0.5,0.5,0.5))
-        self.parser.add_argument('--mirror', type=vec3, default=None)
-        self.parser.add_argument('--crop_border', type=vec3, default=None)
-        self.parser.add_argument('--crop_center', type=vec3, default=None)
-        self.parser.add_argument('--blend', default='bump')
+        self.parser.add_argument('--aff',  type=int, default=0)
+        self.parser.add_argument('--long', type=int, default=0)
+        self.parser.add_argument('--bdr',  type=int, default=0)
+        self.parser.add_argument('--psd',  type=int, default=0)
+        self.parser.add_argument('--mit',  type=int, default=0)
+        self.parser.add_argument('--mye',  type=int, default=0)
+        self.parser.add_argument('--bld',  type=int, default=0)
 
         # Test-time augmentation
         self.parser.add_argument('--test_aug', type=int, default=None, nargs='+')
-
-        # Benchmark
-        self.parser.add_argument('--dummy', action='store_true')
-        self.parser.add_argument('--dummy_inputsz', type=int, default=[128,1024,1024], nargs='+')
 
         # Cloud-volume input
         self.parser.add_argument('--gs_input', default='')
@@ -82,6 +59,24 @@ class Options(object):
         self.parser.add_argument('-r','--resolution', type=vec3, default=(4,4,40))
         self.parser.add_argument('-o','--offset', type=vec3, default=None)
         self.parser.add_argument('--chunk_size', type=vec3, default=(64,64,16))
+
+        # Data
+        self.parser.add_argument('--data_dir', default="")
+        self.parser.add_argument('--data_names', nargs='+')
+        self.parser.add_argument('--input_name', default="img.h5")
+
+        # Forward scanning
+        self.parser.add_argument('--out_prefix', default='')
+        self.parser.add_argument('--out_tag', default='')
+        self.parser.add_argument('--overlap', type=vec3f, default=(0.5,0.5,0.5))
+        self.parser.add_argument('--mirror', type=vec3, default=None)
+        self.parser.add_argument('--crop_border', type=vec3, default=None)
+        self.parser.add_argument('--crop_center', type=vec3, default=None)
+        self.parser.add_argument('--blend', default='bump')
+
+        # Benchmark
+        self.parser.add_argument('--dummy', action='store_true')
+        self.parser.add_argument('--dummy_inputsz', type=int, default=[128,1024,1024], nargs='+')
 
         self.initialized = True
 

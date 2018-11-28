@@ -1,6 +1,5 @@
 from __future__ import print_function
 import argparse
-import imp
 import os
 
 from deepem.utils.py_utils import vec3
@@ -23,7 +22,7 @@ class Options(object):
         self.parser.add_argument('--augment',  default=None)
 
         # cuDNN auto-tuning
-        self.parser.add_argument('--autotune', action='store_true')
+        self.parser.add_argument('--no_autotune', action='store_false')
 
         # Training/validation sets
         self.parser.add_argument('--train_ids', type=str, default=[], nargs='+')
@@ -53,18 +52,17 @@ class Options(object):
         self.parser.add_argument('--margin1', type=float, default=0)
         self.parser.add_argument('--inverse', action='store_true')
         self.parser.add_argument('--class_balancing', action='store_true')
-        self.parser.add_argument('--no_logits', action='store_true')
 
         # Optimizer
         self.parser.add_argument('--optim', default='Adam')
         self.parser.add_argument('--lr', type=float, default=0.001)
 
-        # Adam
+        # Optimizer: Adam
         self.parser.add_argument('--betas', type=float, default=[0.9,0.999], nargs='+')
         self.parser.add_argument('--eps', type=float, default=1e-08)
         self.parser.add_argument('--amsgrad', action='store_true')
 
-        # SGD
+        # Optimizer: SGD
         self.parser.add_argument('--momentum', type=float, default=0.9)
 
         # Model architecture
@@ -73,7 +71,6 @@ class Options(object):
         self.parser.add_argument('--fov', type=vec3, default=(20,256,256))
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--width', type=int, default=None, nargs='+')
-        self.parser.add_argument('--long_range', action='store_true')
         self.parser.add_argument('--group', type=int, default=0)
         self.parser.add_argument('--act', default='ReLU')
 
@@ -88,16 +85,19 @@ class Options(object):
         self.parser.add_argument('--blur', type=int, default=0)
         self.parser.add_argument('--box', default=None)
         self.parser.add_argument('--lost', action='store_true')
-        self.parser.add_argument('--random_fill', action='store_true')
+        self.parser.add_argument('--random', action='store_true')
+
+        # Long-range affinity
+        self.parser.add_argument('--long', type=float, default=0)
+        self.parser.add_argument('--edges', type=vec3, default=[], nargs='+')
 
         # Multiclass detection
-        self.parser.add_argument('--aff', type=float, default=0)
-        self.parser.add_argument('--bdr', type=float, default=0)
-        self.parser.add_argument('--psd', type=float, default=0)
-        self.parser.add_argument('--mit', type=float, default=0)
-        self.parser.add_argument('--mye', type=float, default=0)
-        self.parser.add_argument('--bld', type=float, default=0)
-        self.parser.add_argument('--som', type=float, default=0)
+        self.parser.add_argument('--aff', type=float, default=0)  # Affinity
+        self.parser.add_argument('--bdr', type=float, default=0)  # Boundary
+        self.parser.add_argument('--syn', type=float, default=0)  # Synapse
+        self.parser.add_argument('--mit', type=float, default=0)  # Mitochondria
+        self.parser.add_argument('--mye', type=float, default=0)  # Myelin
+        self.parser.add_argument('--bld', type=float, default=0)  # Blood vessel
 
         self.initialized = True
 
@@ -122,6 +122,12 @@ class Options(object):
         if opt.val_prob:
             assert len(opt.val_ids) == len(opt.val_prob)
 
+        args = vars(opt)
+
+        # Loss
+        loss_keys = ['size_average','margin0','margin1','inverse']
+        opt.loss_params = {k: args[k] for k in loss_keys}
+
         # Optimizer
         if opt.optim == 'Adam':
             optim_keys = ['lr','betas','eps','amsgrad']
@@ -129,73 +135,54 @@ class Options(object):
             optim_keys = ['lr','momentum']
         else:
             optim_keys = ['lr']
-        args = vars(opt)
-        opt.optim_params = {k: v for k, v in args.items() if k in optim_keys}
+        opt.optim_params = {k: args[k] for k in optim_keys}
 
-        # Loss
-        opt.loss_params = dict()
-        opt.loss_params['size_average'] = opt.size_average
-        opt.loss_params['margin0'] = opt.margin0
-        opt.loss_params['margin1'] = opt.margin1
-        opt.loss_params['inverse'] = opt.inverse
-        opt.loss_params['logits'] = not opt.no_logits
+        # Data augmentation
+        aug_keys = ['recompute','flip','grayscale','warping','misalign',
+                    'interp','missing','blur','box','lost','random']
+        opt.aug_params = {k: args[k] for k in aug_keys}
+
+        # Multiclass detection
+
+        opt.data_params['seg'] = opt.aff > 0 or opt.long > 0
+        opt.data_params['bdr'] = opt.bdr > 0
+        opt.data_params['syn'] = opt.syn > 0
+        opt.data_params['mit'] = opt.mit > 0
+        opt.data_params['mye'] = opt.mye > 0
+        opt.data_params['bld'] = opt.bld > 0
 
         # Model
         opt.fov = tuple(opt.fov)
         opt.inputsz = opt.fov if opt.inputsz is None else tuple(opt.inputsz)
         opt.outputsz = opt.fov if opt.outputsz is None else tuple(opt.outputsz)
         opt.in_spec = dict(input=(1,) + opt.inputsz)
-        opt.edges = self.get_edges(opt)
         opt.out_spec = dict()
         opt.loss_weight = dict()
 
-        if opt.aff > 0:
-            opt.out_spec['affinity'] = (len(opt.edges),) + opt.outputsz
-            opt.loss_weight['affinity'] = opt.aff
+        # Multiclass detection
+        class_keys = list()
+        class_dict = {
+            'aff':  ('affinity', 3),
+            'long': ('long_range', len(opt.edges)),
+            'bdr':  ('boundary', 1),
+            'syn':  ('synapse', 1),
+            'mit':  ('mitochondria', 1),
+            'mye':  ('myelin', 1),
+            'bld':  ('blood_vessel', 1)
+        }
 
-        if opt.bdr > 0:
-            opt.out_spec['boundary'] = (1,) + opt.outputsz
-            opt.loss_weight['boundary'] = opt.bdr
-
-        if opt.psd > 0:
-            opt.out_spec['synapse'] = (1,) + opt.outputsz
-            opt.loss_weight['synapse'] = opt.psd
-
-        if opt.mit > 0:
-            opt.out_spec['mitochondria'] = (1,) + opt.outputsz
-            opt.loss_weight['mitochondria'] = opt.mit
-
-        if opt.mye > 0:
-            opt.out_spec['myelin'] = (1,) + opt.outputsz
-            opt.loss_weight['myelin'] = opt.mye
+        for k, v in class_dict.items():
+            loss_w = args[k]
+            if loss_w > 0:
+                output_name, num_channels = *v
+                assert num_channels > 0
+                opt.out_spec[output_name] = (num_channels,) + opt.outputsz
+                opt.loss_weight[output_name] = loss_w
+                class_keys.append(k)
 
         assert len(opt.out_spec) > 0
-        assert len(opt.out_spec) == len(opt.loss_weight)
-
-        # Data augmentation
-        opt.aug_params = dict()
-        opt.aug_params['recompute'] = opt.recompute
-        opt.aug_params['flip'] = opt.flip
-        opt.aug_params['grayscale'] = opt.grayscale
-        opt.aug_params['warping'] = opt.warping
-        opt.aug_params['misalign'] = opt.misalign
-        opt.aug_params['interp'] = opt.interp
-        opt.aug_params['missing'] = opt.missing
-        opt.aug_params['blur'] = opt.blur
-        opt.aug_params['box'] = opt.box
-        opt.aug_params['lost'] = opt.lost
-        opt.aug_params['random'] = opt.random_fill
-        opt.aug_params['skip_track'] = opt.skip_track
-
-        # Multiclass detection
-        opt.data_params = dict()
-        opt.data_params['seg'] = opt.aff > 0
-        opt.data_params['bdr'] = opt.bdr > 0
-        opt.data_params['psd'] = opt.psd > 0
-        opt.data_params['mit'] = opt.mit > 0
-        opt.data_params['mye'] = opt.mye > 0
-        opt.data_params['bld'] = opt.bld > 0
-        opt.data_params['som'] = opt.som > 0
+        assert len(opt.out_spec) == len(opt.loss_weight) == len(class_keys)
+        opt.data_params = dict(class_keys=class_keys)
 
         args = vars(opt)
         print('------------ Options -------------')
@@ -205,31 +192,3 @@ class Options(object):
 
         self.opt = opt
         return self.opt
-
-    def get_edges(self, opt):
-        edges = list()
-
-        # Nearest neighbor edges
-        edges.append((0,0,1))
-        edges.append((0,1,0))
-        edges.append((1,0,0))
-
-        if opt.long_range:
-            # x-affinity.
-            edges.append((0,0,4))
-            edges.append((0,0,8))
-            edges.append((0,0,12))
-            edges.append((0,0,16))
-            edges.append((0,0,32))
-            # y-affinity.
-            edges.append((0,4,0))
-            edges.append((0,8,0))
-            edges.append((0,12,0))
-            edges.append((0,16,0))
-            edges.append((0,32,0))
-            # z-affinity.
-            edges.append((2,0,0))
-            edges.append((3,0,0))
-            edges.append((4,0,0))
-
-        return edges

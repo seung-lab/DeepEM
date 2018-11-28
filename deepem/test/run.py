@@ -42,7 +42,7 @@ if __name__ == "__main__":
         os.makedirs(opt.fwd_dir)
 
     # cuDNN auto-tuning
-    torch.backends.cudnn.benchmark = opt.autotune
+    torch.backends.cudnn.benchmark = not opt.no_autotune
 
     # Run inference.
     print("Running inference: {}".format(opt.exp_name))

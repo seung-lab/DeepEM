@@ -8,23 +8,19 @@ from deepem.utils import torch_utils
 
 
 class EdgeSampler(object):
-    def __init__(self, edges, split_boundary=True):
+    def __init__(self, edges):
         self.edges = list(edges)
-        self.split_boundary = split_boundary
 
     def generate_edges(self):
         return list(self.edges)
 
     def generate_true_aff(self, obj, edge):
-        o1, o2 = torch_utils.get_pair2(obj, edge)
-        if self.split_boundary:
-            ret = (((o1 == o2) + (o1 != 0) + (o2 != 0)) == 3)
-        else:
-            ret = (o1 == o2)
+        o1, o2 = torch_utils.get_pair(obj, edge)
+        ret = (((o1 == o2) + (o1 != 0) + (o2 != 0)) == 3)
         return ret.type(obj.type())
 
     def generate_mask_aff(self, mask, edge):
-        m1, m2 = torch_utils.get_pair2(mask, edge)
+        m1, m2 = torch_utils.get_pair(mask, edge)
         return (m1 * m2).type(mask.type())
 
 
@@ -36,21 +32,20 @@ class EdgeCRF(nn.Module):
         self.balancing = class_balancing
 
     def forward(self, preds, targets, masks):
-        assert(len(preds)==len(targets)==len(masks))
-        loss = 0
-        nmsk = 0
+        assert len(preds) == len(targets) == len(masks)
+        loss, nmsk = 0, 0
         for pred, target, mask in zip(preds, targets, masks):
             mask = self.class_balancing(target, mask)
             l, n = self.criterion(pred, target, mask)
             loss += l
             nmsk += n
-        assert(nmsk.item() > 0)
+        assert nmsk.item() > 0
         if self.size_average:
             try:
                 loss = loss / nmsk.item()
                 nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
             except:
-                # import pdb; pdb.set_trace()
+                import pdb; pdb.set_trace()
                 raise
         return loss, nmsk
 
@@ -69,11 +64,13 @@ class EdgeCRF(nn.Module):
 
 
 class AffinityLoss(nn.Module):
-    def __init__(self, edges, criterion, size_average=False, class_balancing=False):
+    def __init__(self, edges, criterion, size_average=False,
+                 class_balancing=False):
         super(AffinityLoss, self).__init__()
         self.sampler = EdgeSampler(edges)
         self.decoder = AffinityLoss.Decoder(edges)
-        self.criterion = EdgeCRF(criterion,
+        self.criterion = EdgeCRF(
+            criterion,
             size_average=size_average,
             class_balancing=class_balancing
         )
@@ -95,12 +92,12 @@ class AffinityLoss(nn.Module):
     class Decoder(nn.Module):
         def __init__(self, edges):
             super(AffinityLoss.Decoder, self).__init__()
-            assert(len(edges) > 0)
+            assert len(edges) > 0
             self.edges = list(edges)
 
         def forward(self, x, i):
             num_channels = x.size(-4)
-            assert(num_channels == len(self.edges))
-            assert(i < num_channels and i >= 0)
+            assert num_channels == len(self.edges)
+            assert i < num_channels and i >= 0
             edge = self.edges[i]
-            return torch_utils.get_pair_first2(x[...,[i],:,:,:], edge)
+            return torch_utils.get_pair_first(x[...,[i],:,:,:], edge)

@@ -13,17 +13,17 @@ from deepem.train.model import Model
 def get_criteria(opt):
     criteria = dict()
     for k in opt.out_spec:
-        if k == 'affinity':
+        if k == 'affinity' or k == 'long_range':
+            if k == 'affinity':
+                edges = [(0,0,1),(0,1,0),(1,0,0)]
+            else:
+                edges = list(opt.edges)
+            assert len(edges) > 0
             params = dict(opt.loss_params)
             params['size_average'] = False
-            criteria[k] = loss.AffinityLoss(opt.edges,
+            criteria[k] = loss.AffinityLoss(edges,
                 criterion=getattr(loss, opt.loss)(**params),
                 size_average=opt.size_average,
-                class_balancing=opt.class_balancing
-            )
-        elif k == 'boundary':
-            criteria[k] = loss.BoundaryLoss(
-                getattr(loss, opt.loss)(**opt.loss_params),
                 class_balancing=opt.class_balancing
             )
         else:

@@ -116,7 +116,7 @@ if __name__ == "__main__":
         os.makedirs(opt.model_dir)
 
     # cuDNN auto-tuning
-    torch.backends.cudnn.benchmark = opt.autotune
+    torch.backends.cudnn.benchmark = not opt.no_autotune
 
     # Run experiment.
     print("Running experiment: {}".format(opt.exp_name))
