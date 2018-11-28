@@ -10,7 +10,7 @@ class Options(object):
     Test options.
     """
     def __init__(self):
-        self.parser = argparse.ArgumentParser()
+        self.parser = argparse.ArgumentParser(fromfile_prefix_chars='@')
         self.initialized = False
 
     def initialize(self):

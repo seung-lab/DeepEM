@@ -21,6 +21,12 @@ class Logger(object):
         self.out_spec = dict(opt.out_spec)
         self.lr = opt.lr
 
+        # Basic logging
+        self.timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
+        self.log_params(vars(opt))
+        self.log_command()
+        self.log_command_args()
+
     def __enter__(self):
         return self
 
@@ -93,7 +99,7 @@ class Logger(object):
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
                 tensor = F.sigmoid(preds[k][0,0:3,...])
-                self.log_image(tag, tensor, iter_num)            
+                self.log_image(tag, tensor, iter_num)
 
     def log_image(self, tag, tensor, iter_num):
         assert(torch.is_tensor(tensor))
@@ -102,21 +108,20 @@ class Logger(object):
         img = make_grid(imgs, nrow=depth, padding=0)
         self.writer.add_image(tag, img, iter_num)
 
-    def log_parameters(self, params, log_dir=None):
-        tstamp = self.timestamp()
-        log_dir = self.log_dir if log_dir is None else log_dir
-        params_fname = os.path.join(log_dir, "{}_params.csv".format(tstamp))
-        with open(params_fname,"w+") as f:
-            for (k,v) in params.items():
-                f.write("{k}: {v}\n".format(k=k,v=v))
+    def log_params(self, params):
+        fname = os.path.join(self.log_dir, "{}_params.csv".format(self.timestamp))
+        with open(fname, "w+") as f:
+            for k, v in params.items():
+                f.write("{k}: {v}\n".format(k=k, v=v))
 
-    def log_command(self, log_dir=None):
-        tstamp = self.timestamp()
-        log_dir = self.log_dir if log_dir is None else log_dir
-        cmd_fname = os.path.join(log_dir, "{}_command".format(tstamp))
+    def log_command(self):
+        fname = os.path.join(self.log_dir, "{}_command".format(self.timestamp))
         command = " ".join(sys.argv)
-        with open(cmd_fname, "w+") as f:
+        with open(fname, "w+") as f:
             f.write(command)
 
-    def timestamp(self):
-        return datetime.datetime.now().strftime("%y%m%d_%H%M%S")
+    def log_command_args(self):
+        fname = os.path.join(self.log_dir, "{}_args.txt".format(self.timestamp))
+        with open(fname, "w+") as f:
+            for arg in sys.argv[1:]:
+                f.write(arg + "\n")

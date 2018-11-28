@@ -31,10 +31,6 @@ def train(opt):
         # Timer
         t0 = time.time()
 
-        # Log parameters
-        logger.log_parameters(vars(opt))
-        logger.log_command()
-
         for i in range(opt.chkpt_num, opt.max_iter):
 
             # Load training samples.
