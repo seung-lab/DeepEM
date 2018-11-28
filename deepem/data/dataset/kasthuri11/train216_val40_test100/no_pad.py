@@ -1,11 +1,9 @@
 from __future__ import print_function
-import numpy as np
 import os
 
 import dataprovider3.emio as emio
 
 
-# Kasthuri11 dataset
 data_info = {
     'train_AC4':{
         'img': 'img.h5',
@@ -60,10 +58,9 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
     # Image
     fpath = os.path.join(dpath, info['dir'], info['img'])
     print(fpath)
-    img = emio.imread(fpath).astype('float32') / 255.0
-    dset['img'] = img
+    dset['img'] = emio.imread(fpath).astype('float32') / 255.0
 
-    # Train mask
+    # Mask
     fpath = os.path.join(dpath, info['dir'], info['msk'])
     print(fpath)
     dset['msk'] = emio.imread(fpath).astype('uint8')
@@ -72,8 +69,7 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
     if 'aff' in class_keys or 'long' in class_keys:
         fpath = os.path.join(dpath, info['dir'], info['seg'])
         print(fpath)
-        seg = emio.imread(fpath).astype('uint32')
-        dset['seg'] = seg
+        dset['seg'] = emio.imread(fpath).astype('uint32')
 
     # Myelin
     if 'mye' in class_keys:
