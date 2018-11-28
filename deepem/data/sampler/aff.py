@@ -6,20 +6,28 @@ from dataprovider3 import DataProvider, Dataset
 
 def get_spec(in_spec, out_spec):
     spec = dict()
+
+    # Input spec
     for k, v in in_spec.items():
         spec[k] = v[-3:]
+
+    # Output spec
     for k, v in out_spec.items():
         dim = tuple(v[-3:])
-        if k == 'affinity':
-            dim = tuple(d+2 for d in dim)
         spec[k] = dim
         spec[k+'_mask'] = dim
+
     return spec
 
 
 class Sampler(object):
     def __init__(self, data, spec, is_train, aug=None, prob=None):
         self.is_train = is_train
+        if 'long_range' in spec:
+            self.long_range = True
+            del spec['long_range']
+        else:
+            self.long_range = False
         self.build(data, spec, aug, prob)
 
     def __call__(self):
@@ -28,6 +36,12 @@ class Sampler(object):
 
     def postprocess(self, sample):
         assert 'affinity' in sample
+
+        # TODO: Copy or Ref?
+        if self.long_range:
+            sample['long_range'] = sample['affinity']
+            sample['long_range_mask'] = sample['affinity_mask']
+
         sample = Augment.to_tensor(sample)
         return self.to_float32(sample)
 
@@ -56,11 +70,13 @@ class Sampler(object):
         seg = data['seg']
         loc = data['loc']
         msk = self.get_mask(data)
+
         # Create Dataset.
         dset = Dataset(tag=tag)
         dset.add_data(key='input', data=img)
         dset.add_data(key='affinity', data=seg)
         dset.add_mask(key='affinity_mask', data=msk, loc=loc)
+
         return dset
 
     def get_mask(self, data):
