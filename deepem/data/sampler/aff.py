@@ -6,17 +6,14 @@ from dataprovider3 import DataProvider, Dataset
 
 def get_spec(in_spec, out_spec):
     spec = dict()
-
     # Input spec
     for k, v in in_spec.items():
         spec[k] = v[-3:]
-
     # Output spec
     for k, v in out_spec.items():
         dim = tuple(v[-3:])
         spec[k] = dim
         spec[k+'_mask'] = dim
-
     return spec
 
 
