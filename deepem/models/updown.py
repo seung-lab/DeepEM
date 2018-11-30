@@ -55,7 +55,7 @@ class UpBlock(nn.Module):
                     nn.Upsample(scale_factor=scale_factor, mode='trilinear'))
 
     def forward(self, x):
-        return {k: m(x) for k, m in self.named_children()}
+        return {k: m(x[k]) for k, m in self.named_children()}
 
 
 class Model(nn.Sequential):
