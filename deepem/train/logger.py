@@ -98,8 +98,25 @@ class Logger(object):
             if k == 'affinity':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
-                tensor = F.sigmoid(preds[k][0,0:3,...])
+                tensor = F.sigmoid(preds[k][0,0:3,...]).cpu()
                 self.log_image(tag, tensor, iter_num)
+
+            elif k == 'myelin':
+                # Prediction
+                tag = '{}/images/{}'.format(phase, k)
+                pred = F.sigmoid(preds[k][0,...]).cpu()
+                self.log_image(tag, pred, iter_num)
+
+            elif k == 'synapse':
+                # Prediction
+                tag = '{}/images/{}'.format(phase, k)
+                pred = F.sigmoid(preds[k][0,...]).cpu()
+                self.log_image(tag, pred, iter_num)
+
+                # Target
+                tag = '{}/labels/{}'.format(phase, k)
+                target = sample[k][0,...].cpu()
+                self.log_image(tag, target, iter_num)
 
     def log_image(self, tag, tensor, iter_num):
         assert(torch.is_tensor(tensor))
