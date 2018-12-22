@@ -3,8 +3,8 @@ from __future__ import print_function
 from augmentor import *
 
 
-def get_augmentation(is_train, box=None, interp=False, missing, blur, lost,
-                     **kwargs):
+def get_augmentation(is_train, box=None, interp=False, missing=7, blur=7,
+                     lost=True, **kwargs):
     # Mild misalignment
     m1 = Blend(
         [Misalign((0,5), margin=1), SlipMisalign((0,5), interp=interp, margin=1)],
