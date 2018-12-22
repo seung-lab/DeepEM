@@ -108,7 +108,7 @@ class Logger(object):
 
                 # Target
                 tag = '{}/labels/{}'.format(phase, k)
-                seg = sample[k][0,0,...].cpu().numpy().astype(np.uint32)
+                seg = sample[k][0,0,...].cpu().numpy().astype('uint32')
                 rgb = torch.from_numpy(py_utils.seg2rgb(seg))
                 self.log_image(tag, rgb, iter_num)
 
