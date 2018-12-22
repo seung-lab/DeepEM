@@ -9,7 +9,7 @@ from torch.nn import functional as F
 from torchvision.utils import make_grid
 from tensorboardX import SummaryWriter
 
-from deepem.utils import torch_utils
+from deepem.utils import torch_utils, py_utils
 
 
 class Logger(object):
