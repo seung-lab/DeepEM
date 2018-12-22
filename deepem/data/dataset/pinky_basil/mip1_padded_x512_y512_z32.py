@@ -206,7 +206,7 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
             print(fpath)
             mye = emio.imread(fpath).astype('uint8')
         else:
-            mye = np.zeros_like(dset['msk'])
+            mye = np.zeros(dset['img'], dtype='uint8')
         dset['mye'] = mye
 
     # Additoinal info
