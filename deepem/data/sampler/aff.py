@@ -23,6 +23,7 @@ class Sampler(object):
         if 'long_range' in spec:
             self.long_range = True
             del spec['long_range']
+            del spec['long_range_mask']
         else:
             self.long_range = False
         self.build(data, spec, aug, prob)
