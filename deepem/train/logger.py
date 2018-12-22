@@ -101,6 +101,17 @@ class Logger(object):
                 tensor = F.sigmoid(preds[k][0,0:3,...]).cpu()
                 self.log_image(tag, tensor, iter_num)
 
+                # Mask
+                tag = '{}/masks/{}'.format(phase, k)
+                msk = sample[k + '_mask'][0,...].cpu()
+                self.log_image(tag, msk, iter_num)
+
+                # Target
+                tag = '{}/labels/{}'.format(phase, k)
+                seg = sample[k][0,0,...].cpu().numpy().astype(np.uint32)
+                rgb = torch.from_numpy(py_utils.seg2rgb(seg))
+                self.log_image(tag, rgb, iter_num)
+
             elif k == 'myelin':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
