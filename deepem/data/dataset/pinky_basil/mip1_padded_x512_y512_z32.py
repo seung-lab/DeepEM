@@ -14,10 +14,22 @@ basil_info = {
         'msk': 'msk.d128.h5',
         'loc': True,
     },
+    'vol001a':{
+        'img': 'img.h5',
+        'seg': 'seg.h5',
+        'msk': 'msk.h5',
+        'loc': True,
+    },
     'vol002':{
         'img': 'img.h5',
         'seg': 'seg.h5',
         'msk': 'msk.d128.h5',
+        'loc': True,
+    },
+    'vol002a':{
+        'img': 'img.h5',
+        'seg': 'seg.h5',
+        'msk': 'msk.h5',
         'loc': True,
     },
     'vol003':{
@@ -111,6 +123,12 @@ pinky_info = {
         'img': 'img.h5',
         'seg': 'seg.h5',
         'msk': 'msk.d128.h5',
+        'loc': True,
+    },
+    'vol501a':{
+        'img': 'img.h5',
+        'seg': 'seg.h5',
+        'msk': 'msk.h5',
         'loc': True,
     },
     'vol502':{
