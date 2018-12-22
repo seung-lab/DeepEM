@@ -174,7 +174,8 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
     dset = dict()
 
     # Image
-    fpath = os.path.join(dpath, tag, info['img'])
+    dname = tag[:-1] if tag[-1] == 'a' else tag
+    fpath = os.path.join(dpath, dname, info['img'])
     print(fpath)
     dset['img']  = emio.imread(fpath).astype('float32')
     dset['img'] /= 255.0
