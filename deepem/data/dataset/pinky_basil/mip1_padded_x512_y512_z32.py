@@ -181,28 +181,28 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
     dset['img'] /= 255.0
 
     # Mask
-    if tag == 'stitched_vol19-vol34':
-        fpath = os.path.join(dpath, tag, 'msk_train.h5')
+    if dname == 'stitched_vol19-vol34':
+        fpath = os.path.join(dpath, dname, 'msk_train.h5')
         print(fpath)
         dset['msk_train'] = emio.imread(fpath).astype('uint8')
-        fpath = os.path.join(dpath, tag, 'msk_val.h5')
+        fpath = os.path.join(dpath, dname, 'msk_val.h5')
         print(fpath)
         dset['msk_val'] = emio.imread(fpath).astype('uint8')
     else:
-        fpath = os.path.join(dpath, tag, info['msk'])
+        fpath = os.path.join(dpath, dname, info['msk'])
         print(fpath)
         dset['msk'] = emio.imread(fpath).astype('uint8')
 
     # Segmentation
     if 'aff' in class_keys or 'long' in class_keys:
-        fpath = os.path.join(dpath, tag, info['seg'])
+        fpath = os.path.join(dpath, dname, info['seg'])
         print(fpath)
         dset['seg'] = emio.imread(fpath).astype('uint32')
 
     # Myelin
     if 'mye' in class_keys:
         if 'mye' in info:
-            fpath = os.path.join(dpath, tag, info['mye'])
+            fpath = os.path.join(dpath, dname, info['mye'])
             print(fpath)
             mye = emio.imread(fpath).astype('uint8')
         else:
