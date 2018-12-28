@@ -50,11 +50,16 @@ def get_augmentation(is_train, box=None, interp=False, missing=7, blur=7,
     to_blend.append(Compose([m1,m2,m3]))
     to_blend.append(MisalignPlusMissing((3,15), random=False))
     if missing > 0:
-        to_blend.append(Blend([
-            MixedMissingSection(maxsec=missing, individual=True, random=is_train),
-            MixedMissingSection(maxsec=missing, individual=False, random=is_train),
-            MixedMissingSection(maxsec=missing, individual=False, random=False)
-        ]))
+        if is_train:
+            to_blend.append(Blend([
+                MixedMissingSection(maxsec=missing, individual=True, random=True),
+                MixedMissingSection(maxsec=missing, individual=False, random=is_train),
+                MixedMissingSection(maxsec=missing, individual=False, random=False)
+            ]))
+        else:
+            to_blend.append(
+                MixedMissingSection(maxsec=missing, individual=False, random=False)
+            )
     if lost:
         to_blend.append(Blend([
             Compose([LostSection(1), LostSection(1)]),
