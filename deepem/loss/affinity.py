@@ -39,8 +39,11 @@ class EdgeCRF(nn.Module):
             l, n = self.criterion(pred, target, mask)
             loss += l
             nmsk += n
-        assert nmsk.item() > 0
+        assert nmsk.item() >= 0
+        if nmsk.item() == 0:
+            loss = 0
         if self.size_average:
+            assert nmsk.item() > 0
             try:
                 loss = loss / nmsk.item()
                 nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
