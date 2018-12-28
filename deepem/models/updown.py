@@ -72,5 +72,5 @@ class Model(nn.Sequential):
         self.add_module('down', DownBlock(scale_factor=scale_factor))
         self.add_module('in', InputBlock(in_channels, out_channels, io_kernel))
         self.add_module('core', core)
-        self.add_module('out', OutputBlock(out_channels, out_spec, (1,1,1)))
+        self.add_module('out', OutputBlock(out_channels, out_spec, io_kernel))
         self.add_module('up', UpBlock(out_spec, scale_factor=scale_factor))
