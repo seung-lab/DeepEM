@@ -41,7 +41,7 @@ class EdgeCRF(nn.Module):
             nmsk += n
         assert nmsk.item() >= 0
         if nmsk.item() == 0:
-            loss = 0
+            loss = torch.tensor([0]).type(torch.cuda.FloatTensor)
         if self.size_average:
             assert nmsk.item() > 0
             try:
