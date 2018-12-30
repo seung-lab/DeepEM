@@ -40,8 +40,11 @@ class EdgeCRF(nn.Module):
             loss += l
             nmsk += n
         assert nmsk.item() >= 0
+
         if nmsk.item() == 0:
             loss = torch.tensor([0]).type(torch.cuda.FloatTensor)
+            return loss, nmsk
+
         if self.size_average:
             assert nmsk.item() > 0
             try:
@@ -50,6 +53,7 @@ class EdgeCRF(nn.Module):
             except:
                 import pdb; pdb.set_trace()
                 raise
+
         return loss, nmsk
 
     def class_balancing(self, target, mask):
