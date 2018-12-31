@@ -42,14 +42,14 @@ class EdgeCRF(nn.Module):
         assert nmsk.item() >= 0
 
         if nmsk.item() == 0:
-            loss = torch.tensor([0]).type(torch.cuda.FloatTensor)
+            loss = torch.tensor(0).type(torch.cuda.FloatTensor)
             return loss, nmsk
 
         if self.size_average:
             assert nmsk.item() > 0
             try:
                 loss = loss / nmsk.item()
-                nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
+                nmsk = torch.tensor(1, dtype=nmsk.dtype, device=nmsk.device)
             except:
                 import pdb; pdb.set_trace()
                 raise

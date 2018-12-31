@@ -24,7 +24,7 @@ class BCELoss(nn.Module):
         nmsk = (mask > 0).type(mask.dtype).sum()
         assert nmsk.item() >= 0
         if nmsk.item() == 0:
-            loss = 0
+            loss = torch.tensor(0).type(torch.cuda.FloatTensor)
             return loss, nmsk
 
         # Margin
@@ -43,7 +43,7 @@ class BCELoss(nn.Module):
 
         if self.size_average:
             loss = loss / nmsk.item()
-            nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
+            nmsk = torch.tensor(1, dtype=nmsk.dtype, device=nmsk.device)
 
         return loss, nmsk
 
@@ -66,7 +66,7 @@ class MSELoss(nn.Module):
         nmsk = (mask > 0).type(mask.type()).sum()
         assert nmsk.item() >= 0
         if nmsk.item() == 0:
-            loss = 0
+            loss = torch.tensor(0).type(torch.cuda.FloatTensor)
             return loss, nmsk
 
         activ = F.sigmoid(input) if self.logits else input
@@ -83,6 +83,6 @@ class MSELoss(nn.Module):
 
         if self.size_average:
             loss = loss / nmsk.item()
-            nmsk = torch.tensor([1], dtype=nmsk.dtype, device=nmsk.device)
+            nmsk = torch.tensor(1, dtype=nmsk.dtype, device=nmsk.device)
 
         return loss, nmsk
