@@ -11,30 +11,35 @@ basil_info = {
     'vol001':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.d128.h5',
         'loc': True,
     },
     'vol001a':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol002':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.d128.h5',
         'loc': True,
     },
     'vol002a':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol003':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'mye': 'mye.h5',
         'loc': True,
@@ -42,12 +47,14 @@ basil_info = {
     'vol004':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol005':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'mye': 'mye.h5',
         'loc': True,
@@ -55,18 +62,21 @@ basil_info = {
     'vol006':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol008':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol011':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
@@ -79,42 +89,49 @@ pinky_info = {
     'stitched_vol19-vol34':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'stitched_vol40-vol41':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol101':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol102':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol103':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol104':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol401':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'mye': 'mye.h5',
         'loc': True,
@@ -122,18 +139,21 @@ pinky_info = {
     'vol501':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.d128.h5',
         'loc': True,
     },
     'vol501a':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol502':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'mye': 'mye.h5',
         'loc': True,
@@ -141,6 +161,7 @@ pinky_info = {
     'vol503':{
         'img': 'img.h5',
         'seg': 'seg.h5',
+        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
@@ -198,6 +219,16 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
         fpath = os.path.join(dpath, dname, info['seg'])
         print(fpath)
         dset['seg'] = emio.imread(fpath).astype('uint32')
+
+    # Synapse (distillation)
+    if 'syn' in class_keys:
+        if 'syn' in info:
+            fpath = os.path.join(dpath, dname, info['syn'])
+            print(fpath)
+            syn = emio.imread(fpath).astype('float32')
+        else:
+            syn = np.zeros(dset['img'].shape, dtype='float32')
+        dset['syn'] = syn
 
     # Myelin
     if 'mye' in class_keys:

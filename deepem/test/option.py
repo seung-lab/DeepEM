@@ -39,7 +39,7 @@ class Options(object):
         self.parser.add_argument('--aff',  type=int, default=0)
         self.parser.add_argument('--long', type=int, default=0)
         self.parser.add_argument('--bdr',  type=int, default=0)
-        self.parser.add_argument('--psd',  type=int, default=0)
+        self.parser.add_argument('--syn',  type=int, default=0)
         self.parser.add_argument('--mit',  type=int, default=0)
         self.parser.add_argument('--mye',  type=int, default=0)
         self.parser.add_argument('--bld',  type=int, default=0)
@@ -110,7 +110,7 @@ class Options(object):
             opt.out_spec['affinity'] = (3,) + opt.outputsz
         if opt.bdr:
             opt.out_spec['boundary'] = (1,) + opt.outputsz
-        if opt.psd:
+        if opt.syn:
             opt.out_spec['synapse'] = (1,) + opt.outputsz
         if opt.mit:
             opt.out_spec['mitochondria'] = (1,) + opt.outputsz
@@ -126,7 +126,7 @@ class Options(object):
             opt.scan_spec['affinity'] = (3,) + opt.outputsz
         if opt.bdr:
             opt.scan_spec['boundary'] = (1,) + opt.outputsz
-        if opt.psd:
+        if opt.syn:
             opt.scan_spec['synapse'] = (1,) + opt.outputsz
         if opt.mit:
             opt.scan_spec['mitochondria'] = (1,) + opt.outputsz
