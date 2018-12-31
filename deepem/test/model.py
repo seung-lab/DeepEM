@@ -7,6 +7,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from deepem.utils import torch_utils
+from deepem.test.mask import PatchMask, AffinityMask
 
 
 class Model(nn.Module):
@@ -18,13 +19,21 @@ class Model(nn.Module):
         self.model = model
         self.in_spec = dict(opt.in_spec)
         self.pretrain = opt.pretrain
-        self.cropsz = np.maximum(opt.cropsz, 0)
+        self.cropsz = opt.cropsz
 
-        # Metric learning
-        self.vec_to = opt.vec_to
-        self.vec_aff = opt.vec_aff
-        self.mean_loss = opt.mean_loss
-        self.gamma = 2 * opt.delta_d
+        # Precomputed mask
+        self.mask = dict()
+        if opt.blend == 'precomputed':
+            for k, v in opt.scan_spec.items():
+                patch_sz = v[-3:]
+                if k == 'affinity':
+                    edges = [(0,0,1),(0,1,0),(1,0,0)]
+                    mask = AffinityMask(patch_sz, opt.overlap, edges, opt.bump)
+                else:
+                    mask = PatchMask(patch_sz, opt.overlap)
+                    mask = np.expand_dims(mask, axis=0)
+                mask = np.expand_dims(mask, axis=0)
+                self.mask[k] = torch.from_numpy(mask).cuda()
 
     def forward(self, sample):
         inputs = [sample[k] for k in sorted(self.in_spec)]
@@ -33,18 +42,13 @@ class Model(nn.Module):
         for k, x in preds.items():
             outputs[k] = F.sigmoid(x)
 
+            # Precomputed mask
+            if k in self.mask:
+                outputs[k] *= self.mask[k]
+
             # Crop outputs.
-            if any(self.cropsz):
-                ndim = outputs[k].dim()
-                cropsz = [0] * ndim
-                cropsz[-3:] = self.cropsz
-                slices = list()
-                for cs in cropsz:
-                    if cs > 0:
-                        slices.append(slice(cs,-cs))
-                    else:
-                        slices.append(slice(None))
-                outputs[k] = outputs[k][slices]
+            if self.cropsz is not None:
+                outputs[k] = torch_utils.crop_border(outputs[k], self.cropsz)
 
         return outputs
 
@@ -60,12 +64,3 @@ class Model(nn.Module):
             self.model.load_state_dict(model_dict)
         else:
             self.model.load_state_dict(state_dict)
-
-
-class OnnxModel(Model):
-    def __init__(self, model, opt):
-        super(OnnxModel, self).__init__(model, opt)
-
-    def forward(self, x):
-        outputs = self.model(x)
-        return [F.sigmoid(x) for x in outputs]

@@ -27,7 +27,11 @@ def get_criteria(opt):
                 class_balancing=opt.class_balancing
             )
         else:
-            criteria[k] = getattr(loss, opt.loss)(**opt.loss_params)
+            params = dict(opt.loss_params)
+            params['margin0'] = 0
+            params['margin1'] = 0
+            params['inverse'] = False
+            criteria[k] = getattr(loss, opt.loss)(**opt.params)
     return criteria
 
 

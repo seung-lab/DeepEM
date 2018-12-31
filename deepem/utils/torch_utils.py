@@ -31,3 +31,9 @@ def get_pair(arr, edge):
                     os2[1]:shape[1]-os1[1],
                     os2[2]:shape[2]-os1[2]]
     return arr1, arr2
+
+
+def crop_border(v, size):
+    assert all([a > b for a, b in zip(v.shape[-3:], size[-3:])])
+    sz, sy, sx = [s // 2 for s in size[-3:]]
+    return v[..., sz:-sz, sy:-sy, sx:-sx]

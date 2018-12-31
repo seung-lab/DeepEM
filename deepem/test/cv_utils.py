@@ -1,4 +1,5 @@
 from __future__ import print_function
+import numpy as np
 
 import cloudvolume as cv
 from cloudvolume.lib import Vec, Bbox
@@ -17,10 +18,13 @@ def make_info(num_channels, layer_type, dtype, shape, resolution,
 
 
 def cutout(opt, dtype='uint8'):
-    print(opt.gs_input)
+    gs_path = opt.gs_input
+    if '{}' in opt.gs_input:
+        gs_path = gs_path.format(*opt.keywords)
+    print(gs_path)
 
     # CloudVolume.
-    cvol = cv.CloudVolume(opt.gs_input, mip=opt.in_mip, cache=opt.cache,
+    cvol = cv.CloudVolume(gs_path, mip=opt.in_mip, cache=opt.cache,
                           fill_missing=True, parallel=opt.parallel)
 
     # Cutout
@@ -59,22 +63,39 @@ def ingest(data, opt):
     data = data.transpose((3,2,1,0))
     num_channels = data.shape[-1]
     shape = data.shape[:-1]
+
+    # Offset
     if opt.offset is None:
         opt.offset = opt.begin
+
+    # MIP level correction
     if opt.gs_input and opt.in_mip > 0:
         o = opt.offset
         p = pow(2,opt.in_mip)
         offset = (o[0]//p, o[1]//p, o[2])
     else:
         offset = opt.offset
+
+    # Patch offset correction (when output patch is smaller than input patch)
+    patch_offset = (np.array(opt.inputsz) - np.array(opt.outputsz)) // 2
+    offset = tuple(np.array(offset) + np.flip(patch_offset, 0))
+
+    # Create info
     info = make_info(num_channels, 'image', str(data.dtype), shape,
                      opt.resolution, offset=offset, chunk_size=opt.chunk_size)
     print(info)
+    gs_path = opt.gs_output
     if '{}' in opt.gs_output:
-        coords = '_'.join(['{}-{}'.format(b,e) for b,e in zip(opt.begin,opt.end)])
-        gs_path = opt.gs_output.format(coords)
-    else:
-        gs_path = opt.gs_output
+        if opt.keywords:
+            gs_path = gs_path.format(*opt.keywords)
+        else:
+            if opt.center is not None:
+                coord = "x{}_y{}_z{}".format(*opt.center)
+            else:
+                coord = '_'.join(['{}-{}'.format(b,e) for b,e in zip(opt.begin,opt.end)])
+            gs_path = gs_path.format(coord)
+
+    print("gs_output:\n{}".format(gs_path))
     cvol = cv.CloudVolume(gs_path, mip=0, info=info,
                           parallel=opt.parallel)
     cvol[:,:,:,:] = data

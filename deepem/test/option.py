@@ -1,5 +1,6 @@
 from __future__ import print_function
 import argparse
+import math
 import os
 
 from deepem.utils.py_utils import vec3, vec3f
@@ -14,7 +15,7 @@ class Options(object):
         self.initialized = False
 
     def initialize(self):
-        self.parser.add_argument('--log_name', required=True)
+        self.parser.add_argument('--exp_name', required=True)
         self.parser.add_argument('--chkpt_num', type=int, default=0)
         self.parser.add_argument('--gpu_id', type=str, default='0')
 
@@ -27,9 +28,12 @@ class Options(object):
         self.parser.add_argument('--no_eval', action='store_true')
         self.parser.add_argument('--inputsz', type=vec3, default=None)
         self.parser.add_argument('--outputsz', type=vec3, default=None)
+        self.parser.add_argument('--cropsz', type=vec3, default=None)
         self.parser.add_argument('--fov', type=vec3, default=None)
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--width', type=int, default=None, nargs='+')
+        self.parser.add_argument('--group', type=int, default=0)
+        self.parser.add_argument('--act', default='ReLU')
 
         # Multiclass detection
         self.parser.add_argument('--aff',  type=int, default=0)
@@ -54,6 +58,7 @@ class Options(object):
 
         # Cloud-volume output
         self.parser.add_argument('--gs_output', default='')
+        self.parser.add_argument('--keywords', default=[], nargs='+')
         self.parser.add_argument('-p','--parallel', type=int, default=16)
         self.parser.add_argument('-d','--downsample', action='store_true')
         self.parser.add_argument('-r','--resolution', type=vec3, default=(4,4,40))
@@ -73,6 +78,7 @@ class Options(object):
         self.parser.add_argument('--crop_border', type=vec3, default=None)
         self.parser.add_argument('--crop_center', type=vec3, default=None)
         self.parser.add_argument('--blend', default='bump')
+        self.parser.add_argument('--bump', default='zung')  # 'zung' or 'wu'
 
         # Benchmark
         self.parser.add_argument('--dummy', action='store_true')
@@ -97,13 +103,11 @@ class Options(object):
         opt.fov = tuple(opt.fov)
         opt.inputsz = opt.fov if opt.inputsz is None else opt.inputsz
         opt.outputsz = opt.fov if opt.outputsz is None else opt.outputsz
-        opt.cropsz = tuple((i-o)//2 for i, o in zip(opt.inputsz, opt.outputsz))
+        opt.cropsz = opt.cropsz
         opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.out_spec = dict()
-        if opt.vec > 0:
-            opt.out_spec['embedding'] = (opt.vec,) + opt.outputsz
-        if opt.aff > 0:
-            opt.out_spec['affinity'] = (opt.aff,) + opt.outputsz
+        if opt.aff:
+            opt.out_spec['affinity'] = (3,) + opt.outputsz
         if opt.bdr:
             opt.out_spec['boundary'] = (1,) + opt.outputsz
         if opt.psd:
@@ -114,16 +118,11 @@ class Options(object):
             opt.out_spec['myelin'] = (1,) + opt.outputsz
         if opt.bld:
             opt.out_spec['bloodvessel'] = (1,) + opt.outputsz
-        if opt.som:
-            opt.out_spec['soma'] = (1,) + opt.outputsz
         assert(len(opt.out_spec) > 0)
 
         # Scan spec
         opt.scan_spec = dict()
-        if opt.vec > 0:
-            dim = 3 if opt.vec_to else opt.vec
-            opt.scan_spec['embedding'] = (dim,) + opt.outputsz
-        if opt.aff > 0:
+        if opt.aff:
             opt.scan_spec['affinity'] = (3,) + opt.outputsz
         if opt.bdr:
             opt.scan_spec['boundary'] = (1,) + opt.outputsz
@@ -135,10 +134,9 @@ class Options(object):
             opt.scan_spec['myelin'] = (1,) + opt.outputsz
         if opt.bld:
             opt.scan_spec['bloodvessel'] = (1,) + opt.outputsz
-        if opt.som:
-            opt.scan_spec['soma'] = (1,) + opt.outputsz
-        stride = self.get_stride(opt.outputsz, opt.overlap)
-        opt.scan_params = dict(stride=stride, blend=opt.blend)
+        opt.overlap = self.get_overlap(opt.outputsz, opt.overlap)
+        opt.stride = tuple(int(f-o) for f,o in zip(opt.outputsz, opt.overlap))
+        opt.scan_params = dict(stride=opt.stride, blend=opt.blend)
 
         args = vars(opt)
         print('------------ Options -------------')
@@ -149,8 +147,8 @@ class Options(object):
         self.opt = opt
         return self.opt
 
-    def get_stride(self, fov, overlap):
-        assert(len(fov) == 3)
-        assert(len(overlap) == 3)
-        inverse = lambda f,o: float(1-o) if o>0 and o<1 else int(f-o)
-        return tuple(inverse(f,o) for f,o in zip(fov,overlap))
+    def get_overlap(self, fov, overlap):
+        assert len(fov) == 3
+        assert len(overlap) == 3
+        overlap_filter = lambda f,o: math.floor(f*o) if o > 0 and o < 1 else o
+        return tuple(int(overlap_filter(f,o)) for f,o in zip(fov,overlap))
