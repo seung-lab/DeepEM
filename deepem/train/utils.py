@@ -31,7 +31,7 @@ def get_criteria(opt):
             params['margin0'] = 0
             params['margin1'] = 0
             params['inverse'] = False
-            criteria[k] = getattr(loss, opt.loss)(**opt.params)
+            criteria[k] = getattr(loss, 'BCELoss')(**params)
     return criteria
 
 
