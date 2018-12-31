@@ -23,7 +23,11 @@ class Model(nn.Module):
         preds = self.model(*inputs)
 
         # Loss evaluation
-        losses, nmasks = self.eval_loss(preds, sample)
+        try:
+            losses, nmasks = self.eval_loss(preds, sample)
+        except:
+            import pdb; pdb.set_trace()
+            raise
         return losses, nmasks, preds
 
     def eval_loss(self, preds, sample):
