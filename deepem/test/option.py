@@ -42,7 +42,7 @@ class Options(object):
         self.parser.add_argument('--syn',  type=int, default=0)
         self.parser.add_argument('--mit',  type=int, default=0)
         self.parser.add_argument('--mye',  type=int, default=0)
-        self.parser.add_argument('--bld',  type=int, default=0)
+        self.parser.add_argument('--blv',  type=int, default=0)
 
         # Test-time augmentation
         self.parser.add_argument('--test_aug', type=int, default=None, nargs='+')
@@ -116,8 +116,8 @@ class Options(object):
             opt.out_spec['mitochondria'] = (1,) + opt.outputsz
         if opt.mye:
             opt.out_spec['myelin'] = (1,) + opt.outputsz
-        if opt.bld:
-            opt.out_spec['bloodvessel'] = (1,) + opt.outputsz
+        if opt.blv:
+            opt.out_spec['bloodvessel'] = (2,) + opt.outputsz
         assert(len(opt.out_spec) > 0)
 
         # Scan spec
@@ -132,8 +132,8 @@ class Options(object):
             opt.scan_spec['mitochondria'] = (1,) + opt.outputsz
         if opt.mye:
             opt.scan_spec['myelin'] = (1,) + opt.outputsz
-        if opt.bld:
-            opt.scan_spec['bloodvessel'] = (1,) + opt.outputsz
+        if opt.blv:
+            opt.scan_spec['bloodvessel'] = (2,) + opt.outputsz
         opt.overlap = self.get_overlap(opt.outputsz, opt.overlap)
         opt.stride = tuple(int(f-o) for f,o in zip(opt.outputsz, opt.overlap))
         opt.scan_params = dict(stride=opt.stride, blend=opt.blend)
