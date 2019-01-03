@@ -129,6 +129,14 @@ class Logger(object):
                 target = sample[k][0,...].cpu()
                 self.log_image(tag, target, iter_num)
 
+            elif k == 'blood_vessel':
+                # Prediction
+                tag = '{}/images/{}'.format(phase, k)
+                pred = F.sigmoid(preds[k][0,...]).cpu()
+                zero = torch.zeros_like(pred[[0],...])
+                pred = torch.cat((pred,zero), dim=-4)
+                self.log_image(tag, pred, iter_num)
+
     def log_image(self, tag, tensor, iter_num):
         assert(torch.is_tensor(tensor))
         depth = tensor.shape[-3]
