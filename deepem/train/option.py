@@ -97,7 +97,7 @@ class Options(object):
         self.parser.add_argument('--syn', type=float, default=0)  # Synapse
         self.parser.add_argument('--mit', type=float, default=0)  # Mitochondria
         self.parser.add_argument('--mye', type=float, default=0)  # Myelin
-        self.parser.add_argument('--bld', type=float, default=0)  # Blood vessel
+        self.parser.add_argument('--blv', type=float, default=0)  # Blood vessel
 
         self.initialized = True
 
@@ -159,7 +159,7 @@ class Options(object):
             'syn':  ('synapse', 1),
             'mit':  ('mitochondria', 1),
             'mye':  ('myelin', 1),
-            'bld':  ('blood_vessel', 1)
+            'blv':  ('blood_vessel', 2)
         }
 
         for k, v in class_dict.items():

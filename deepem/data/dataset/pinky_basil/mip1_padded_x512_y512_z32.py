@@ -13,6 +13,7 @@ basil_info = {
         'seg': 'seg.h5',
         'syn': 'syn.h5',
         'msk': 'msk.d128.h5',
+        'blv': 'blv.h5',
         'loc': True,
     },
     'vol001a':{
@@ -20,6 +21,7 @@ basil_info = {
         'seg': 'seg.h5',
         'syn': 'syn.h5',
         'msk': 'msk.h5',
+        'blv': 'blv.h5',
         'loc': True,
     },
     'vol002':{
@@ -105,6 +107,7 @@ pinky_info = {
         'seg': 'seg.h5',
         'syn': 'syn.h5',
         'msk': 'msk.h5',
+        'blv': 'blv.h5',
         'loc': True,
     },
     'vol102':{
@@ -134,6 +137,7 @@ pinky_info = {
         'syn': 'syn.h5',
         'msk': 'msk.h5',
         'mye': 'mye.h5',
+        'blv': 'blv.h5',
         'loc': True,
     },
     'vol501':{
@@ -163,6 +167,21 @@ pinky_info = {
         'seg': 'seg.h5',
         'syn': 'syn.h5',
         'msk': 'msk.h5',
+        'blv': 'blv.h5',
+        'loc': True,
+    },
+    'vol201':{
+        'img': 'img.h5',
+        'seg': 'seg.h5',
+        'msk': 'msk.d128.h5',
+        'blv': 'blv.h5',
+        'loc': True,
+    },
+    'vol201a':{
+        'img': 'img.h5',
+        'seg': 'seg.h5',
+        'msk': 'msk.h5',
+        'blv': 'blv.h5',
         'loc': True,
     },
 }
@@ -239,6 +258,16 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
         else:
             mye = np.zeros(dset['img'].shape, dtype='uint8')
         dset['mye'] = mye
+
+    # Blood vessel
+    if 'blv' in class_keys:
+        if 'blv' in info:
+            fpath = os.path.join(dpath, dname, info['blv'])
+            print(fpath)
+            blv = emio.imread(fpath).astype('uint8')
+        else:
+            blv = np.zeros(dset['img'].shape, dtype='uint8')
+        dset['blv'] = blv
 
     # Additoinal info
     dset['loc'] = info['loc']
