@@ -36,16 +36,19 @@ class Options(object):
         self.parser.add_argument('--act', default='ReLU')
 
         # Multiclass detection
-        self.parser.add_argument('--aff',  type=int, default=0)
+        self.parser.add_argument('--aff',  action='store_true')
         self.parser.add_argument('--long', type=int, default=0)
-        self.parser.add_argument('--bdr',  type=int, default=0)
-        self.parser.add_argument('--syn',  type=int, default=0)
-        self.parser.add_argument('--mit',  type=int, default=0)
-        self.parser.add_argument('--mye',  type=int, default=0)
-        self.parser.add_argument('--blv',  type=int, default=0)
+        self.parser.add_argument('--bdr',  action='store_true')
+        self.parser.add_argument('--syn',  action='store_true')
+        self.parser.add_argument('--mit',  action='store_true')
+        self.parser.add_argument('--mye',  action='store_true')
+        self.parser.add_argument('--blv',  action='store_true')
 
         # Test-time augmentation
         self.parser.add_argument('--test_aug', type=int, default=None, nargs='+')
+
+        # Temperature T for softer softmax
+        self.parser.add_argument('--temperature', type=float, default=None)
 
         # Cloud-volume input
         self.parser.add_argument('--gs_input', default='')
@@ -117,7 +120,7 @@ class Options(object):
         if opt.mye:
             opt.out_spec['myelin'] = (1,) + opt.outputsz
         if opt.blv:
-            opt.out_spec['bloodvessel'] = (2,) + opt.outputsz
+            opt.out_spec['blood_vessel'] = (2,) + opt.outputsz
         assert(len(opt.out_spec) > 0)
 
         # Scan spec
@@ -133,7 +136,7 @@ class Options(object):
         if opt.mye:
             opt.scan_spec['myelin'] = (1,) + opt.outputsz
         if opt.blv:
-            opt.scan_spec['bloodvessel'] = (2,) + opt.outputsz
+            opt.scan_spec['blood_vessel'] = (2,) + opt.outputsz
         opt.overlap = self.get_overlap(opt.outputsz, opt.overlap)
         opt.stride = tuple(int(f-o) for f,o in zip(opt.outputsz, opt.overlap))
         opt.scan_params = dict(stride=opt.stride, blend=opt.blend)

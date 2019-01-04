@@ -21,6 +21,12 @@ class Model(nn.Module):
         self.pretrain = opt.pretrain
         self.cropsz = opt.cropsz
 
+        # Softer softmax
+        if opt.temperature is None:
+            self.temperature = None
+        else:
+            self.temperature = max(opt.temperature, 1.0)
+
         # Precomputed mask
         self.mask = dict()
         if opt.blend == 'precomputed':
@@ -40,7 +46,10 @@ class Model(nn.Module):
         preds = self.model(*inputs)
         outputs = dict()
         for k, x in preds.items():
-            outputs[k] = F.sigmoid(x)
+            if self.temperature is None:
+                outputs[k] = F.sigmoid(x)
+            else:
+                outputs[k] = F.sigmoid(x/self.temperature)
 
             # Precomputed mask
             if k in self.mask:
