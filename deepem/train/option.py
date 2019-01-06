@@ -95,6 +95,7 @@ class Options(object):
         self.parser.add_argument('--aff', type=float, default=0)  # Affinity
         self.parser.add_argument('--bdr', type=float, default=0)  # Boundary
         self.parser.add_argument('--syn', type=float, default=0)  # Synapse
+        self.parser.add_argument('--psd', type=float, default=0)  # Synapse
         self.parser.add_argument('--mit', type=float, default=0)  # Mitochondria
         self.parser.add_argument('--mye', type=float, default=0)  # Myelin
         self.parser.add_argument('--blv', type=float, default=0)  # Blood vessel
@@ -157,6 +158,7 @@ class Options(object):
             'long': ('long_range', len(opt.edges)),
             'bdr':  ('boundary', 1),
             'syn':  ('synapse', 1),
+            'psd':  ('synapse', 1),
             'mit':  ('mitochondria', 1),
             'mye':  ('myelin', 1),
             'blv':  ('blood_vessel', 2)
