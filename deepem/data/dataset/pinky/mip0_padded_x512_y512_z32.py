@@ -68,7 +68,7 @@ pinky_info = {
     },
     'vol501a':{
         'img': 'img.h5',
-        'seg': 'seg.h5',        
+        'seg': 'seg.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
@@ -134,6 +134,11 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
     dset['img'] /= 255.0
 
     # Mask
+    fpath = os.path.join(dpath, dname, info['msk'])
+    print(fpath)
+    dset['msk'] = emio.imread(fpath).astype('uint8')
+
+    # Special volume
     if dname == 'stitched_vol19-vol34':
         fpath = os.path.join(dpath, dname, 'msk_train.h5')
         print(fpath)
@@ -141,10 +146,6 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
         fpath = os.path.join(dpath, dname, 'msk_val.h5')
         print(fpath)
         dset['msk_val'] = emio.imread(fpath).astype('uint8')
-    else:
-        fpath = os.path.join(dpath, dname, info['msk'])
-        print(fpath)
-        dset['msk'] = emio.imread(fpath).astype('uint8')
 
     # Segmentation
     if 'aff' in class_keys or 'long' in class_keys:
