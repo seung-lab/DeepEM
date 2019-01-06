@@ -63,14 +63,12 @@ pinky_info = {
     'vol501':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'psd': 'psd.h5',
         'msk': 'msk.d128.h5',
         'loc': True,
     },
     'vol501a':{
         'img': 'img.h5',
-        'seg': 'seg.h5',
-        'psd': 'psd.h5',
+        'seg': 'seg.h5',        
         'msk': 'msk.h5',
         'loc': True,
     },
