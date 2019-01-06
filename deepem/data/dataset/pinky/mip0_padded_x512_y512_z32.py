@@ -17,8 +17,8 @@ pinky_info = {
     },
     'stitched_vol40-vol41':{
         'img': 'img.h5',
+        'seg': 'seg.h5',
         'psd': 'psd.h5',
-        'syn': 'syn.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
