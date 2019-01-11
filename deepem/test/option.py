@@ -40,6 +40,7 @@ class Options(object):
         self.parser.add_argument('--long', type=int, default=0)
         self.parser.add_argument('--bdr',  action='store_true')
         self.parser.add_argument('--syn',  action='store_true')
+        self.parser.add_argument('--psd',  action='store_true')
         self.parser.add_argument('--mit',  action='store_true')
         self.parser.add_argument('--mye',  action='store_true')
         self.parser.add_argument('--blv',  action='store_true')
@@ -115,6 +116,8 @@ class Options(object):
             opt.out_spec['boundary'] = (1,) + opt.outputsz
         if opt.syn:
             opt.out_spec['synapse'] = (1,) + opt.outputsz
+        if opt.psd:
+            opt.out_spec['synapse'] = (1,) + opt.outputsz
         if opt.mit:
             opt.out_spec['mitochondria'] = (1,) + opt.outputsz
         if opt.mye:
@@ -130,6 +133,8 @@ class Options(object):
         if opt.bdr:
             opt.scan_spec['boundary'] = (1,) + opt.outputsz
         if opt.syn:
+            opt.scan_spec['synapse'] = (1,) + opt.outputsz
+        if opt.psd:
             opt.scan_spec['synapse'] = (1,) + opt.outputsz
         if opt.mit:
             opt.scan_spec['mitochondria'] = (1,) + opt.outputsz

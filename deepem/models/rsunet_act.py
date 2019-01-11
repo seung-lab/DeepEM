@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 
 import emvision
+from emvision.models import rsunet_act, rsunet_act_gn
 
 from deepem.models.layers import Conv
 
@@ -17,10 +18,10 @@ def create_model(opt):
         depth = opt.depth
     if opt.group > 0:
         # Group normalization
-        core = emvision.models.rsunet_gn(width=width[:depth], group=opt.group)
+        core = rsunet_act_gn(width=width[:depth], group=opt.group, act=opt.act)
     else:
-        # Batch (instance) normalization
-        core = emvision.models.RSUNet(width=width[:depth])
+        # Batch normalization
+        core = rsunet_act(width=width[:depth], act=opt.act)
     return Model(core, opt.in_spec, opt.out_spec, width[0])
 
 
