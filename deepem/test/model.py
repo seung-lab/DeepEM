@@ -18,6 +18,7 @@ class Model(nn.Module):
         super(Model, self).__init__()
         self.model = model
         self.in_spec = dict(opt.in_spec)
+        self.scan_spec = dict(opt.scan_spec)
         self.pretrain = opt.pretrain
         self.cropsz = opt.cropsz
 
@@ -50,6 +51,13 @@ class Model(nn.Module):
                 outputs[k] = F.sigmoid(x)
             else:
                 outputs[k] = F.sigmoid(x/self.temperature)
+
+            # Narrowing
+            output_channels = outputs[k].shape[-4]
+            scan_channels = self.scan_spec[k][-4]
+            assert output_channels >= scan_channels
+            if output_channels > scan_channels:
+                outputs[k] = outputs[k].narrow(-4, 0, scan_channels)
 
             # Precomputed mask
             if k in self.mask:
