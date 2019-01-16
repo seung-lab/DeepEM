@@ -27,6 +27,9 @@ class Logger(object):
         self.log_command()
         self.log_command_args()
 
+        # Blood vessel
+        self.blv_num_channels = opt.blv_num_channels
+
     def __enter__(self):
         return self
 
@@ -133,8 +136,9 @@ class Logger(object):
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
                 pred = F.sigmoid(preds[k][0,...]).cpu()
-                zero = torch.zeros_like(pred[[0],...])
-                pred = torch.cat((pred,zero), dim=-4)
+                if self.blv_num_channels == 2:
+                    zero = torch.zeros_like(pred[[0],...])
+                    pred = torch.cat((pred,zero), dim=-4)
                 self.log_image(tag, pred, iter_num)
 
     def log_image(self, tag, tensor, iter_num):
