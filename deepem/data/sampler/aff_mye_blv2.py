@@ -46,7 +46,6 @@ class Sampler(object):
         # Blood vessel
         blv = sample['blood_vessel']
         sample['blood_vessel'] = (blv > 0)  # Endothelia + lumen
-        sample['blood_vessel_mask'] = blv_msk
 
         sample = Augment.to_tensor(sample)
         return self.to_float32(sample)
