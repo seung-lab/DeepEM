@@ -11,7 +11,7 @@ basil_info = {
     'vol001':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.d128.h5',
         'blv': 'blv.h5',
         'loc': True,
@@ -19,7 +19,7 @@ basil_info = {
     'vol001a':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'blv': 'blv.h5',
         'loc': True,
@@ -27,21 +27,21 @@ basil_info = {
     'vol002':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.d128.h5',
         'loc': True,
     },
     'vol002a':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol003':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'mye': 'mye.h5',
         'loc': True,
@@ -49,14 +49,14 @@ basil_info = {
     'vol004':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol005':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'mye': 'mye.h5',
         'loc': True,
@@ -64,21 +64,21 @@ basil_info = {
     'vol006':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol008':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol011':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
@@ -91,21 +91,21 @@ pinky_info = {
     'stitched_vol19-vol34':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'stitched_vol40-vol41':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol101':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'blv': 'blv.h5',
         'loc': True,
@@ -113,28 +113,28 @@ pinky_info = {
     'vol102':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol103':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol104':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol401':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'mye': 'mye.h5',
         'blv': 'blv.h5',
@@ -143,21 +143,21 @@ pinky_info = {
     'vol501':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.d128.h5',
         'loc': True,
     },
     'vol501a':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'loc': True,
     },
     'vol502':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'mye': 'mye.h5',
         'loc': True,
@@ -165,7 +165,7 @@ pinky_info = {
     'vol503':{
         'img': 'img.h5',
         'seg': 'seg.h5',
-        'syn': 'syn.h5',
+        'psd': 'psd.h5',
         'msk': 'msk.h5',
         'blv': 'blv.h5',
         'loc': True,
@@ -239,15 +239,25 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
         print(fpath)
         dset['seg'] = emio.imread(fpath).astype('uint32')
 
-    # Synapse (distillation)
-    if 'syn' in class_keys:
-        if 'syn' in info:
-            fpath = os.path.join(dpath, dname, info['syn'])
+    # Synapse
+    if 'psd' in class_keys:
+        if 'psd' in info:
+            fpath = os.path.join(dpath, dname, info['psd'])
             print(fpath)
-            syn = emio.imread(fpath).astype('float32')
+            psd = (emio.imread(fpath) > 0).astype('uint8')
         else:
-            syn = np.zeros(dset['img'].shape, dtype='float32')
-        dset['syn'] = syn
+            psd = np.zeros(dset['img'].shape, dtype='uint8')
+        dset['psd'] = psd
+
+        # Special volumes
+        special = ['stitched_vol40-vol41','vol101','vol102','vol103','vol104']
+        if dname in special:
+            fpath = os.path.join(dpath, dname, 'psd_msk.h5')
+            print(fpath)
+            psd_msk = emio.imread(fpath).astype('uint8')
+        else:
+            psd_msk = dset['msk']
+        dset['psd_msk'] = psd_msk
 
     # Myelin
     if 'mye' in class_keys:
