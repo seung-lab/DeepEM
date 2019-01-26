@@ -354,7 +354,12 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
         fpath = os.path.join(dpath, dname, info['fld'])
         print(fpath)
         fld = emio.imread(fpath).astype('uint8')
-        msk[fld > 0] = 0
+        if 'msk' in dset:
+            dset['msk'][fld > 0] = 0
+        if 'msk_train' in dset:
+            dset['msk_train'][fld > 0] = 0
+        if 'msk_val' in dset:
+            dset['msk_val'][fld > 0] = 0
 
     # Additoinal info
     dset['loc'] = info['loc']
