@@ -57,7 +57,7 @@ minnie_info = {
         'img': 'img.h5',
         'seg': 'seg.h5',
         'msk': 'msk.h5',
-        'fld': 'fld.h5',
+        'mye': 'mye.h5',
         'loc': True,
     },
     'minnie009':{
