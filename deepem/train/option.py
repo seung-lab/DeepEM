@@ -98,6 +98,7 @@ class Options(object):
         self.parser.add_argument('--psd', type=float, default=0)  # Synapse
         self.parser.add_argument('--mit', type=float, default=0)  # Mitochondria
         self.parser.add_argument('--mye', type=float, default=0)  # Myelin
+        self.parser.add_argument('--fld', type=float, default=0)  # Fold
         self.parser.add_argument('--blv', type=float, default=0)  # Blood vessel
         self.parser.add_argument('--blv_num_channels', type=int, default=2)
 
@@ -162,6 +163,7 @@ class Options(object):
             'psd':  ('synapse', 1),
             'mit':  ('mitochondria', 1),
             'mye':  ('myelin', 1),
+            'fld':  ('fold', 1),
             'blv':  ('blood_vessel', opt.blv_num_channels)
         }
 
