@@ -50,8 +50,7 @@ def load_model(opt):
 
 def load_optimizer(opt, trainable):
     # Create an optimizer.
-    optimizer = getattr(torch.optim, opt.optim)(
-                        trainable, **opt.optim_params)
+    optimizer = getattr(torch.optim, opt.optim)(trainable, **opt.optim_params)
 
     if not opt.pretrain and opt.chkpt_num > 0:
         n = opt.chkpt_num
