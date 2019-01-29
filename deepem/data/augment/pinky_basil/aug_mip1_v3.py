@@ -30,14 +30,14 @@ def get_augmentation(is_train, box=None, missing=7, blur=7, lost=True,
     # Missing section & misalignment
     to_blend = list()
     # Misalingments
-    trans = Compose(Misalign((0, 5), margin=1),
-                    Misalign((0,15), margin=1),
-                    Misalign((0,25), margin=1))
+    trans = Compose([Misalign((0, 5), margin=1),
+                     Misalign((0,15), margin=1),
+                     Misalign((0,25), margin=1)])
 
     # Out-of-alignments
-    slip = Compose(SlipMisalign((0, 5), interp=True, margin=1),
-                   SlipMisalign((0,15), interp=True, margin=1),
-                   SlipMisalign((0,25), interp=True, margin=1))
+    slip = Compose([SlipMisalign((0, 5), interp=True, margin=1),
+                    SlipMisalign((0,15), interp=True, margin=1),
+                    SlipMisalign((0,25), interp=True, margin=1)])
     to_blend.append(Blend([trans,slip], props=[0.7,0.3]))
     if is_train:
         to_blend.append(Blend([
