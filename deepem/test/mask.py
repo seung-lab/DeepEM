@@ -62,7 +62,7 @@ def make_mask(patch_size, overlap, edge=None, bump='zung'):
             base_mask[s] += bump_map(logit, max_logit[s], edge=edge)
 
         # Normalized weight
-        s = [slice(s,s+p) for s,p in zip(stride,patch_size)]
+        s = tuple(slice(s,s+p) for s,p in zip(stride,patch_size))
         weight = bump_map(logit, max_logit[s]) / base_mask[s]
 
     elif bump == 'wu':
@@ -72,7 +72,7 @@ def make_mask(patch_size, overlap, edge=None, bump='zung'):
             base_mask[s] += bmap
 
         # Normalized weight
-        s = [slice(s,s+p) for s,p in zip(stride,patch_size)]
+        s = tuple(slice(s,s+p) for s,p in zip(stride,patch_size))
         weight = bmap / base_mask[s]
 
     else:
