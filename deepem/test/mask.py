@@ -43,7 +43,7 @@ def make_mask(patch_size, overlap, edge=None, bump='zung'):
     # Slices
     slices = list()
     for offset in offsets:
-        s = [slice(o*s,o*s+p) for o,s,p in zip(offset,stride,patch_size)]
+        s = tuple(slice(o*s,o*s+p) for o,s,p in zip(offset,stride,patch_size))
         slices.append(s)
 
     # Shape of the 3x3x3 overlapping grid
