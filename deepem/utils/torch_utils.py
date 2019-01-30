@@ -37,3 +37,12 @@ def crop_border(v, size):
     assert all([a > b for a, b in zip(v.shape[-3:], size[-3:])])
     sz, sy, sx = [s // 2 for s in size[-3:]]
     return v[..., sz:-sz, sy:-sy, sx:-sx]
+
+
+def crop_center(v, size):
+    assert all([a >= b for a, b in zip(v.shape[-3:], size[-3:])])
+    z, y, x = size[-3:]
+    sx = (v.shape[-1] - x) // 2
+    sy = (v.shape[-2] - y) // 2
+    sz = (v.shape[-3] - z) // 2
+    return v[..., sz:sz+z, sy:sy+y, sx:sx+x]

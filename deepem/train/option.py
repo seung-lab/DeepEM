@@ -1,6 +1,7 @@
 from __future__ import print_function
 import argparse
 import os
+import numpy as np
 
 from deepem.utils.py_utils import vec3
 
@@ -153,6 +154,14 @@ class Options(object):
         opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.out_spec = dict()
         opt.loss_weight = dict()
+
+        # Crop output
+        diff = np.array(opt.fov) - np.array(opt.outputsz)
+        assert all(diff >= 0)
+        if any(diff > 0):
+            opt.cropsz = opt.outputsz
+        else:
+            opt.cropsz = None
 
         # Multiclass detection
         class_keys = list()

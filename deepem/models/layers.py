@@ -6,6 +6,8 @@ import torch.nn as nn
 import emvision
 from emvision.models.utils import pad_size
 
+from deepem.utils import torch_utils
+
 
 class Conv(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size=3, stride=1,
@@ -29,3 +31,14 @@ class Scale(nn.Module):
 
     def forward(self, x):
         return x * self.scale
+
+
+class Crop(nn.Module):
+    def __init__(self, cropsz):
+        self.cropsz = tuple(cropsz)
+
+    def forward(self. x):
+        if self.cropsz is not None:
+            for k, v in x.items():
+                x[k] = torch_utils.crop_center(v, self.cropsz)
+        return x
