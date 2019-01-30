@@ -4,8 +4,12 @@ from augmentor import *
 
 
 def get_augmentation(is_train, recompute=False, grayscale=False, missing=0,
-                     blur=0, warping=False, misalign=0, box=None, **kwargs):
+                     blur=0, warping=False, misalign=0, box=None, mip=0,
+                     **kwargs):
     augs = list()
+
+    # MIP factor
+    mip_f = pow(2,mip)
 
     # Misalignment
     if is_train:
@@ -40,9 +44,11 @@ def get_augmentation(is_train, recompute=False, grayscale=False, missing=0,
 
         # Box occlusion
         if box == 'fill':
+            dims = (6//mip_f, 30//mip_f)
+            margin = (1, 6//mip_f, 6//mip_f)
             augs.append(Blend([
-                FillBox(dims=(6,30), margin=(1,6,6), density=0.3, individual=True,  skip=0.1),
-                FillBox(dims=(6,30), margin=(1,6,6), density=0.3, individual=False, skip=0.1)
+                FillBox(dims=dims, margin=margin, density=0.3, individual=True,  skip=0.1),
+                FillBox(dims=dims, margin=margin, density=0.3, individual=False, skip=0.1)
             ]))
 
         # Out-of-focus section

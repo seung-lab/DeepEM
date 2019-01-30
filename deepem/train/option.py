@@ -84,6 +84,7 @@ class Options(object):
         self.parser.add_argument('--missing', type=int, default=0)
         self.parser.add_argument('--blur', type=int, default=0)
         self.parser.add_argument('--box', default=None)
+        self.parser.add_argument('--mip', type=int, default=0)
         self.parser.add_argument('--lost', action='store_true')
         self.parser.add_argument('--random', action='store_true')
 
