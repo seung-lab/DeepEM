@@ -35,10 +35,9 @@ def get_augmentation(is_train, recompute=False, grayscale=False, missing=0,
 
         # Missing section
         if missing > 0:
-            mutex.append(Blend([
-                MissingSection(maxsec=missing, individual=True,  value=0, random=random),
-                MissingSection(maxsec=missing, individual=False, value=0, random=random)
-            ]))
+            mutex.append(
+                MissingSection(maxsec=missing, individual=True, random=random)
+            )
 
         augs.append(Blend(mutex))
 
@@ -46,10 +45,9 @@ def get_augmentation(is_train, recompute=False, grayscale=False, missing=0,
         if box == 'fill':
             dims = (6//mip_f, 30//mip_f)
             margin = (1, 6//mip_f, 6//mip_f)
-            augs.append(Blend([
-                FillBox(dims=dims, margin=margin, density=0.3, individual=True,  skip=0.1),
-                FillBox(dims=dims, margin=margin, density=0.3, individual=False, skip=0.1)
-            ]))
+            augs.append(
+                FillBox(dims=dims, margin=margin, density=0.3, individual=True, skip=0.1)
+            )
 
         # Out-of-focus section
         if blur > 0:
