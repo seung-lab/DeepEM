@@ -19,6 +19,7 @@ class Logger(object):
         self.writer = SummaryWriter(opt.log_dir)
         self.in_spec = dict(opt.in_spec)
         self.out_spec = dict(opt.out_spec)
+        self.outputsz = opt.outputsz
         self.lr = opt.lr
 
         # Basic logging
@@ -88,12 +89,11 @@ class Logger(object):
             return ret
 
     def log_images(self, phase, iter_num, preds, sample):
-        # TODO: GPU -> CPU before processing (to save GPU memory)?
-
         # Inputs
         for k in sorted(self.in_spec):
             tag = '{}/images/{}'.format(phase, k)
-            tensor = sample[k][0,...]
+            tensor = sample[k][0,...].cpu()
+            img = torch_utils.crop_center(img, self.outputsz)
             self.log_image(tag, tensor, iter_num)
 
         # Outputs
