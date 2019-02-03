@@ -35,6 +35,7 @@ class Scale(nn.Module):
 
 class Crop(nn.Module):
     def __init__(self, cropsz):
+        super(Crop, self).__init__()
         self.cropsz = tuple(cropsz)
 
     def forward(self, x):
