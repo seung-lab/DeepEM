@@ -37,7 +37,7 @@ class Crop(nn.Module):
     def __init__(self, cropsz):
         self.cropsz = tuple(cropsz)
 
-    def forward(self. x):
+    def forward(self, x):
         if self.cropsz is not None:
             for k, v in x.items():
                 x[k] = torch_utils.crop_center(v, self.cropsz)
