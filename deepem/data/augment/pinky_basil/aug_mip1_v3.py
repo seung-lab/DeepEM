@@ -49,13 +49,13 @@ def get_augmentation(is_train, box=None, missing=7, blur=7, lost=True,
     if missing > 0:
         if is_train:
             to_blend.append(Blend([
+                MixedMissingSection(maxsec=missing, individual=True, value=0, random=False),
                 MixedMissingSection(maxsec=missing, individual=True, value=0, random=random),
-                MixedMissingSection(maxsec=missing, individual=False, value=0, random=random),
-                MixedMissingSection(maxsec=missing, individual=False, value=0, random=False)
+                MissingSection(maxsec=missing, individual=False, value=0, random=random),
             ]))
         else:
             to_blend.append(
-                MixedMissingSection(maxsec=missing, individual=False, value=0, random=False)
+                MixedMissingSection(maxsec=missing, individual=True, value=0, random=False)
             )
     if lost:
         if is_train:
