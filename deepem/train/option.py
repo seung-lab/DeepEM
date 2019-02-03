@@ -79,7 +79,7 @@ class Options(object):
         self.parser.add_argument('--flip', action='store_true')
         self.parser.add_argument('--grayscale', action='store_true')
         self.parser.add_argument('--warping', action='store_true')
-        self.parser.add_argument('--misalign', action='store_true')
+        self.parser.add_argument('--misalign', type=int, default=0)
         self.parser.add_argument('--interp', action='store_true')
         self.parser.add_argument('--missing', type=int, default=0)
         self.parser.add_argument('--blur', type=int, default=0)
