@@ -123,6 +123,11 @@ minnie_info = {
         'blv': 'blv.h5',
         'loc': True,
     },
+}
+
+
+minnie2_dir = 'minnie/ground_truth/mip1/padded_x512_y512_z32'
+minnie2_info = {
     'minnie016':{
         'img': 'img.h5',
         'seg': 'seg.h5',
@@ -369,7 +374,7 @@ pinky_info = {
 
 def load_data(data_dir, data_ids=None, **kwargs):
     if data_ids is None:
-        data_ids = minnie_info.keys() + basil_info.keys() + pinky_info.keys()
+        data_ids = minnie_info.keys() + minnie2_info.keys() + basil_info.keys() + pinky_info.keys()
 
     data = dict()
     base = os.path.expanduser(data_dir)
@@ -379,6 +384,11 @@ def load_data(data_dir, data_ids=None, **kwargs):
         if data_id in minnie_info:
             dpath = os.path.join(base, minnie_dir)
             info = minnie_info[data_id]
+            data[data_id] = load_dataset(dpath, data_id, info, **kwargs)
+        # Minnie2
+        if data_id in minnie2_info:
+            dpath = os.path.join(base, minnie2_dir)
+            info = minnie2_info[data_id]
             data[data_id] = load_dataset(dpath, data_id, info, **kwargs)
         # Basil
         if data_id in basil_info:
