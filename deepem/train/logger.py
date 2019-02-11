@@ -93,7 +93,7 @@ class Logger(object):
         for k in sorted(self.in_spec):
             tag = '{}/images/{}'.format(phase, k)
             tensor = sample[k][0,...].cpu()
-            img = torch_utils.crop_center(img, self.outputsz)
+            tensor = torch_utils.crop_center(tensor, self.outputsz)
             self.log_image(tag, tensor, iter_num)
 
         # Outputs
