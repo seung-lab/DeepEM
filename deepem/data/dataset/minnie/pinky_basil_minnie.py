@@ -8,6 +8,21 @@ import dataprovider3.emio as emio
 # Minnie dataset
 minnie_dir = 'minnie/ground_truth/mip1/padded_x512_y512_z0'
 minnie_info = {
+    'minnie001':{
+        'img': 'img.h5',
+        'seg': 'seg.h5',
+        'msk': 'msk.h5',
+        'mye': 'mye.h5',
+        'fld': 'fld.h5',
+        'loc': True,
+    },
+    'minnie002':{
+        'img': 'img.h5',
+        'seg': 'seg.h5',
+        'msk': 'msk.h5',
+        'fld': 'fld.h5',
+        'loc': True,
+    },
     'minnie002':{
         'img': 'img.h5',
         'seg': 'seg.h5',
