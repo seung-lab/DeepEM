@@ -1,4 +1,5 @@
 from __future__ import print_function
+import numpy as np
 
 from augmentor import Augment
 from dataprovider3 import DataProvider, Dataset
