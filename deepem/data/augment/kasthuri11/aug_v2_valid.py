@@ -5,7 +5,7 @@ from augmentor import *
 
 def get_augmentation(is_train, recompute=False, grayscale=False, missing=0,
                      blur=0, warping=False, misalign=0, box=None, mip=0,
-                     **kwargs):
+                     random=False, **kwargs):
     augs = list()
 
     # MIP factor
