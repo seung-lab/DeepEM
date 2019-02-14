@@ -11,7 +11,6 @@ def get_augmentation(is_train, recompute=False, grayscale=False, missing=0,
     # MIP factor
     mip_f = pow(2,mip)
 
-    # Misalignment
     if is_train:
         # Brightness & contrast purterbation
         if grayscale:
@@ -36,7 +35,7 @@ def get_augmentation(is_train, recompute=False, grayscale=False, missing=0,
         # Missing section
         if missing > 0:
             mutex.append(
-                MissingSection(maxsec=missing, individual=True, random=random)
+                MixedMissingSection(maxsec=missing, individual=True, random=random, skip=0.1)
             )
 
         augs.append(Blend(mutex))
