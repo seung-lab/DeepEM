@@ -19,12 +19,24 @@ class Forward(object):
         self.scan_spec = dict(opt.scan_spec)
         self.scan_params = dict(opt.scan_params)
         self.test_aug = opt.test_aug
+        self.variance = opt.variance
+        self.precomputed = (opt.blend == 'precomputed')
+
+        # For optional variance computation
+        self.aug_out = None
 
     def __call__(self, model, scanner):
         dataset = scanner.dataset
 
         # Test-time augmentation
         if self.test_aug:
+
+            # For variance computation
+            if self.variance:
+                self.aug_out = dict()
+                for k, v in scanner.outputs.data.items():
+                    self.aug_out[k] = list()
+
             count = 0.0
             for aug in self.test_aug:
                 # dec2bin
@@ -43,9 +55,16 @@ class Forward(object):
                 for k, v in scanner.outputs.data.items():
                     print("Accumulate to {}...".format(k))
                     output = outputs.get_data(k)
+
                     # Revert output.
                     dst = (1,1,1) if k == 'affinity' else None
-                    v._data += fwd_utils.revert_flip(output, rule=rule, dst=dst)
+                    reverted = fwd_utils.revert_flip(output, rule=rule, dst=dst)
+                    v._data += reverted
+
+                    # For variance computation
+                    if self.variance:
+                        self.aug_out[k].append(reverted)
+
                 count += 1
 
                 # Revert dataset.
@@ -55,11 +74,14 @@ class Forward(object):
             # Normalize.
             for k, v in scanner.outputs.data.items():
                 print("Normalize {}...".format(k))
-                v._norm._data[...] = count
+                if self.precomputed:
+                    v._data[...] /= count
+                else:
+                    v._norm._data[...] = count
 
-            return scanner.outputs
+            return (scanner.outputs, self.aug_out)
 
-        return self.forward(model, scanner)
+        return (self.forward(model, scanner), self.aug_out)
 
     ####################################################################
     ## Non-interface functions

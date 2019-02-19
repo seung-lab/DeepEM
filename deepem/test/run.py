@@ -17,8 +17,8 @@ def test(opt):
 
     if opt.gs_input:
         scanner = make_forward_scanner(opt)
-        output = forward(model, scanner)
-        save_output(output, opt)
+        output, aug_out = forward(model, scanner)
+        save_output(output, opt, aug_out=aug_out)
     else:
         for dname in opt.data_names:
             scanner = make_forward_scanner(opt, data_name=dname)

@@ -144,7 +144,7 @@ class Options(object):
 
         # Data augmentation
         aug_keys = ['recompute','flip','grayscale','warping','misalign',
-                    'interp','missing','blur','box','lost','random']
+                    'interp','missing','blur','box','mip','lost','random']
         opt.aug_params = {k: args[k] for k in aug_keys}
 
         # Model

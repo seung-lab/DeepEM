@@ -48,6 +48,7 @@ class Options(object):
 
         # Test-time augmentation
         self.parser.add_argument('--test_aug', type=int, default=None, nargs='+')
+        self.parser.add_argument('--variance', action='store_true')
 
         # Temperature T for softer softmax
         self.parser.add_argument('--temperature', type=float, default=None)
