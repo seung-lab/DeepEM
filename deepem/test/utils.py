@@ -82,6 +82,12 @@ def save_output(output, opt, data_name=None, aug_out=None):
             try:
                 from deepem.test import cv_utils
                 cv_utils.ingest(data, opt)
+
+                # Optional variance
+                if aug_out is not None:
+                    variance = np.var(np.stack(aug_out[k]), axis=0)
+                    cv_utils.ingest(variance, opt_var)
+
             except ImportError:
                 raise
         else:
@@ -93,12 +99,3 @@ def save_output(output, opt, data_name=None, aug_out=None):
                 fname = fname + '_' + opt.out_tag
             fpath = os.path.join(opt.fwd_dir, fname + ".h5")
             emio.imsave(data, fpath)
-
-        # Optional variance
-        if aug_out is not None:
-            try:
-                from deepem.test import cv_utils
-                variance = np.var(np.stack(aug_out[k]), axis=0)
-                cv_utils.ingest(variance, opt_var)
-            except ImportError:
-                raise

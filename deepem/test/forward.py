@@ -22,9 +22,6 @@ class Forward(object):
         self.variance = opt.variance
         self.precomputed = (opt.blend == 'precomputed')
 
-        # For optional variance computation
-        self.aug_out = None
-
     def __call__(self, model, scanner):
         dataset = scanner.dataset
 
@@ -33,9 +30,11 @@ class Forward(object):
 
             # For variance computation
             if self.variance:
-                self.aug_out = dict()
+                aug_out = dict()
                 for k, v in scanner.outputs.data.items():
-                    self.aug_out[k] = list()
+                    aug_out[k] = list()
+            else:
+                aug_out = None
 
             count = 0.0
             for aug in self.test_aug:
@@ -63,7 +62,7 @@ class Forward(object):
 
                     # For variance computation
                     if self.variance:
-                        self.aug_out[k].append(reverted)
+                        aug_out[k].append(reverted)
 
                 count += 1
 
@@ -79,9 +78,9 @@ class Forward(object):
                 else:
                     v._norm._data[...] = count
 
-            return (scanner.outputs, self.aug_out)
+            return (scanner.outputs, aug_out)
 
-        return (self.forward(model, scanner), self.aug_out)
+        return (self.forward(model, scanner), None)
 
     ####################################################################
     ## Non-interface functions

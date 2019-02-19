@@ -22,7 +22,7 @@ def test(opt):
     else:
         for dname in opt.data_names:
             scanner = make_forward_scanner(opt, data_name=dname)
-            output = forward(model, scanner)
+            output, _ = forward(model, scanner)
             save_output(output, opt, data_name=dname)
 
 
