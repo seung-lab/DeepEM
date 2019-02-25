@@ -45,8 +45,10 @@ def get_augmentation(is_train, recompute=False, grayscale=False, missing=0,
         if box == 'fill':
             dims = (6//mip_f, 30//mip_f)
             margin = (1, 6//mip_f, 6//mip_f)
+            aniso = 30/(6*mip_f)
             augs.append(
-                FillBox(dims=dims, margin=margin, density=0.3, individual=True, skip=0.1)
+                FillBox(dims=dims, margin=margin, density=0.3, individual=True,
+                        aniso=aniso, skip=0.1)
             )
 
     # Out-of-focus section
