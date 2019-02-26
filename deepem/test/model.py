@@ -34,7 +34,7 @@ class Model(nn.Module):
             for k, v in opt.scan_spec.items():
                 patch_sz = v[-3:]
                 if k == 'affinity':
-                    edges = [(0,0,1),(0,1,0),(1,0,0)]
+                    edges = opt.mask_edges
                     mask = AffinityMask(patch_sz, opt.overlap, edges, opt.bump)
                 else:
                     mask = PatchMask(patch_sz, opt.overlap)

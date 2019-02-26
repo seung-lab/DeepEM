@@ -99,7 +99,7 @@ def bump_logit_map(patch_size):
 def mask_edge(weight, edge=None):
     if edge is not None:
         assert len(edge) == 3
-        z,y,x = edge
+        z, y, x = edge
         assert abs(x) < weight.shape[-1]
         if x > 0:
             weight[:,:,:x] = 0
@@ -124,15 +124,16 @@ def bump_map(logit, max_logit, edge=None):
 
 
 def bump_map2(patch_size, edge=None):
+    """Wu blending"""
     x = range(patch_size[-1])
     y = range(patch_size[-2])
     z = range(patch_size[-3])
     zv, yv, xv = np.meshgrid(z, y, x, indexing='ij')
-    xv = (xv+1.0)/(patch_size[-1]+1.0) * 2.0 - 1.0
-    yv = (yv+1.0)/(patch_size[-2]+1.0) * 2.0 - 1.0
-    zv = (zv+1.0)/(patch_size[-3]+1.0) * 2.0 - 1.0
-    weight = np.exp(-1.0/(1.0-xv*xv) +
-                    -1.0/(1.0-yv*yv) +
-                    -1.0/(1.0-zv*zv))
+    xv = (xv + 1.0)/(patch_size[-1] + 1.0) * 2.0 - 1.0
+    yv = (yv + 1.0)/(patch_size[-2] + 1.0) * 2.0 - 1.0
+    zv = (zv + 1.0)/(patch_size[-3] + 1.0) * 2.0 - 1.0
+    weight = np.exp(-1.0/(1.0 - xv*xv) +
+                    -1.0/(1.0 - yv*yv) +
+                    -1.0/(1.0 - zv*zv))
     weight = mask_edge(weight, edge=edge)
     return np.asarray(weight, dtype=np.float64)

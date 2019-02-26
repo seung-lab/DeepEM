@@ -86,6 +86,9 @@ class Options(object):
         self.parser.add_argument('--blend', default='bump')
         self.parser.add_argument('--bump', default='zung')  # 'zung' or 'wu'
 
+        # Asymmetric mask
+        self.parser.add_argument('--mask_edges', type=vec3, default=[(0,0,1),(0,1,0),(1,0,0)], nargs='+')
+
         # Benchmark
         self.parser.add_argument('--dummy', action='store_true')
         self.parser.add_argument('--dummy_inputsz', type=int, default=[128,1024,1024], nargs='+')
