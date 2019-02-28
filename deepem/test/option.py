@@ -84,7 +84,7 @@ class Options(object):
         self.parser.add_argument('--crop_border', type=vec3, default=None)
         self.parser.add_argument('--crop_center', type=vec3, default=None)
         self.parser.add_argument('--blend', default='bump')
-        self.parser.add_argument('--bump', default='zung')  # 'zung' or 'wu'
+        self.parser.add_argument('--bump', default='zung')  # 'zung'/'wu'/'wu_no_crust'
 
         # Asymmetric mask
         self.parser.add_argument('--mask_edges', type=vec3, default=[(0,0,1),(0,1,0),(1,0,0)], nargs='+')

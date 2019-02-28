@@ -19,7 +19,7 @@ class AffinityMask(np.ndarray):
         assert len(patch_size) == 3
         assert len(overlap) == 3
         assert len(edges) > 0
-        assert bump in ['zung','wu']
+        assert bump in ['zung','wu', 'wu_no_crust']
 
         masks = list()
         for edge in edges:
@@ -51,6 +51,7 @@ def make_mask(patch_size, overlap, edge=None, bump='zung'):
     base_mask = np.zeros(shape, dtype=np.float64)
 
     if bump == 'zung':
+
         # Max logit
         max_logit = np.full(shape, -np.inf, dtype=np.float64)
         logit = bump_logit_map(patch_size)
@@ -63,11 +64,23 @@ def make_mask(patch_size, overlap, edge=None, bump='zung'):
 
         # Normalized weight
         s = tuple(slice(s,s+p) for s,p in zip(stride,patch_size))
-        weight = bump_map(logit, max_logit[s]) / base_mask[s]
+        weight = bump_map(logit, max_logit[s], edge=edge) / base_mask[s]
 
     elif bump == 'wu':
+
         # Mask
-        bmap = bump_map2(patch_size, edge=edge)
+        bmap = bump_map_wu(patch_size, edge=edge)
+        for s in slices:
+            base_mask[s] += bmap
+
+        # Normalized weight
+        s = tuple(slice(s,s+p) for s,p in zip(stride,patch_size))
+        weight = bmap / base_mask[s]
+
+    elif bump == 'wu_no_crust':
+
+        # Mask
+        bmap = bump_map_wu_no_crust(patch_size, edge=edge)
         for s in slices:
             base_mask[s] += bmap
 
@@ -123,7 +136,7 @@ def bump_map(logit, max_logit, edge=None):
     return mask_edge(weight, edge=edge)
 
 
-def bump_map2(patch_size, edge=None):
+def bump_map_wu(patch_size, edge=None):
     """Wu blending"""
     x = range(patch_size[-1])
     y = range(patch_size[-2])
@@ -137,3 +150,15 @@ def bump_map2(patch_size, edge=None):
                     -1.0/(1.0 - zv*zv))
     weight = mask_edge(weight, edge=edge)
     return np.asarray(weight, dtype=np.float64)
+
+
+def bump_map_wu_no_crust(patch_size, edge=None):
+    """Wu blending with crust suppressed"""
+    weight = bump_map_wu(patch_size, edge=edge)
+
+    # Ignore the "crust"
+    weight[[0,-1],:,:] = 0
+    weight[:,[0,-1],:] = 0
+    weight[:,:,[0,-1]] = 0
+
+    return weight
