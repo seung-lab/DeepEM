@@ -55,6 +55,7 @@ class Options(object):
 
         # Cloud-volume input
         self.parser.add_argument('--gs_input', default='')
+        self.parser.add_argument('--gs_input_mask', default='')
         self.parser.add_argument('--in_mip', type=int, default=0)
         self.parser.add_argument('--cache', action='store_true')
         self.parser.add_argument('-b','--begin', type=vec3, default=None)

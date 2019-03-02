@@ -17,9 +17,8 @@ def make_info(num_channels, layer_type, dtype, shape, resolution,
         chunk_size=chunk_size)
 
 
-def cutout(opt, dtype='uint8'):
-    gs_path = opt.gs_input
-    if '{}' in opt.gs_input:
+def cutout(opt, gs_path, dtype='uint8'):
+    if '{}' in gs_path:
         gs_path = gs_path.format(*opt.keywords)
     print(gs_path)
 

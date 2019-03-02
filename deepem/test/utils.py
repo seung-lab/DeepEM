@@ -35,8 +35,17 @@ def make_forward_scanner(opt, data_name=None):
     if opt.gs_input:
         try:
             from deepem.test import cv_utils
-            img = cv_utils.cutout(opt)
+            img = cv_utils.cutout(opt, opt.gs_input, dtype='uint8')
             img = (img/255.).astype('float32')
+
+            # Optional input mask
+            if opt.gs_input_mask:
+                try:
+                    msk = cv_utils.cutout(opt, opt.gs_input_mask, dtype='uint8')
+                    img[msk > 0] = 0
+                except:
+                    raise
+
         except ImportError:
             raise
     else:
