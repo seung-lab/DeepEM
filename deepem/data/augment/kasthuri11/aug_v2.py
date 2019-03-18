@@ -38,7 +38,8 @@ def get_augmentation(is_train, recompute=False, grayscale=False, missing=0,
                 MixedMissingSection(maxsec=missing, individual=True, random=random, skip=0.1)
             )
 
-        augs.append(Blend(mutex))
+        if misalign > 0 or missing > 0:
+            augs.append(Blend(mutex))
 
         # Box occlusion
         if box == 'fill':
