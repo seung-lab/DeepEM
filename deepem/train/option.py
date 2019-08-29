@@ -103,6 +103,7 @@ class Options(object):
         self.parser.add_argument('--fld', type=float, default=0)  # Fold
         self.parser.add_argument('--blv', type=float, default=0)  # Blood vessel
         self.parser.add_argument('--blv_num_channels', type=int, default=2)
+        self.parser.add_argument('--glia', type=float, default=0)  # Glia
 
         self.initialized = True
 
@@ -174,7 +175,8 @@ class Options(object):
             'mit':  ('mitochondria', 1),
             'mye':  ('myelin', 1),
             'fld':  ('fold', 1),
-            'blv':  ('blood_vessel', opt.blv_num_channels)
+            'blv':  ('blood_vessel', opt.blv_num_channels),
+            'glia':  ('glia', 1),
         }
 
         for k, v in class_dict.items():
