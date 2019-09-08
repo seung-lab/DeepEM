@@ -53,6 +53,7 @@ class Options(object):
         self.parser.add_argument('--margin1', type=float, default=0)
         self.parser.add_argument('--inverse', action='store_true')
         self.parser.add_argument('--class_balancing', action='store_true')
+        self.parser.add_argument('--default_aux', action='store_true')
 
         # Optimizer
         self.parser.add_argument('--optim', default='Adam')
@@ -104,6 +105,7 @@ class Options(object):
         self.parser.add_argument('--blv', type=float, default=0)  # Blood vessel
         self.parser.add_argument('--blv_num_channels', type=int, default=2)
         self.parser.add_argument('--glia', type=float, default=0)  # Glia
+        self.parser.add_argument('--glia_mask', action='store_true')
 
         self.initialized = True
 
@@ -190,7 +192,8 @@ class Options(object):
 
         assert len(opt.out_spec) > 0
         assert len(opt.out_spec) == len(opt.loss_weight) == len(class_keys)
-        opt.data_params = dict(class_keys=class_keys)
+        opt.data_params = dict(class_keys=class_keys,
+                               glia_mask=opt.glia_mask)
 
         args = vars(opt)
         print('------------ Options -------------')

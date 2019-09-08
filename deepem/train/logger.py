@@ -141,6 +141,17 @@ class Logger(object):
                     pred = torch.cat((pred,zero), dim=-4)
                 self.log_image(tag, pred, iter_num)
 
+            elif k == 'glia':
+                # Prediction
+                tag = '{}/images/{}'.format(phase, k)
+                pred = F.sigmoid(preds[k][0,...]).cpu()
+                self.log_image(tag, pred, iter_num)
+
+                # Target
+                tag = '{}/labels/{}'.format(phase, k)
+                target = sample[k][0,...].cpu()
+                self.log_image(tag, target, iter_num)
+
     def log_image(self, tag, tensor, iter_num):
         assert(torch.is_tensor(tensor))
         depth = tensor.shape[-3]

@@ -28,9 +28,10 @@ def get_criteria(opt):
             )
         else:
             params = dict(opt.loss_params)
-            # params['margin0'] = 0
-            # params['margin1'] = 0
-            # params['inverse'] = False
+            if opt.default_aux:
+                params['margin0'] = 0
+                params['margin1'] = 0
+                params['inverse'] = False
             criteria[k] = getattr(loss, 'BCELoss')(**params)
     return criteria
 
