@@ -67,9 +67,10 @@ class Sampler(object):
     def build_dataset(self, tag, data):
         img = data['img']
         seg = data['seg']
-        glia = data['glia']
         loc = data['loc']
         msk = self.get_mask(data)
+        glia = data['glia']
+        gmsk = data['gmsk'] if 'gmsk' in data else msk
 
         # Create Dataset.
         dset = Dataset(tag=tag)
@@ -77,7 +78,7 @@ class Sampler(object):
         dset.add_data(key='affinity', data=seg)
         dset.add_mask(key='affinity_mask', data=msk, loc=loc)
         dset.add_data(key='glia', data=glia)
-        dset.add_mask(key='glia_mask', data=msk)
+        dset.add_mask(key='glia_mask', data=gmsk)
 
         return dset
 

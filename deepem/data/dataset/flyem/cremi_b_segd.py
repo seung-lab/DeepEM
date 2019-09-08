@@ -42,6 +42,11 @@ def load_dataset(dpath, tag, info, class_keys=[], glia_mask=False, **kwargs):
     dset['img']  = emio.imread(fpath).astype(np.float32)
     dset['img'] /= 255.0
 
+    # Mask
+    fpath = os.path.join(dpath, info['dir'], 'msk.h5')
+    print(fpath)
+    dset['msk'] = emio.imread(fpath).astype(np.uint8)
+
     # Segmentation
     if 'aff' in class_keys:
         fpath = os.path.join(dpath, info['dir'], info['seg_d3_b0'])
@@ -54,15 +59,16 @@ def load_dataset(dpath, tag, info, class_keys=[], glia_mask=False, **kwargs):
         print(fpath)
         dset['glia'] = emio.imread(fpath).astype(np.uint8)
 
-    # Mask
-    fpath = os.path.join(dpath, info['dir'], 'msk.h5')
-    print(fpath)
-    msk = emio.imread(fpath).astype(np.bool)
+    # Glia mask
     if glia_mask:
+        # Use original mask for glia detection.
+        assert 'msk' in dset
+        dset['gmsk'] = np.copy(dset['msk'])
+
+        # Mask out glia.
         assert 'seg' in dset
         gmsk = ~np.isin(dset['seg'], info['glia_ids'])
-        msk &= gmsk
-    dset['msk'] = msk.astype(np.uint8)
+        dset['msk'] &= gmsk
 
     # Additoinal info
     dset['loc'] = info['loc']
