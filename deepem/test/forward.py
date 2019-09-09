@@ -44,7 +44,7 @@ class Forward(object):
 
                 # Augment dataset.
                 aug_dset = Dataset(spec=self.in_spec)
-                for v in dataset.data.values():
+                for k, v in dataset.data.items():
                     aug_dset.add_data(k, fwd_utils.flip(v._data, rule=rule))
 
                 # Forward scan
