@@ -4,7 +4,7 @@ import time
 
 import torch
 
-from dataprovider3 import ForwardScanner
+from dataprovider3 import Dataset, ForwardScanner
 
 from deepem.test import fwd_utils
 
