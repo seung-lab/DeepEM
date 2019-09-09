@@ -67,10 +67,6 @@ class Forward(object):
 
                 count += 1
 
-                # Revert dataset.
-                for v in dataset.data.values():
-                    v._data = fwd_utils.revert_flip(v._data, rule=rule)
-
             # Normalize.
             for k, v in scanner.outputs.data.items():
                 print("Normalize {}...".format(k))
