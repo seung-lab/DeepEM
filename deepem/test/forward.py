@@ -43,11 +43,12 @@ class Forward(object):
                 print("Test-time augmentation {}".format(rule))
 
                 # Augment dataset.
+                aug_dset = Dataset(spec=self.in_spec)
                 for v in dataset.data.values():
-                    v._data = fwd_utils.flip(v._data, rule=rule)
+                    aug_dset.add_data(k, fwd_utils.flip(v._data, rule=rule))
 
                 # Forward scan
-                aug_scanner = self.make_forward_scanner(dataset)
+                aug_scanner = self.make_forward_scanner(aug_dset)
                 outputs = self.forward(model, aug_scanner)
 
                 # Accumulate.
