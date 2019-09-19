@@ -1,5 +1,6 @@
 from __future__ import print_function
 import argparse
+import json
 import math
 import os
 
@@ -66,6 +67,7 @@ class Options(object):
 
         # Cloud-volume output
         self.parser.add_argument('--gs_output', default='')
+        self.parser.add_argument('--tags', type=json.loads, default=None)
         self.parser.add_argument('--keywords', default=[], nargs='+')
         self.parser.add_argument('-p','--parallel', type=int, default=16)
         self.parser.add_argument('-d','--downsample', action='store_true')
@@ -156,6 +158,11 @@ class Options(object):
         opt.overlap = self.get_overlap(opt.outputsz, opt.overlap)
         opt.stride = tuple(int(f-o) for f,o in zip(opt.outputsz, opt.overlap))
         opt.scan_params = dict(stride=opt.stride, blend=opt.blend)
+
+        # Output tagging
+        if opt.tags is not None:
+            for k in opt.tags:
+                assert k in opt.scan_spec
 
         args = vars(opt)
         print('------------ Options -------------')

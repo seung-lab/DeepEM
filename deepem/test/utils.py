@@ -71,12 +71,6 @@ def make_forward_scanner(opt, data_name=None):
 
 
 def save_output(output, opt, data_name=None, aug_out=None):
-    # Optional variance
-    if aug_out is not None:
-        assert opt.gs_output
-        opt_var = SimpleNamespace(**vars(opt))
-        opt_var.gs_output = opt.gs_output + '_var'
-
     for k in output.data:
         data = output.get_data(k)
 
@@ -89,13 +83,18 @@ def save_output(output, opt, data_name=None, aug_out=None):
         # Cloud-volume
         if opt.gs_output:
             try:
+                tag = k
+                if opt.tags is not None:
+                    if tag in opt.tags:
+                        tag = opt.tags[tag]
+
                 from deepem.test import cv_utils
-                cv_utils.ingest(data, opt)
+                cv_utils.ingest(data, opt, tag=tag)
 
                 # Optional variance
                 if aug_out is not None:
                     variance = np.var(np.stack(aug_out[k]), axis=0)
-                    cv_utils.ingest(variance, opt_var)
+                    cv_utils.ingest(variance, opt, tag=(tag + '_var'))
 
             except ImportError:
                 raise

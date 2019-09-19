@@ -56,7 +56,7 @@ def cutout(opt, gs_path, dtype='uint8'):
     return cutout
 
 
-def ingest(data, opt):
+def ingest(data, opt, tag=None):
     # Neuroglancer format
     data = py_utils.to_tensor(data)
     data = data.transpose((3,2,1,0))
@@ -93,6 +93,13 @@ def ingest(data, opt):
             else:
                 coord = '_'.join(['{}-{}'.format(b,e) for b,e in zip(opt.begin,opt.end)])
             gs_path = gs_path.format(coord)
+
+    # Tagging
+    if tag is not None:
+        if gs_path[-1] == '/':
+            gs_path += tag
+        else:
+            gs_path += ('/' + tag)
 
     print("gs_output:\n{}".format(gs_path))
     cvol = cv.CloudVolume(gs_path, mip=0, info=info,
