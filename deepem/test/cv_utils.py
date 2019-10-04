@@ -90,6 +90,7 @@ def ingest(data, opt, tag=None):
         else:
             if opt.center is not None:
                 coord = "x{}_y{}_z{}".format(*opt.center)
+                coord += "_s{}-{}-{}".format(*opt.size)
             else:
                 coord = '_'.join(['{}-{}'.format(b,e) for b,e in zip(opt.begin,opt.end)])
             gs_path = gs_path.format(coord)
