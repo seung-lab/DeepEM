@@ -33,6 +33,7 @@ class Data(object):
 
     def __call__(self):
         sample = next(self.dataiter)
+        sample = self.modifier(sample)
         for k in sample:
             is_input = k in self.inputs
             sample[k].requires_grad_(is_input)
@@ -54,6 +55,12 @@ class Data(object):
         mod = imp.load_source('sampler', opt.sampler)
         spec = mod.get_spec(opt.in_spec, opt.out_spec)
         sampler = mod.Sampler(data, spec, is_train, aug, prob=prob)
+
+        # Sample modifier
+        self.modifier = lambda x: x
+        if opt.modifier is not None:
+            mod = imp.load_source('modifier', opt.modifier)
+            self.modifier = mod.Modifier()
 
         # Data loader
         size = (opt.max_iter - opt.chkpt_num) * opt.batch_size
