@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from augmentor import Augment
 from dataprovider3 import DataProvider, Dataset
 

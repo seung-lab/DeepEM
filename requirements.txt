@@ -1,3 +1,5 @@
+cloudvolume
+igneous
 tensorflow
 tensorboard
 tensorboardX

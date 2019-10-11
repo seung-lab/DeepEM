@@ -1,4 +1,3 @@
-from __future__ import print_function
 import imp
 import os
 import time
@@ -37,7 +36,7 @@ def train(opt):
             sample = train_loader()
 
             # Crop sample.
-            
+
 
             # Optimizer step
             optimizer.zero_grad()

@@ -1,4 +1,3 @@
-from __future__ import print_function
 import os
 
 import dataprovider3.emio as emio
