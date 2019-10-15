@@ -4,7 +4,6 @@ import datetime
 from collections import OrderedDict
 
 import torch
-from torch.nn import functional as F
 from torchvision.utils import make_grid
 from tensorboardX import SummaryWriter
 
@@ -100,7 +99,7 @@ class Logger(object):
             if k == 'affinity':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
-                tensor = F.sigmoid(preds[k][0,0:3,...]).cpu()
+                tensor = torch.sigmoid(preds[k][0,0:3,...]).cpu()
                 self.log_image(tag, tensor, iter_num)
 
                 # Mask
@@ -117,13 +116,13 @@ class Logger(object):
             elif k == 'myelin':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
-                pred = F.sigmoid(preds[k][0,...]).cpu()
+                pred = torch.sigmoid(preds[k][0,...]).cpu()
                 self.log_image(tag, pred, iter_num)
 
             elif k == 'synapse':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
-                pred = F.sigmoid(preds[k][0,...]).cpu()
+                pred = torch.sigmoid(preds[k][0,...]).cpu()
                 self.log_image(tag, pred, iter_num)
 
                 # Target
@@ -134,7 +133,7 @@ class Logger(object):
             elif k == 'blood_vessel':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
-                pred = F.sigmoid(preds[k][0,...]).cpu()
+                pred = torch.sigmoid(preds[k][0,...]).cpu()
                 if self.blv_num_channels == 2:
                     zero = torch.zeros_like(pred[[0],...])
                     pred = torch.cat((pred,zero), dim=-4)
@@ -143,7 +142,7 @@ class Logger(object):
             elif k == 'glia':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
-                pred = F.sigmoid(preds[k][0,...]).cpu()
+                pred = torch.sigmoid(preds[k][0,...]).cpu()
                 self.log_image(tag, pred, iter_num)
 
                 # Target

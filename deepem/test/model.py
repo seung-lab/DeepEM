@@ -46,9 +46,9 @@ class Model(nn.Module):
         outputs = dict()
         for k, x in preds.items():
             if self.temperature is None:
-                outputs[k] = F.sigmoid(x)
+                outputs[k] = torch.sigmoid(x)
             else:
-                outputs[k] = F.sigmoid(x/self.temperature)
+                outputs[k] = torch.sigmoid(x/self.temperature)
 
             # Narrowing
             output_channels = outputs[k].shape[-4]

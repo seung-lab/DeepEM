@@ -33,7 +33,7 @@ class BCELoss(nn.Module):
                 target[torch.eq(target, 1)] = 1 - m1
                 target[torch.eq(target, 0)] = m0
             else:
-                activ = F.sigmoid(input)
+                activ = torch.sigmoid(input)
                 m_int = torch.ge(activ, 1 - m1) * torch.eq(target, 1)
                 m_ext = torch.le(activ, m0) * torch.eq(target, 0)
                 mask *= 1 - (m_int + m_ext).type(mask.dtype)
@@ -68,7 +68,7 @@ class MSELoss(nn.Module):
             loss = torch.tensor(0).type(torch.cuda.FloatTensor)
             return loss, nmsk
 
-        activ = F.sigmoid(input) if self.logits else input
+        activ = torch.sigmoid(input) if self.logits else input
 
         # Margin
         m0, m1 = self.margin0, self.margin1
