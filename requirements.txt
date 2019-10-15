@@ -1,6 +1,5 @@
-cloudvolume
-igneous
-taskqueue
+cloud-volume
+task-queue
 tensorflow
 tensorboard
 tensorboardX
