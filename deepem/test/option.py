@@ -39,6 +39,7 @@ class Options(object):
         # Multiclass detection
         self.parser.add_argument('--aff',  action='store_true')
         self.parser.add_argument('--long', type=int, default=0)
+        self.parser.add_argument('--aff_deprecated', type=int, default=16)
         self.parser.add_argument('--bdr',  action='store_true')
         self.parser.add_argument('--syn',  action='store_true')
         self.parser.add_argument('--psd',  action='store_true')
@@ -129,6 +130,8 @@ class Options(object):
 
         if opt.aff:
             opt.out_spec['affinity'] = (3,) + opt.outputsz
+        if opt.aff_deprecated:
+            opt.out_spec['affinity'] = (opt.aff_deprecated,) + opt.outputsz
         if opt.bdr:
             opt.out_spec['boundary'] = (1,) + opt.outputsz
         if opt.syn:
@@ -148,6 +151,8 @@ class Options(object):
         # Scan spec
         opt.scan_spec = dict()
         if opt.aff:
+            opt.scan_spec['affinity'] = (3,) + opt.outputsz
+        if opt.aff_deprecated:
             opt.scan_spec['affinity'] = (3,) + opt.outputsz
         if opt.bdr:
             opt.scan_spec['boundary'] = (1,) + opt.outputsz
