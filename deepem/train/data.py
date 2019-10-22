@@ -59,7 +59,7 @@ class Data(object):
         self.modifier = lambda x: x
         if opt.modifier is not None:
             mod = imp.load_source('modifier', opt.modifier)
-            self.modifier = mod.Modifier()
+            self.modifier = mod.Modifier(**opt.mod_params)
 
         # Data loader
         size = (opt.max_iter - opt.chkpt_num) * opt.batch_size

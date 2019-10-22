@@ -3,7 +3,7 @@ import torch.nn as nn
 
 import emvision
 from emvision.models.layers import BilinearUp
-from deepem.models.layers import Conv
+from deepem.models.layers import Conv, Crop
 
 
 def create_model(opt):
@@ -19,7 +19,7 @@ def create_model(opt):
     else:
         # Batch (instance) normalization
         core = emvision.models.RSUNet(width=width[:depth])
-    return Model(core, opt.in_spec, opt.out_spec, width[0])
+    return Model(core, opt.in_spec, opt.out_spec, width[0], cropsz=opt.cropsz)
 
 
 class InputBlock(nn.Sequential):
@@ -47,7 +47,7 @@ class Model(nn.Sequential):
     """
     Residual Symmetric U-Net with down/upsampling in/output.
     """
-    def __init__(self, core, in_spec, out_spec, out_channels):
+    def __init__(self, core, in_spec, out_spec, out_channels, cropsz=None):
         super(Model, self).__init__()
 
         assert len(in_spec)==1, "model takes a single input"
@@ -57,3 +57,5 @@ class Model(nn.Sequential):
         self.add_module('in', InputBlock(in_channels, out_channels, io_kernel))
         self.add_module('core', core)
         self.add_module('out', OutputBlock(out_channels, out_spec, io_kernel))
+        if cropsz is not None:
+            self.add_module('crop', Crop(cropsz))

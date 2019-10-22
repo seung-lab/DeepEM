@@ -2,6 +2,7 @@ import argparse
 import json
 import math
 import os
+import numpy as np
 
 from deepem.utils.py_utils import vec3, vec3f
 
@@ -28,7 +29,7 @@ class Options(object):
         self.parser.add_argument('--no_eval', action='store_true')
         self.parser.add_argument('--inputsz', type=vec3, default=None)
         self.parser.add_argument('--outputsz', type=vec3, default=None)
-        self.parser.add_argument('--cropsz', type=vec3, default=None)
+        self.parser.add_argument('--force_crop', type=vec3, default=None)
         self.parser.add_argument('--fov', type=vec3, default=None)
         self.parser.add_argument('--depth', type=int, default=4)
         self.parser.add_argument('--width', type=int, default=None, nargs='+')
@@ -115,9 +116,17 @@ class Options(object):
         opt.fov = tuple(opt.fov)
         opt.inputsz = opt.fov if opt.inputsz is None else opt.inputsz
         opt.outputsz = opt.fov if opt.outputsz is None else opt.outputsz
-        opt.cropsz = opt.cropsz
         opt.in_spec = dict(input=(1,) + opt.inputsz)
         opt.out_spec = dict()
+
+        # Crop output
+        diff = np.array(opt.fov) - np.array(opt.outputsz)
+        assert all(diff >= 0)
+        if any(diff > 0):
+            opt.cropsz = opt.outputsz
+        else:
+            opt.cropsz = None
+
         if opt.aff:
             opt.out_spec['affinity'] = (3,) + opt.outputsz
         if opt.bdr:
@@ -154,6 +163,8 @@ class Options(object):
             opt.scan_spec['blood_vessel'] = (opt.blv_num_channels,) + opt.outputsz
         if opt.glia:
             opt.scan_spec['glia'] = (1,) + opt.outputsz
+
+        # Overlap & stride
         opt.overlap = self.get_overlap(opt.outputsz, opt.overlap)
         opt.stride = tuple(int(f-o) for f,o in zip(opt.outputsz, opt.overlap))
         opt.scan_params = dict(stride=opt.stride, blend=opt.blend)

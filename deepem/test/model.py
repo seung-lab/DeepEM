@@ -18,7 +18,7 @@ class Model(nn.Module):
         self.in_spec = dict(opt.in_spec)
         self.scan_spec = dict(opt.scan_spec)
         self.pretrain = opt.pretrain
-        self.cropsz = opt.cropsz
+        self.force_crop = opt.force_crop
 
         # Softer softmax
         if opt.temperature is None:
@@ -62,8 +62,8 @@ class Model(nn.Module):
                 outputs[k] *= self.mask[k]
 
             # Crop outputs.
-            if self.cropsz is not None:
-                outputs[k] = torch_utils.crop_border(outputs[k], self.cropsz)
+            if self.force_crop is not None:
+                outputs[k] = torch_utils.crop_border(outputs[k], self.force_crop)
 
         return outputs
 
