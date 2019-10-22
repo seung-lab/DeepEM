@@ -35,9 +35,6 @@ def train(opt):
             # Load training samples.
             sample = train_loader()
 
-            # Crop sample.
-
-
             # Optimizer step
             optimizer.zero_grad()
             losses, nmasks, preds = forward(model, sample, opt)

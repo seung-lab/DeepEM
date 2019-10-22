@@ -124,7 +124,8 @@ class Options(object):
         diff = np.array(opt.fov) - np.array(opt.outputsz)
         assert all(diff >= 0)
         if any(diff > 0):
-            opt.cropsz = opt.outputsz
+            # opt.cropsz = opt.outputsz
+            opt.cropsz = [o/float(f) for f,o in zip(opt.fov,opt.outputsz)]
         else:
             opt.cropsz = None
 

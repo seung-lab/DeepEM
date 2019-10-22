@@ -2,6 +2,7 @@ import os
 import sys
 import datetime
 from collections import OrderedDict
+import numpy as np
 
 import torch
 from torchvision.utils import make_grid
@@ -87,15 +88,22 @@ class Logger(object):
             return ret
 
     def log_images(self, phase, iter_num, preds, sample):
+        # Peep output size
+        key = sorted(self.out_spec)[0]
+        cropsz = sample[key].shape[-3:]
+        for k in sorted(self.out_spec):
+            outsz = sample[k].shape[-3:]
+            assert np.array_equal(outsz, cropsz)
+
         # Inputs
         for k in sorted(self.in_spec):
             tag = '{}/images/{}'.format(phase, k)
             tensor = sample[k][0,...].cpu()
-            tensor = torch_utils.crop_center(tensor, self.outputsz)
+            tensor = torch_utils.crop_center(tensor, cropsz)
             self.log_image(tag, tensor, iter_num)
 
         # Outputs
-        for k  in sorted(self.out_spec):
+        for k in sorted(self.out_spec):
             if k == 'affinity':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)

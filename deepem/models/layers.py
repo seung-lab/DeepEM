@@ -39,5 +39,6 @@ class Crop(nn.Module):
     def forward(self, x):
         if self.cropsz is not None:
             for k, v in x.items():
-                x[k] = torch_utils.crop_center(v, self.cropsz)
+                cropsz = [int(v.shape[i]*self.cropsz[i]) for i in [-3,-2,-1]]
+                x[k] = torch_utils.crop_center(v, cropsz)
         return x

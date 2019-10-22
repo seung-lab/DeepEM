@@ -107,6 +107,9 @@ class Options(object):
         self.parser.add_argument('--glia', type=float, default=0)  # Glia
         self.parser.add_argument('--glia_mask', action='store_true')
 
+        # Test training
+        self.parser.add_argument('--test', action='store_true')
+
         self.initialized = True
 
     def parse(self):
@@ -119,6 +122,8 @@ class Options(object):
             opt.exp_dir = opt.exp_name
         else:
             opt.exp_dir = 'experiments/{}'.format(opt.exp_name)
+        if opt.test:
+            opt.exp_dir = 'test/' + opt.exp_dir
         opt.log_dir = os.path.join(opt.exp_dir, 'logs')
         opt.model_dir = os.path.join(opt.exp_dir, 'models')
 
@@ -162,7 +167,8 @@ class Options(object):
         diff = np.array(opt.fov) - np.array(opt.outputsz)
         assert all(diff >= 0)
         if any(diff > 0):
-            opt.cropsz = opt.outputsz
+            # opt.cropsz = opt.outputsz
+            opt.cropsz = [o/float(f) for f,o in zip(opt.fov,opt.outputsz)]
         else:
             opt.cropsz = None
 
@@ -180,6 +186,13 @@ class Options(object):
             'blv':  ('blood_vessel', opt.blv_num_channels),
             'glia':  ('glia', 1),
         }
+
+        # Test training
+        if opt.test:
+            opt.eval_intv = 100
+            opt.eval_iter = 10
+            opt.avgs_intv = 10
+            opt.imgs_intv = 100
 
         for k, v in class_dict.items():
             loss_w = args[k]
