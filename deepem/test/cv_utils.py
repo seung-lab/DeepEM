@@ -111,5 +111,6 @@ def ingest(data, opt, tag=None):
         from igneous.task_creation import create_downsampling_tasks
 
         with LocalTaskQueue(parallel=opt.parallel) as tq:
-            create_downsampling_tasks(tq, gs_path, mip=0,
-                                      fill_missing=True)
+            # create_downsampling_tasks(tq, gs_path, mip=0, fill_missing=True)
+            tasks = create_downsampling_tasks(gs_path, mip=0, fill_missing=True)
+            tq.insert_all(tasks)

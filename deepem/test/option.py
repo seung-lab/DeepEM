@@ -39,7 +39,7 @@ class Options(object):
         # Multiclass detection
         self.parser.add_argument('--aff',  action='store_true')
         self.parser.add_argument('--long', type=int, default=0)
-        self.parser.add_argument('--aff_deprecated', type=int, default=16)
+        self.parser.add_argument('--aff_deprecated', type=int, default=None)
         self.parser.add_argument('--bdr',  action='store_true')
         self.parser.add_argument('--syn',  action='store_true')
         self.parser.add_argument('--psd',  action='store_true')
