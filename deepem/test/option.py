@@ -108,6 +108,9 @@ class Options(object):
             self.initialize()
         opt = self.parser.parse_args()
 
+        # Device
+        opt.device = 'cpu' if opt.cpu else 'cuda'
+
         # Directories
         if opt.exp_name.split('/')[0] == 'experiments':
             opt.exp_dir = opt.exp_name
