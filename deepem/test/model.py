@@ -38,7 +38,8 @@ class Model(nn.Module):
                     mask = PatchMask(patch_sz, opt.overlap)
                     mask = np.expand_dims(mask, axis=0)
                 mask = np.expand_dims(mask, axis=0)
-                self.mask[k] = torch.from_numpy(mask).cuda()
+                mask = torch.from_numpy(mask)
+                self.mask[k] = mask.cpu() if opt.cpu else mask.cuda()
 
     def forward(self, sample):
         inputs = [sample[k] for k in sorted(self.in_spec)]

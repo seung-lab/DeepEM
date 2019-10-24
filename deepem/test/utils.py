@@ -19,7 +19,7 @@ def load_model(opt):
         model = load_chkpt(model, opt.model_dir, opt.chkpt_num)
 
     model = model.train() if opt.no_eval else model.eval()
-    return model.cuda()
+    return model.cpu() if opt.cpu else model.cuda()
 
 
 def load_chkpt(model, fpath, chkpt_num):
