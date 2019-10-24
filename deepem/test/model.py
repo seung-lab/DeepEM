@@ -14,6 +14,7 @@ class Model(nn.Module):
     """
     def __init__(self, model, opt):
         super(Model, self).__init__()
+        self.device = opt.device
         self.model = model
         self.in_spec = dict(opt.in_spec)
         self.scan_spec = dict(opt.scan_spec)
@@ -69,7 +70,7 @@ class Model(nn.Module):
 
 
     def load(self, fpath):
-        chkpt = torch.load(fpath)
+        chkpt = torch.load(fpath, map_location=self.device)
         # Backward compatibility
         state_dict = chkpt['state_dict'] if 'state_dict' in chkpt else chkpt
         if self.pretrain:
