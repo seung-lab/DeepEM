@@ -70,7 +70,8 @@ class Model(nn.Module):
 
 
     def load(self, fpath):
-        chkpt = torch.load(fpath, map_location=self.device)
+        map_location = 'cpu' if self.device == 'cpu' else None
+        chkpt = torch.load(fpath, map_location=map_location)
         # Backward compatibility
         state_dict = chkpt['state_dict'] if 'state_dict' in chkpt else chkpt
         if self.pretrain:
