@@ -29,8 +29,10 @@ if __name__ == "__main__":
     # Options
     opt = Options().parse()
 
-    # GPUs
-    os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpu_id
+    # GPU
+    if not opt.cpu:
+        os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpu_id        
+        torch.backends.cudnn.benchmark = not opt.no_autotune
 
     # Make directories.
     if not os.path.isdir(opt.exp_dir):
@@ -39,9 +41,6 @@ if __name__ == "__main__":
         os.makedirs(opt.model_dir)
     if not os.path.isdir(opt.fwd_dir):
         os.makedirs(opt.fwd_dir)
-
-    # cuDNN auto-tuning
-    torch.backends.cudnn.benchmark = not opt.no_autotune
 
     # Run inference.
     print("Running inference: {}".format(opt.exp_name))
