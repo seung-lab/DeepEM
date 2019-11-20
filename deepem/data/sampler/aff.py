@@ -1,5 +1,5 @@
 from augmentor import Augment
-from dataprovider3 import DataProvider, Dataset
+from dataprovider3 import DataProvider, Dataset, DataSuperset
 
 
 def get_spec(in_spec, out_spec):
@@ -50,7 +50,10 @@ class Sampler(object):
         dp = DataProvider(spec)
         keys = data.keys()
         for k in keys:
-            dp.add_dataset(self.build_dataset(k, data[k]))
+            if 'superset' in k:
+                dp.add_dataset(self.build_datasuperset(k, data[k]))
+            else:
+                dp.add_dataset(self.build_dataset(k, data[k]))
         dp.set_augment(aug)
         dp.set_imgs(['input'])
         dp.set_segs(['affinity'])
@@ -60,6 +63,12 @@ class Sampler(object):
             dp.set_sampling_weights(p=None)
         self.dataprovider = dp
         print(dp)
+
+    def build_datasuperset(self, tag, data):
+        dset = DataSuperset(tag=tag)
+        for k in data.keys():
+            dset.add_dataset(self.build_dataset(k, data[k]))
+        return dset
 
     def build_dataset(self, tag, data):
         img = data['img']
