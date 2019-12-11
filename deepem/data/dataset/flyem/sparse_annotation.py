@@ -63,6 +63,6 @@ def load_dataset(dpath, **kwargs):
     dset['msk'][idx] = 0
 
     # Additoinal info
-    dset['loc'] = info['loc']
+    dset['loc'] = data_info['loc']
 
     return dset
