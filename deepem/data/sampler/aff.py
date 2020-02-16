@@ -1,5 +1,5 @@
 from augmentor import Augment
-from dataprovider3 import DataProvider, Dataset, DataSuperset
+from dataprovider3 import DataProvider, Dataset
 
 
 def get_spec(in_spec, out_spec):
