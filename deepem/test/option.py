@@ -173,10 +173,13 @@ class Options(object):
             opt.scan_spec['glia'] = (1,) + opt.outputsz
 
         # Overlap & stride
-        opt.overlap = self.get_overlap(opt.outputsz, opt.overlap)
         if opt.stride is None:
+            # infer stride from overlap
+            opt.overlap = self.get_overlap(opt.outputsz, opt.overlap)
             opt.stride = tuple(int(f-o) for f,o in zip(opt.outputsz, opt.overlap))
-        opt.scan_params = dict(stride=opt.stride, blend=opt.blend)
+        else:            
+            # infer overlap from stride
+            opt.overlap = tuple(int(f-s) for f,s in zip(opt.outputsz, opt.stride))
 
         # Output tagging
         if opt.tags is not None:
