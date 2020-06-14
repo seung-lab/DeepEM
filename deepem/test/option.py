@@ -45,6 +45,7 @@ class Options(object):
         self.parser.add_argument('--psd',  action='store_true')
         self.parser.add_argument('--mit',  action='store_true')
         self.parser.add_argument('--mye',  action='store_true')
+        self.parser.add_argument('--mye_thresh', type=float, default=0.5)
         self.parser.add_argument('--blv',  action='store_true')
         self.parser.add_argument('--blv_num_channels', type=int, default=2)
         self.parser.add_argument('--glia',  action='store_true')
@@ -85,6 +86,7 @@ class Options(object):
         self.parser.add_argument('--out_prefix', default='')
         self.parser.add_argument('--out_tag', default='')
         self.parser.add_argument('--overlap', type=vec3f, default=(0.5,0.5,0.5))
+        self.parser.add_argument('--stride', type=vec3, default=None)
         self.parser.add_argument('--mirror', type=vec3, default=None)
         self.parser.add_argument('--crop_border', type=vec3, default=None)
         self.parser.add_argument('--crop_center', type=vec3, default=None)
@@ -171,9 +173,13 @@ class Options(object):
             opt.scan_spec['glia'] = (1,) + opt.outputsz
 
         # Overlap & stride
-        opt.overlap = self.get_overlap(opt.outputsz, opt.overlap)
-        opt.stride = tuple(int(f-o) for f,o in zip(opt.outputsz, opt.overlap))
-        opt.scan_params = dict(stride=opt.stride, blend=opt.blend)
+        if opt.stride is None:
+            # infer stride from overlap
+            opt.overlap = self.get_overlap(opt.outputsz, opt.overlap)
+            opt.stride = tuple(int(f-o) for f,o in zip(opt.outputsz, opt.overlap))
+        else:            
+            # infer overlap from stride
+            opt.overlap = tuple(int(f-s) for f,s in zip(opt.outputsz, opt.stride))
 
         # Output tagging
         if opt.tags is not None:
