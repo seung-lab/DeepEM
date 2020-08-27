@@ -127,6 +127,17 @@ class Logger(object):
                 pred = torch.sigmoid(preds[k][0,...]).cpu()
                 self.log_image(tag, pred, iter_num)
 
+            elif k == 'mitochondria':
+                # Prediction
+                tag = '{}/images/{}'.format(phase, k)
+                pred = torch.sigmoid(preds[k][0,...]).cpu()
+                self.log_image(tag, pred, iter_num)
+
+                # Target
+                tag = '{}/labels/{}'.format(phase, k)
+                target = sample[k][0,...].cpu()
+                self.log_image(tag, target, iter_num)
+
             elif k == 'synapse':
                 # Prediction
                 tag = '{}/images/{}'.format(phase, k)
