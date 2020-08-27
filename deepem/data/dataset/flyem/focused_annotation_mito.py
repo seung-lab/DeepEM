@@ -160,41 +160,13 @@ def load_dataset(dpath, tag, info, class_keys=[], **kwargs):
     print(fpath)
     dset['msk'] = emio.imread(fpath).astype(np.uint8)
 
-    # Segmentation
-    fpath = os.path.join(dpath, info['dir'], info['seg_d3_b0'])
-    print(fpath)
-    dset['seg'] = emio.imread(fpath).astype(np.uint32)
-
-    # Special case
-    if 'lamellae' in info:
-        idx = np.isin(dset['seg'], info['lamellae'])
-        dset['seg'][idx] = 0
-
-    # Glia
-    if 'glia' in class_keys:
-        if 'glia' in info:
-            fpath = os.path.join(dpath, info['dir'], info['glia'])
-            print(fpath)
-            dset['glia'] = emio.imread(fpath).astype(np.uint8)
-        else:
-            dset['glia'] = np.zeros_like(dset['msk'])
-
-    # Mask out
-    if 'rosetta' in info:
-        idx = np.isin(dset['seg'], info['rosetta'])
-        dset['msk'][idx] = 0
-
-    if 'esophagus' in info:
-        idx = np.isin(dset['seg'], info['esophagus'])
-        dset['msk'][idx] = 0
-
-    if 'glia_msk' in info:
-        idx = np.isin(dset['seg'], info['glia_msk'])
-        dset['msk'][idx] = 0
-
-    if 'dark_cell' in info:
-        idx = np.isin(dset['seg'], info['dark_cell'])
-        dset['msk'][idx] = 0
+    # Mitochondria
+    if 'mit' in info:
+        fpath = os.path.join(dpath, info['dir'], info['mit'])
+        print(fpath)
+        dset['mit'] = (emio.imread(fpath) > 0).astype(np.uint8)
+    else:
+        dset['mit'] = np.zeros_like(dset['msk'])
 
     # Additoinal info
     dset['loc'] = info['loc']
