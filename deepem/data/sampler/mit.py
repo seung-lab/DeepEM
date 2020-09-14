@@ -59,7 +59,7 @@ class Sampler(object):
         dset = Dataset(tag=tag)
         dset.add_data(key='input', data=img)
         dset.add_data(key='mitochondria', data=mit)
-        dset.add_mask(key='mitochondria_mask', data=msk)
+        dset.add_mask(key='mitochondria_mask', data=msk, loc=loc)
 
         return dset
 
