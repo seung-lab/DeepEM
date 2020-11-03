@@ -180,6 +180,7 @@ class Options(object):
         else:            
             # infer overlap from stride
             opt.overlap = tuple(int(f-s) for f,s in zip(opt.outputsz, opt.stride))
+        opt.scan_params = dict(stride=opt.stride, blend=opt.blend)
 
         # Output tagging
         if opt.tags is not None:
