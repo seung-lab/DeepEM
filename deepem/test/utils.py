@@ -35,6 +35,14 @@ def make_forward_scanner(opt, data_name=None):
         try:
             from deepem.test import cv_utils
             img = cv_utils.cutout(opt, opt.gs_input, dtype='uint8')
+
+            # Optional input histogram normalization 
+            if opt.gs_input_norm:
+                assert len(opt.gs_input_norm) == 2
+                low, high = opt.gs_input_norm
+                img = normalize_per_slice(img, lowerfract=low, upperfract=high)
+            
+            # [0, 255] -> [0.0, 1.0]
             img = (img/255.).astype('float32')
 
             # Optional input mask
@@ -106,3 +114,65 @@ def save_output(output, opt, data_name=None, aug_out=None):
                 fname = fname + '_' + opt.out_tag
             fpath = os.path.join(opt.fwd_dir, fname + ".h5")
             emio.imsave(data, fpath)
+
+
+def histogram_per_slice(img):    
+    z = img.shape[-3]
+    xy = img.shape[-2] * img.shape[-1]
+    return np.apply_along_axis(np.bincount, axis=1, arr=img.reshape((z,xy)),
+                               minlength=255)
+
+
+def find_section_clamping_values(zlevel, lowerfract, upperfract):
+    """Find int8 values that correspond to lowerfract & upperfract of zlevel histogram
+    
+    From igneous (https://github.com/seung-lab/igneous/blob/master/igneous/tasks/tasks.py#L547)
+    """
+    filtered = np.copy(zlevel)
+
+    # remove pure black from frequency counts as
+    # it has no information in our images
+    filtered[0] = 0
+
+    cdf = np.zeros(shape=(len(filtered),), dtype=np.uint64)
+    cdf[0] = filtered[0]
+    for i in range(1, len(filtered)):
+        cdf[i] = cdf[i - 1] + filtered[i]
+
+    total = cdf[-1]
+
+    if total == 0:
+        return (0, 0)
+
+    lower = 0
+    for i, val in enumerate(cdf):
+        if float(val) / float(total) > lowerfract:
+            break
+        lower = i
+
+    upper = 0
+    for i, val in enumerate(cdf):
+        if float(val) / float(total) > upperfract:
+            break
+        upper = i
+
+    return (lower, upper)
+
+
+def normalize_per_slice(img, lowerfract=0.01, upperfract=0.01):
+    maxval = 255.
+    hist = histogram_per_slice(img)
+    img = img.astype(np.float32)
+    for z in range(img.shape[-3]):
+        lower, upper = find_section_clamping_values(hist[z], 
+                                                lowerfract=lowerfract, 
+                                                upperfract=1-upperfract)
+        if lower == upper:
+            continue
+
+        im = img[z,:,:]
+        im = (im - float(lower)) * (maxval / (float(upper) - float(lower)))
+        img[z,:,:] = im
+
+    img = np.round(img)
+    return np.clip(img, 0., maxval).astype(np.uint8)
