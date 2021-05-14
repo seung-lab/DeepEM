@@ -1,5 +1,5 @@
 cloud-volume
 task-queue
-tensorflow==1.12.0
-tensorboard==1.10.0
+tensorflow
+tensorboard
 tensorboardX
