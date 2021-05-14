@@ -14,6 +14,7 @@ class Model(nn.Module):
     """
     def __init__(self, model, opt):
         super(Model, self).__init__()
+        self.device = opt.device
         self.model = model
         self.in_spec = dict(opt.in_spec)
         self.scan_spec = dict(opt.scan_spec)
@@ -38,7 +39,7 @@ class Model(nn.Module):
                     mask = PatchMask(patch_sz, opt.overlap)
                     mask = np.expand_dims(mask, axis=0)
                 mask = np.expand_dims(mask, axis=0)
-                self.mask[k] = torch.from_numpy(mask).cuda()
+                self.mask[k] = torch.from_numpy(mask).to(opt.device)
 
     def forward(self, sample):
         inputs = [sample[k] for k in sorted(self.in_spec)]
@@ -69,7 +70,8 @@ class Model(nn.Module):
 
 
     def load(self, fpath):
-        chkpt = torch.load(fpath)
+        map_location = 'cpu' if self.device == 'cpu' else None
+        chkpt = torch.load(fpath, map_location=map_location)
         # Backward compatibility
         state_dict = chkpt['state_dict'] if 'state_dict' in chkpt else chkpt
         if self.pretrain:

@@ -20,6 +20,9 @@ class Options(object):
         self.parser.add_argument('--chkpt_num', type=int, default=0)
         self.parser.add_argument('--gpu_id', type=str, default='0')
 
+        # CPU inference
+        self.parser.add_argument('--cpu', action='store_true')
+
         # cuDNN auto-tuning
         self.parser.add_argument('--no_autotune', action='store_false')
 
@@ -106,6 +109,9 @@ class Options(object):
         if not self.initialized:
             self.initialize()
         opt = self.parser.parse_args()
+
+        # Device
+        opt.device = 'cpu' if opt.cpu else 'cuda'
 
         # Directories
         if opt.exp_name.split('/')[0] == 'experiments':

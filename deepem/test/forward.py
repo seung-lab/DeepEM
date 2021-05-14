@@ -13,6 +13,7 @@ class Forward(object):
     Forward scanning.
     """
     def __init__(self, opt):
+        self.device = opt.device
         self.in_spec = dict(opt.in_spec)
         self.out_spec = dict(opt.out_spec)
         self.scan_spec = dict(opt.scan_spec)
@@ -111,7 +112,7 @@ class Forward(object):
         for k in sorted(self.in_spec):
             data = np.expand_dims(sample[k], axis=0)
             tensor = torch.from_numpy(data)
-            inputs[k] = tensor.cuda()
+            inputs[k] = tensor.to(self.device)
         return inputs
 
     def from_torch(self, outputs):
