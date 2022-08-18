@@ -1,6 +1,12 @@
+.vscode/
+.env/
 datasets/
-experiments/
+experiments
+deepem/data/dataset/wasp/
 */**/__pycache__
 */**/*.pyc
 */**/*~
 *~
+*.cmd
+*.out
+environments.yml

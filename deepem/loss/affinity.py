@@ -15,7 +15,8 @@ class EdgeSampler(object):
 
     def generate_true_aff(self, obj, edge):
         o1, o2 = torch_utils.get_pair(obj, edge)
-        ret = (((o1 == o2) + (o1 != 0) + (o2 != 0)) == 3)
+        #ret = (((o1 == o2) + (o1 != 0) + (o2 != 0)) == 3)
+        ret = ((o1 == o2) & (o1 != 0) & (o2 != 0))
         return ret.type(obj.type())
 
     def generate_mask_aff(self, mask, edge):
